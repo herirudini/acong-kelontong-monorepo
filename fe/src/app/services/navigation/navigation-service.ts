@@ -33,7 +33,7 @@ export class NavigationService {
     const breadcrumbs: IBreadcrumb[] = [];
     while (route) {
       const path = route.routeConfig ? route.routeConfig.path : '';
-      let labelKey = route.routeConfig?.data?.['title'] || '';
+      let labelKey = route.routeConfig?.data?.['labelKey'] || '';
       const nextUrl = `${url}${path}/`;
       url = nextUrl;
       route = route.firstChild;

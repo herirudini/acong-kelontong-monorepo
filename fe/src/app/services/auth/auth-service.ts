@@ -22,4 +22,14 @@ export class AuthService {
       ],
     };
   }
+
+  isAuthenticated() {
+    return true;
+    return !!localStorage.getItem('token');
+  }
+
+  isImmediateChangePassword() {
+    return false;
+    return localStorage.getItem('immediateChangePassword') === 'true';
+  }
 }
