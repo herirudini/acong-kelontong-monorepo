@@ -6,9 +6,10 @@ import { IMenu } from '../../types/interfaces/menu.interface';
 import { NavigationService } from '../../services/navigation/navigation-service';
 import { IBreadcrumb } from '../../types/interfaces/breadcrumb.interface';
 import { Alert } from '../../shared/components/alert/alert';
+import { PageSpinner } from '../../shared/components/page-spinner/page-spinner';
 @Component({
   selector: 'app-main-layout',
-  imports: [CommonModule, RouterModule, Alert],
+  imports: [CommonModule, RouterModule, Alert, PageSpinner],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })

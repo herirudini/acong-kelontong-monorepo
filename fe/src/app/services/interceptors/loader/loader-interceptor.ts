@@ -1,9 +1,10 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { finalize } from 'rxjs';
+import { PageSpinnerService } from '../../../shared/components/page-spinner/page-spinner-service';
 
 export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
-  // const modalService = inject(CommonModalService);
+  const pageSpinnerService = inject(PageSpinnerService);
 
   const spinneroff = req.params.get('spinneroff');
   req = req.clone({
@@ -13,10 +14,10 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
   if (spinneroff === '1') {
     return next(req);
   } else {
-    // modalService.spinnerOn();
+    pageSpinnerService.spinnerOn();
     return next(req).pipe(
       finalize(() => {
-        // modalService.spinnerOff();
+        pageSpinnerService.spinnerOff();
       })
     );
   }
