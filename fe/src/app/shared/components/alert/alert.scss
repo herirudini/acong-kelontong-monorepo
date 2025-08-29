@@ -1,0 +1,13 @@
+.ngb-alert-container {
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1100;
+    .ngb-alert-item {
+        width: 90%;
+        max-width: 300px;
+    }
+}

@@ -1,0 +1,9 @@
+<div class="ngb-alert-container">
+    @for(alert of alerts; track alert.alertId) {
+    <ngb-alert class="ngb-alert-item" [animation]="isBrowser" [type]="alert.type" (close)="closeAlert(alert)">
+        <div class="d-flex flex-row align-items-center justify-content-start gap-15px">
+            <div [innerHTML]="alert.message"></div>
+        </div>
+    </ngb-alert>
+    }
+</div>

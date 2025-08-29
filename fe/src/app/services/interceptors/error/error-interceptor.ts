@@ -1,24 +1,16 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 import { catchError, throwError } from 'rxjs';
-// import { inject } from '@angular/core';
-// import { ToastService } from '../toast.service';
+import { AlertService } from '../../../shared/components/alert/alert-service';
+import { inject } from '@angular/core';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
-  // const toast = inject(ToastService);
+  const alert = inject(AlertService);
 
   return next(req).pipe(
     catchError((err) => {
       console.error('HTTP error intercepted:', err);
-
-      const errorMessage =
-        err.error?.response_schema?.response_message ??
-        `Error: ${err.status}`;
-
-      if (err.status === 500) {
-        // toast.error(errorMessage);
-        window.alert(errorMessage);
-      }
-
+      const errorMessage = err.error?.response_schema?.response_message ?? `Error: ${err.status}`;
+      alert.error(errorMessage);
       return throwError(() => err);
     })
   );

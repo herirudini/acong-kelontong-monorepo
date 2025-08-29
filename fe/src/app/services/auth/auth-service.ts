@@ -5,6 +5,7 @@ import { Observable, tap } from 'rxjs';
 import { Endpoint } from '../../types/constants/endpoint';
 import { IUser } from '../../types/interfaces/user.interface';
 import { Router } from '@angular/router';
+import { AlertService } from '../../shared/components/alert/alert-service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class AuthService extends BaseService {
   constructor(
     override http: HttpClient,
     private router: Router,
-    // private toastService: ToastService
+    private alert: AlertService
   ) {
     super(http);
   }

@@ -5,9 +5,10 @@ import { Previleges } from '../../_previleges';
 import { IMenu } from '../../types/interfaces/menu.interface';
 import { NavigationService } from '../../services/navigation/navigation-service';
 import { IBreadcrumb } from '../../types/interfaces/breadcrumb.interface';
+import { Alert } from '../../shared/components/alert/alert';
 @Component({
   selector: 'app-main-layout',
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, Alert],
   templateUrl: './main-layout.html',
   styleUrl: './main-layout.scss'
 })
