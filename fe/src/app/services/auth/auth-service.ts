@@ -1,9 +1,39 @@
 import { Injectable } from '@angular/core';
+import { BaseService } from '../rest-api/base-service';
+import { HttpClient } from '@angular/common/http';
+import { Observable, tap } from 'rxjs';
+import { Endpoint } from '../../types/constants/endpoint';
+import { IUser } from '../../types/interfaces/user.interface';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AuthService extends BaseService {
+  constructor(
+    override http: HttpClient,
+    private router: Router,
+    // private toastService: ToastService
+  ) {
+    super(http);
+  }
+
+  signIn(userCreds: IUser): Observable<any> {
+    return this.postRequest(Endpoint.SIGN_IN, userCreds).pipe(
+      tap({
+        next: (res: any) => {
+          const token  = res.access_token;
+          const refreshToken  = res.refresh_token;
+          const profile: IUser = res.profile;
+          if (profile?.is_email_verified && token) {
+            // this.storeCurrentUser(profile);
+            // this.storeToken(token);
+            // this.storeRefreshToken(refreshToken!);
+          }
+        }
+      })
+    );
+  }
   getProfile() {
     return {
       modules: [

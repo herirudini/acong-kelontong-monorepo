@@ -16,6 +16,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       if (err.status === 500) {
         // toast.error(errorMessage);
+        window.alert(errorMessage);
       }
 
       return throwError(() => err);
