@@ -1,5 +1,5 @@
 {
-  "name": "angular-boilerplate-admin-lte",
+  "name": "acong-kelontong-monorepo-fe",
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
@@ -7,7 +7,7 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:angular-boilerplate-admin-lte": "node dist/angular-boilerplate-admin-lte/server/server.mjs"
+    "serve:ssr:acong-kelontong-monorepo-fe": "node dist/acong-kelontong-monorepo-fe/server/server.mjs"
   },
   "prettier": {
     "overrides": [

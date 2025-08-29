@@ -7,5 +7,5 @@ import { RouterOutlet } from '@angular/router';
   styleUrl: './app.scss'
 })
 export class App {
-  protected readonly title = signal('angular-boilerplate-admin-lte');
+  protected readonly title = signal('acong-kelontong-monorepo-fe');
 }

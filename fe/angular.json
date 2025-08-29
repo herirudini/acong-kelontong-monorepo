@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-boilerplate-admin-lte": {
+    "acong-kelontong-monorepo-fe": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -81,10 +81,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "angular-boilerplate-admin-lte:build:production"
+              "buildTarget": "acong-kelontong-monorepo-fe:build:production"
             },
             "development": {
-              "buildTarget": "angular-boilerplate-admin-lte:build:development"
+              "buildTarget": "acong-kelontong-monorepo-fe:build:development"
             }
           },
           "defaultConfiguration": "development"
