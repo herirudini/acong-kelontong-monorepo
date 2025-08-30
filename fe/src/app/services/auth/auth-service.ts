@@ -23,8 +23,8 @@ export class AuthService extends BaseService {
     return this.postRequest(Endpoint.SIGN_IN, userCreds).pipe(
       tap({
         next: (res: any) => {
-          const token  = res.access_token;
-          const refreshToken  = res.refresh_token;
+          const token = res.access_token;
+          const refreshToken = res.refresh_token;
           const profile: IUser = res.profile;
           if (profile?.is_email_verified && token) {
             // this.storeCurrentUser(profile);
@@ -38,18 +38,18 @@ export class AuthService extends BaseService {
   getProfile() {
     return {
       modules: [
-        { module_code: 'dashboard.view' },
-        { module_code: 'dashboard.update' },
-        { module_code: 'dashboard.create' },
-        { module_code: 'dashboard-v1.view' },
-        { module_code: 'dashboard-v1.update' },
-        { module_code: 'dashboard-v1.create' },
-        { module_code: 'dashboard-v2.view' },
-        { module_code: 'dashboard-v3.view' },
-        { module_code: 'tables.view' },
-        { module_code: 'tables-simple.view' },
-        { module_code: 'forms.view' },
-        { module_code: 'forms-general.view' },
+        'dashboard.view',
+        'dashboard.update',
+        'dashboard.create',
+        'dashboard-v1.view',
+        'dashboard-v1.update',
+        'dashboard-v1.create',
+        'dashboard-v2.view',
+        'dashboard-v3.view',
+        'tables.view',
+        'tables-simple.view',
+        'forms.view',
+        'forms-general.view',
       ],
     };
   }

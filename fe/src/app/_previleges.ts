@@ -34,7 +34,7 @@ export class Previleges {
     }
 
     public getAllowedModuleCodes(): string[] {
-        const modules = this.authSvc.getProfile()?.modules.map((m: any) => m.module_code);
+        const modules = this.authSvc.getProfile()?.modules;
         return [...modules]
     }
 }
