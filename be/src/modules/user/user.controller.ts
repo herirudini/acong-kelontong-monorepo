@@ -3,32 +3,29 @@ import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
 
   @Post()
   create(
     @Body()
     body: {
-      firstName: string;
-      lastName: string;
+      first_name: string;
+      last_name: string;
       email: string;
       password: string;
-      masterKey: string;
-      isEmailConfirmed: boolean;
       modules: string[];
       role: string;
     },
   ) {
-    return this.userService.create(
-      body.firstName,
-      body.lastName,
-      body.email,
-      body.password,
-      body.masterKey,
-      body.isEmailConfirmed,
-      body.modules,
-      body.role,
-    );
+    const data = {
+      first_name: body.first_name,
+      last_name: body.last_name,
+      email: body.email,
+      password: body.password,
+      modules: body.modules,
+      role: body.role,
+    };
+    return this.userService.create(data);
   }
 
   @Get()

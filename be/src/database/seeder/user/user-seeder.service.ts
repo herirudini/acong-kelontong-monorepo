@@ -3,7 +3,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/modules/user/user.schema';
 import * as bcrypt from 'bcrypt';
-
 @Injectable()
 export class UserSeederService {
     constructor(
@@ -17,9 +16,7 @@ export class UserSeederService {
             console.log('✅ Master user already exists');
             return;
         }
-
-        const hashedPassword = await bcrypt.hash('Master@123', 10);
-        const masterKey = await bcrypt.hash('master-key-Master@123', 10);
+        const hashedPassword = await bcrypt.hash('master@admin.123', 10);
         const modules = [
             'dashboard.view',
             'dashboard.update',
@@ -35,14 +32,12 @@ export class UserSeederService {
             'forms-general.view',
         ];
         const masterUser = new this.userModel({
-            firstName: 'Acong',
-            lastName: 'Kelontong',
+            first_name: 'Acong',
+            last_name: 'Kelontong',
             password: hashedPassword,
             email: 'master@admin.com',
             role: 'MASTER',
             modules,
-            masterKey,
-            isEmailConfirmed: true,
         });
 
         await masterUser.save();
