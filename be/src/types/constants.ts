@@ -1,4 +1,9 @@
 export const JWT_SECRET = process.env.JWT_SECRET;
-export const SEASON_DAYS = (process.env.SEASON_DAYS ? parseInt(process.env.SEASON_DAYS) : 7);
-export const SEASON_MINUTES = (process.env.SEASON_MINUTES ? parseInt(process.env.SEASON_MINUTES) : 15);
+export const SESSION_DAYS = (process.env.SESSION_DAYS ? parseInt(process.env.SESSION_DAYS) : 7);
+export const SESSION_MINUTES = (process.env.SESSION_MINUTES ? parseInt(process.env.SESSION_MINUTES) : 15);
 export const SALTS = (process.env.SALTS ? parseInt(process.env.SALTS) : 10);
+export const SMTP_USER = process.env.SMTP_USER as string;
+export const SMTP_PASS = process.env.SMTP_PASS as string;
+export const SMTP_HOST = process.env.SMTP_HOST as string;
+export const SMTP_PORT = process.env.SMTP_PORT as string;
+export const URL_CHANGE_PASSWORD = process.env.URL_CHANGE_PASSWORD as string;

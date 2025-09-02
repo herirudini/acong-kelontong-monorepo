@@ -15,5 +15,6 @@ import { Auth, AuthSchema } from './auth.schema';
     ]),
   ],
   providers: [AuthService, AuthGuard],
+  exports: [MongooseModule, AuthService, AuthGuard],
 })
 export class AuthModule { }

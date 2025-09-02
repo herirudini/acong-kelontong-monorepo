@@ -6,8 +6,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Auth, AuthDocument } from './auth.schema';
 import { Model } from 'mongoose';
 import { UserDocument } from '../user/user.schema';
-import { addDays, sha256Base64 } from 'src/utils/helper';
-import { SALTS, SEASON_DAYS, SEASON_MINUTES } from 'src/types/constants';
+import { sha256Base64 } from 'src/utils/helper';
+import { SALTS, SESSION_DAYS, SESSION_MINUTES } from 'src/types/constants';
+import { ITokenPayload, IRefreshTokenPayload } from 'src/types/many.interface';
 
 @Injectable()
 export class AuthService {
@@ -16,12 +17,12 @@ export class AuthService {
         private readonly authModel: Model<AuthDocument>,
     ) { }
 
-    generateAccessToken(payload: { id: string, id0: string, modules: string[] }): string {
-        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: SEASON_MINUTES + 'm' });
+    generateAccessToken(payload: ITokenPayload): string {
+        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: SESSION_MINUTES + 'm' });
     }
 
-    generateRefreshToken(payload: { id: string, id0: string }): string {
-        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: SEASON_DAYS + 'd' });
+    generateRefreshToken(payload: IRefreshTokenPayload): string {
+        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: SESSION_DAYS + 'd' });
     }
 
     verifyToken(token: string): jwt.JwtPayload | string {
@@ -49,7 +50,6 @@ export class AuthService {
             user_id: user._id,
             modules: user.modules,
             user_agent: userAgent,
-            expiresAt: addDays(new Date(), SEASON_DAYS), // now + SEASON_DAYS
         });
         const id = createAuth._id as string;
         const accessToken = this.generateAccessToken({ id, id0: user._id as string, modules: user.modules });

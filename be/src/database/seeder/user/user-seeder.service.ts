@@ -39,6 +39,7 @@ export class UserSeederService {
             email: 'master@admin.com',
             role: 'MASTER',
             modules,
+            verified: true,
         });
 
         await masterUser.save();

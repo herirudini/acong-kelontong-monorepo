@@ -1,6 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { isEmail } from 'class-validator';
 import { Document } from 'mongoose';
+import { SESSION_DAYS } from 'src/types/constants';
+import { addDays } from 'src/utils/helper';
 @Schema()
 export class User {
 
@@ -16,15 +18,27 @@ export class User {
   @Prop({ required: true })
   password: string;
 
-  @Prop()
-  master_key?: string;
+  @Prop({ default: false })
+  verified?: boolean;
 
   @Prop({ type: [String], default: [] })
   modules: string[];
 
   @Prop({ required: true })
   role: string;
+
+  @Prop({ type: Date, default: addDays(new Date(), SESSION_DAYS) })
+  verifyDueTime?: Date;
 }
 
 export type UserDocument = User & Document;
 export const UserSchema = SchemaFactory.createForClass(User);
+export interface TmpUser extends UserDocument {
+  tmpPassword: string;
+}
+
+// Add index for automatic cleanup (MongoDB TTL)
+UserSchema.index(
+  { verifyDueTime: 1 },
+  { expireAfterSeconds: 0, partialFilterExpression: { verified: false } }
+);

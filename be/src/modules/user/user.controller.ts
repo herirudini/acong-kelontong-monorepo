@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { UserService } from './user.service';
 
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
 
-  @Post()
+  @Post('create')
   create(
     @Body()
     body: {
@@ -28,8 +28,8 @@ export class UserController {
     return this.userService.create(data);
   }
 
-  @Get()
-  findAll() {
+  @Get('list')
+  list() {
     return this.userService.findAll();
   }
 }

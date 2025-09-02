@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, Req, Query } from '@nestjs/common';
+import { Controller, Post, Body, Res, Req, Query, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/user.schema';
@@ -9,6 +9,7 @@ import { AuthDocument } from './auth.schema';
 import { SessionQueryDto } from 'src/dto/session-query.dto';
 import { LoginDto } from 'src/dto/login.dto';
 import { RefreshTokenDto } from 'src/dto/refresh-token.dto';
+import { AuthGuard } from './auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -26,7 +27,10 @@ export class AuthController {
         try {
             const user = await this.userModel.findOne({ email: body.email }).select('+password');
             if (!user) {
-                return res.status(404).json({ success: false, message: 'Invalid email or password' });
+                return res.status(401).json({ success: false, message: 'Invalid email or password' });
+            }
+            if (!user.verified) {
+                return res.status(401).json({ success: false, message: 'Invalid email or password' });
             }
             const passwordIsValid = await bcrypt.compare(body.password, user.password);
             if (!passwordIsValid) {
@@ -86,6 +90,7 @@ export class AuthController {
         }
     }
 
+    @UseGuards(AuthGuard)
     @Post('logout')
     async logout(
         @Req() req: Request,
