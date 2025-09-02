@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, Param, Req } from '@nestjs/common';
+import { Controller, Post, Body, Res, Req, Query } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/user.schema';
@@ -25,7 +25,7 @@ export class AuthController {
             if (!user) {
                 return res.status(404).json({ success: false, message: 'Invalid email or password' });
             }
-            const passwordIsValid = bcrypt.compareSync(body.password, user.password);
+            const passwordIsValid = await bcrypt.compare(body.password, user.password);
             if (!passwordIsValid) {
                 return res.status(401).json({ success: false, message: 'Invalid email or password' });
             }
@@ -48,34 +48,37 @@ export class AuthController {
     }
 
     @Post('refresh')
-    async refresh(@Req() req: Request, @Param('refreshToken') refreshToken: string, @Res() res: Response) {
+    async refresh(@Req() req: Request, @Query('refresh_token') refresh_token: string, @Res() res: Response) {
         try {
             const authHeader: string = req.headers['authorization'] as string;
-            if (!authHeader) {
+            if (!authHeader || !refresh_token) {
                 console.error('Post(refresh) Missing token');
-                return res.status(400).json({ success: false, message: 'Unauthorized' });
+                return res.status(500).json({ success: false, message: 'Middle finger error' });
             }
 
             const headerToken = authHeader.split(' ')[1]; // remove "Bearer"
             const userAgent: string = req.headers['user-agent'] as string;
 
             // check if user still on login session time and return the id then validate
-            const auth: AuthDocument | null = await this.authService.getAuthItem(refreshToken);
-            if (!auth) {
+            const auth: AuthDocument | null = await this.authService.getAuthItem(refresh_token);
+            if (!auth || !headerToken) {
                 console.error('Post(refresh) Missing auth');
+                await this.authService.logout(refresh_token);
                 return res.status(401).json({ success: false, message: 'Unauthorized' });
             }
-            const tokenIsValid = bcrypt.compareSync(headerToken, auth.token);
+            const tokenIsValid = await this.authService.validateToken(headerToken, auth.token);
             const authId = auth._id as string;
             if (userAgent === auth.user_agent && tokenIsValid) {
                 const newAccessToken = this.authService.generateAccessToken({ id: authId, id0: auth.user_id, modules: auth.modules });
                 await this.authService.updateToken(authId, newAccessToken);
                 return res.status(200).json({ access_token: newAccessToken });
             } else {
+                await this.authService.logout(refresh_token);
                 return res.status(401).json({ message: 'Unauthorized' });
             }
         } catch (err) {
             console.error(err);
+            await this.authService.logout(refresh_token);
             return res.status(401).json({ message: 'Unauthorized' });
         }
     }

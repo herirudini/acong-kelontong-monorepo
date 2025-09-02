@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Auth, AuthDocument } from './auth.schema';
 import { Model } from 'mongoose';
 import { UserDocument } from '../user/user.schema';
+import { sha256Base64 } from 'src/common/helper';
 
 @Injectable()
 export class AuthService {
@@ -55,9 +56,15 @@ export class AuthService {
         return { access_token: accessToken, refresh_token: refreshToken };
     }
 
+    validateToken(accessToken: string, hashedToken: string) {
+        const digest = sha256Base64(accessToken);
+        return bcrypt.compare(digest, hashedToken);
+    }
+
     async updateToken(authId: string, accessToken: string): Promise<void> {
-        const cryptedToken = await bcrypt.hash(accessToken, 10);
-        await this.authModel.findByIdAndUpdate(authId, { token: cryptedToken }).exec();
+        const digest = sha256Base64(accessToken); // Digest first because bcrypt only uses the first 72 bytes of the input, where the jwt (128 bytes) new token's first 72 bytes mostly similar with the old one's
+        const crypted = await bcrypt.hash(digest, 10);
+        await this.authModel.findByIdAndUpdate(authId, { token: crypted }).exec();
     }
 
     async logout(token: string): Promise<void> {
