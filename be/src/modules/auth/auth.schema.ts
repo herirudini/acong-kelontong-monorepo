@@ -14,7 +14,9 @@ export class Auth {
     user_agent: string;
     @Prop({ type: [String], ref: User.name, required: true })
     modules: string[];
-
+    @Prop({ type: Date, required: true })
+    expiresAt: Date;
+    
 }
 
 export type AuthDocument = Auth & Document;

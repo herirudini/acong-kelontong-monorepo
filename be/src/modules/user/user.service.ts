@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from './user.schema';
 import * as bcrypt from 'bcrypt';
+import { SALTS } from 'src/types/constants';
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) { }
@@ -13,7 +14,7 @@ export class UserService {
       first_name: data.first_name,
       last_name: data.last_name,
       email: data.email,
-      password: await bcrypt.hash(data.password, 10),
+      password: await bcrypt.hash(data.password, SALTS),
       modules: data.modules,
       role: data.role,
     });

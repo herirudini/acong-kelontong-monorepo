@@ -6,6 +6,9 @@ import type { Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { AuthDocument } from './auth.schema';
+import { SessionQueryDto } from 'src/dto/session-query.dto';
+import { LoginDto } from 'src/dto/login.dto';
+import { RefreshTokenDto } from 'src/dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -17,7 +20,7 @@ export class AuthController {
     @Post('login')
     async login(
         @Req() req: Request,
-        @Body() body: { email: string; password: string },
+        @Body() body: LoginDto,
         @Res() res: Response,
     ) {
         try {
@@ -30,7 +33,7 @@ export class AuthController {
                 return res.status(401).json({ success: false, message: 'Invalid email or password' });
             }
 
-            const userAgent: string = req.headers['user-agent'];
+            const userAgent: string = req.headers['user-agent'] as string;
             const { access_token, refresh_token } = await this.authService.login(user, userAgent);
 
             return res.status(200).json({
@@ -48,10 +51,10 @@ export class AuthController {
     }
 
     @Post('refresh')
-    async refresh(@Req() req: Request, @Query('refresh_token') refresh_token: string, @Res() res: Response) {
+    async refresh(@Req() req: Request, @Query() query: RefreshTokenDto, @Res() res: Response) {
         try {
             const authHeader: string = req.headers['authorization'] as string;
-            if (!authHeader || !refresh_token) {
+            if (!authHeader) {
                 console.error('Post(refresh) Missing token');
                 return res.status(500).json({ success: false, message: 'Middle finger error' });
             }
@@ -60,10 +63,10 @@ export class AuthController {
             const userAgent: string = req.headers['user-agent'] as string;
 
             // check if user still on login session time and return the id then validate
-            const auth: AuthDocument | null = await this.authService.getAuthItem(refresh_token);
+            const auth: AuthDocument | null = await this.authService.getAuthItem(query.refresh_token);
             if (!auth || !headerToken) {
                 console.error('Post(refresh) Missing auth');
-                await this.authService.logout(refresh_token);
+                await this.authService.logout(query.refresh_token);
                 return res.status(401).json({ success: false, message: 'Unauthorized' });
             }
             const tokenIsValid = await this.authService.validateToken(headerToken, auth.token);
@@ -73,12 +76,12 @@ export class AuthController {
                 await this.authService.updateToken(authId, newAccessToken);
                 return res.status(200).json({ access_token: newAccessToken });
             } else {
-                await this.authService.logout(refresh_token);
+                await this.authService.logout(query.refresh_token);
                 return res.status(401).json({ message: 'Unauthorized' });
             }
         } catch (err) {
             console.error(err);
-            await this.authService.logout(refresh_token);
+            await this.authService.logout(query.refresh_token);
             return res.status(401).json({ message: 'Unauthorized' });
         }
     }
@@ -86,6 +89,7 @@ export class AuthController {
     @Post('logout')
     async logout(
         @Req() req: Request,
+        @Query() query: SessionQueryDto,
         @Res() res: Response,
     ) {
         try {
@@ -94,10 +98,8 @@ export class AuthController {
                 console.error('Post(logout) Missing token');
                 return res.status(401).json({ success: false, message: 'Unauthorized' });
             }
-
             const token = authHeader.split(' ')[1]; // remove "Bearer"
-            await this.authService.logout(token);
-
+            await this.authService.logout(token, query.session);
             return res.status(200).json({ success: true, message: 'Logout success' });
         } catch (err) {
             console.error(err);
