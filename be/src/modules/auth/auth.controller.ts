@@ -73,7 +73,7 @@ export class AuthController {
                 await this.authService.logout(query.refresh_token);
                 return res.status(401).json({ success: false, message: 'Unauthorized' });
             }
-            const tokenIsValid = await this.authService.validateToken(headerToken, auth.token);
+            const tokenIsValid = await this.authService.compareDBToken(headerToken, auth.token);
             const authId = auth._id as string;
             if (userAgent === auth.user_agent && tokenIsValid) {
                 const newAccessToken = this.authService.generateAccessToken({ id: authId, id0: auth.user_id, modules: auth.modules });

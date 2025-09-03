@@ -58,8 +58,7 @@ export class AuthService {
         return { access_token: accessToken, refresh_token: refreshToken };
     }
 
-    validateToken(accessToken: string, hashedToken: string) {
-        this.verifyToken(accessToken); // verify first to make sure the token is valid and not expired or tampered
+    compareDBToken(accessToken: string, hashedToken: string) {
         const digest = sha256Base64(accessToken);
         return bcrypt.compare(digest, hashedToken);
     }
