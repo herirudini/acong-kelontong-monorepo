@@ -7,8 +7,8 @@ import { Auth, AuthDocument } from './auth.schema';
 import { Model } from 'mongoose';
 import { UserDocument } from '../user/user.schema';
 import { sha256Base64 } from 'src/utils/helper';
-import { SALTS, SESSION_DAYS, SESSION_MINUTES } from 'src/types/constants';
 import { ITokenPayload, IRefreshTokenPayload } from 'src/types/many.interface';
+import { salts, sessionDays, sessionMinutes } from 'src/types/constants';
 
 @Injectable()
 export class AuthService {
@@ -18,11 +18,11 @@ export class AuthService {
     ) { }
 
     generateAccessToken(payload: ITokenPayload): string {
-        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: SESSION_MINUTES + 'm' });
+        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: sessionMinutes + 'm' });
     }
 
     generateRefreshToken(payload: IRefreshTokenPayload): string {
-        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: SESSION_DAYS + 'd' });
+        return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: sessionDays + 'd' });
     }
 
     verifyToken(token: string): jwt.JwtPayload | string {
@@ -36,7 +36,7 @@ export class AuthService {
 
     async getAuthItem(token: string): Promise<AuthDocument | null> {
         try {
-            const decoded: jwt.JwtPayload | string = this.verifyToken(token) as { id: string };
+            const decoded: jwt.JwtPayload | string = jwt.decode(token) as { id: string };
             const result = await this.authModel.findById(decoded.id);
             return result;
         } catch (err) {
@@ -66,7 +66,7 @@ export class AuthService {
 
     async updateToken(authId: string, accessToken: string): Promise<void> {
         const digest = sha256Base64(accessToken); // Digest first because bcrypt only uses the first 72 bytes of the input, where the jwt (128 bytes) new token's first 72 bytes mostly similar with the old one's
-        const crypted = await bcrypt.hash(digest, SALTS);
+        const crypted = await bcrypt.hash(digest, salts);
         await this.authModel.findByIdAndUpdate(authId, { token: crypted }).exec();
     }
 

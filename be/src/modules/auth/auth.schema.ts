@@ -2,8 +2,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { User } from '../user/user.schema';
-import { SESSION_DAYS } from 'src/types/constants';
 import { addDays } from 'src/utils/helper';
+import { sessionDays } from 'src/types/constants';
 
 @Schema({ timestamps: true })
 export class Auth {
@@ -16,7 +16,7 @@ export class Auth {
     user_agent: string;
     @Prop({ type: [String], ref: User.name, required: true })
     modules: string[];
-    @Prop({ type: Date, default: addDays(new Date(), SESSION_DAYS) })
+    @Prop({ type: Date, default: addDays(new Date(), sessionDays) })
     expiresAt?: Date;
     
 }

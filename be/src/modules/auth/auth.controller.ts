@@ -69,7 +69,7 @@ export class AuthController {
             // check if user still on login session time and return the id then validate
             const auth: AuthDocument | null = await this.authService.getAuthItem(query.refresh_token);
             if (!auth || !headerToken) {
-                console.error('Post(refresh) Missing auth');
+                console.error('Post(refresh) Missing auth', headerToken, auth);
                 await this.authService.logout(query.refresh_token);
                 return res.status(401).json({ success: false, message: 'Unauthorized' });
             }

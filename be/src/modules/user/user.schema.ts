@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { isEmail } from 'class-validator';
 import { Document } from 'mongoose';
-import { SESSION_DAYS } from 'src/types/constants';
+import { sessionDays } from 'src/types/constants';
 import { addDays } from 'src/utils/helper';
 @Schema()
 export class User {
@@ -27,7 +27,7 @@ export class User {
   @Prop({ required: true })
   role: string;
 
-  @Prop({ type: Date, default: addDays(new Date(), SESSION_DAYS) })
+  @Prop({ type: Date, default: addDays(new Date(), sessionDays) })
   verifyDueTime?: Date;
 }
 

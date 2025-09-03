@@ -8,6 +8,9 @@ import { SeederModule } from './database/seeder/seeder.module';
 import { UserSeederService } from './database/seeder/user/user-seeder.service';
 import { AuthModule } from './modules/auth/auth.module';
 import { AdminModule } from './modules/admin/admin.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { toNumber } from './utils/helper';
 
 @Module({
   imports: [
@@ -20,6 +23,39 @@ import { AdminModule } from './modules/admin/admin.module';
         uri: config.get<string>('MONGO_URI'),
       }),
     }),
+    MailerModule.forRootAsync({
+      useFactory: () => {
+        const host = process.env.SMTP_HOST as string;
+        const port = process.env.SMTP_PORT ? toNumber(process.env.SMTP_PORT) : undefined;
+        const user = process.env.SMTP_USER as string;
+        const pass = process.env.SMTP_PASS as string;
+        return {
+          transport: {
+            host,
+            port,
+            auth: {
+              user,
+              pass,
+            },
+            ignoreTLS: true,
+            secure: false,
+            pool: true
+          },
+          defaults: {
+            from: `"Acong Kelontong <No Reply>" <${process.env.SMTP_USER as string}>`,
+            html: '<b>Hello</b>'
+          },
+          preview: true,
+          template: {
+            dir: __dirname + '/templates',
+            adapter: new HandlebarsAdapter(),
+            options: {
+              strict: true,
+            },
+          },
+        }
+      },
+    }),
     UserModule,
     SeederModule,
     AuthModule,
@@ -29,7 +65,7 @@ import { AdminModule } from './modules/admin/admin.module';
   providers: [AppService],
 })
 export class AppModule implements OnModuleInit {
-  constructor(private readonly seederService: UserSeederService) {}
+  constructor(private readonly seederService: UserSeederService) { }
 
   async onModuleInit() {
     await this.seederService.run();
