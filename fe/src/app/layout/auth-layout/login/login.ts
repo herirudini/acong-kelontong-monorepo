@@ -29,9 +29,10 @@ export class Login implements OnInit {
     this.authServices.login(this.loginForm.value).subscribe(
       {
         next: (res: IAuth) => {
-          this.router.navigate(["/"]);
+          this.router.navigate(["/"]).then(() => {
+            window.location.reload(); // TODO: This is quick fix to solve issue related to SSR and auth guard (AdminLTE menu toggle not working)
+          });
           this.alert.success("Logged in succesfully!")
-
         },
         error: (error: any) => {
           console.log(error)
