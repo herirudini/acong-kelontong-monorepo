@@ -2,12 +2,19 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { RequestMethod } from '@nestjs/common';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   // set global prefix
   app.setGlobalPrefix('api', {
-    exclude: [{ path: '', method: RequestMethod.GET }],
+    exclude: [{ path: '', method: RequestMethod.OPTIONS }],
   });
+  app.enableCors({
+    origin: process.env.FE_URL as string, // FE domain
+    credentials: true,                    // allow cookies
+    methods: ['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

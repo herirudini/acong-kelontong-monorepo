@@ -9,17 +9,19 @@
             </div>
             <div class="card-body login-card-body">
                 <p class="login-box-msg">Sign in to start your session</p>
-                <form action="../index3.html" method="post">
+                <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                     <div class="input-group mb-1">
                         <div class="form-floating">
-                            <input id="loginEmail" type="email" class="form-control" value="" placeholder="" />
+                            <input id="loginEmail" type="email" class="form-control" formControlName="email"
+                                placeholder="" />
                             <label for="loginEmail">Email</label>
                         </div>
                         <div class="input-group-text"><span class="bi bi-envelope"></span></div>
                     </div>
                     <div class="input-group mb-1">
                         <div class="form-floating">
-                            <input id="loginPassword" type="password" class="form-control" placeholder="" />
+                            <input id="loginPassword" type="password" class="form-control" formControlName="password"
+                                placeholder="" />
                             <label for="loginPassword">Password</label>
                         </div>
                         <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
@@ -60,6 +62,6 @@
             <!-- /.login-card-body -->
         </div>
     </div>
-    <app-alert></app-alert>
-    <app-page-spinner></app-page-spinner>
 </main>
+<app-alert></app-alert>
+<app-page-spinner></app-page-spinner>

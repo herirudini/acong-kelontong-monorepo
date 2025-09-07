@@ -1,10 +1,9 @@
-export type TPermission = 'create' | 'view' | 'update' | 'delete';
 export interface IMenu {
     code: string;
-    url?: string;
+    url: string;
     icon?: string;
     labelKey?: string;
-    permissions?: TPermission[];
+    permissions?: string[];
     children?: { [key: string]: IMenu };
     mappedChildren?: IMenu[];
 }

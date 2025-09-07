@@ -41,6 +41,7 @@ export class BaseService {
       params,
       ...requestOptions,
       responseType: 'json',
+      withCredentials: true 
     });
   }
 
@@ -52,7 +53,7 @@ export class BaseService {
         spinneroff: spinneroff ? '1' : '0'
       }
     }
-    return this.http.put(url, body, { params });
+    return this.http.put(url, body, { params, withCredentials: true });
   }
 
   deleteRequest(url: string, params?: any, spinneroff?: 'spinneroff'): Observable<any> {
@@ -66,7 +67,7 @@ export class BaseService {
       ...params,
       spinneroff: spinneroff ? '1' : '0'
     }
-    return this.http.delete(url, { params, ...requestOptions });
+    return this.http.delete(url, { params, ...requestOptions, withCredentials: true });
   }
 
   postRequestFile(url: string, file: FormData, params?: any, spinneroff?: 'spinneroff'): Observable<any> {
@@ -74,7 +75,7 @@ export class BaseService {
       ...params,
       spinneroff: spinneroff ? '1' : '0'
     }
-    return this.http.post(url, file, { params });
+    return this.http.post(url, file, { params, withCredentials: true });
   }
 
   getRequestFile(url: string, params?: any, spinneroff?: 'spinneroff'): Observable<File> {

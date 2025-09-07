@@ -1,31 +1,28 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, PLATFORM_ID } from '@angular/core';
 import { ActivatedRouteSnapshot, UrlTree } from '@angular/router';
-import { Previleges } from '../../../_previleges';
 import { Observable } from 'rxjs';
+import { isPlatformServer } from '@angular/common';
+import { AuthService } from '../../auth/auth-service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PageGuardService {
-  constructor(private previleges: Previleges) { }
+  constructor(private authSvc: AuthService, @Inject(PLATFORM_ID) private platformId: Object) { }
 
   canActivate(route: ActivatedRouteSnapshot): | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree>
     | boolean
     | UrlTree {
-    
-    const menuList = this.previleges.getMenuList();
-    const hasPermission = menuList?.find(item => {
-      const children = item.mappedChildren;
-      if (item.code === route.data['code']) {
-        console.log('has permission', item.code);
-        return true;
-      } else if (children) {
-        console.log('checking children permissions', children);
-        return children.find(child => child.code === route.data['code']);
-      }
-      return false;
-    });
+    if (isPlatformServer(this.platformId)) {
+      // ✅ On the server: don't block, let browser handle it
+      return true;
+    }
+
+    // ✅ On the browser: enforce real guard
+    const modules = this.authSvc.getProfile()?.modules || [];
+    const permissionAsk = route.data['permissions'];
+    const hasPermission = modules.some(item=>permissionAsk.includes(item))
 
     if (!hasPermission) {
       console.log('no permission');

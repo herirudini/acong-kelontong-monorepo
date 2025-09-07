@@ -1,8 +1,9 @@
 export interface IUser {
-    id: string;
-    email: string;
-    name: string;
-    is_email_verified: boolean;
-    modules?: { module_code: string }[];
+    first_name?: string;
+    last_name?: string;
+    email?: string;
+    verified?: boolean;
+    modules?: string[];
+    role: string;
     // add more user properties here...
 }
