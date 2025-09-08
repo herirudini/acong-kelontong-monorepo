@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
 import { Auth, AuthDocument } from './auth.schema';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { UserDocument } from '../user/user.schema';
 import { sha256Base64 } from 'src/utils/helper';
 import { ITokenPayload, IRefreshTokenPayload } from 'src/types/many.interface';
@@ -72,12 +72,16 @@ export class AuthService {
     async logout(token: string, session?: string): Promise<void> {
         try {
             const decoded: jwt.JwtPayload | string = jwt.decode(token) as { id: string };
+            console.log('logoutbe', session,decoded)
             if (session === 'all') {
-                await this.authModel.deleteMany({ user_id: decoded.id0 }).exec();
+                await this.authModel.deleteMany({ user_id: new Types.ObjectId(decoded.id0 as string) }).exec();
+                console.log('all')
             } else if (session === 'other') {
-                await this.authModel.deleteMany({ user_id: decoded.id0, _id: { $ne: decoded.id } }).exec();
+                await this.authModel.deleteMany({ user_id: new Types.ObjectId(decoded.id0 as string), _id: { $ne: new Types.ObjectId(decoded.id as string) } }).exec();
+                console.log('other')
             } else {
                 await this.authModel.findByIdAndDelete(decoded.id).exec();
+                console.log('current')
             }
         } catch (err) {
             console.error(err);

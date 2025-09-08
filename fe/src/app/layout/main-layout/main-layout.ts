@@ -39,4 +39,8 @@ export class MainLayout {
   navigate(url:any) {
     this.router.navigate([url]);
   }
+
+  logout() {
+    this.auth.logout('current').subscribe();
+  }
 }

@@ -97,8 +97,8 @@ export class AuthService extends BaseService {
     );
   }
 
-  logout(type?: 'all' | 'other' | 'current'): Observable<any> {
-    return this.postRequest(Endpoint.LOGOUT, { type }).pipe(
+  logout(session?: 'all' | 'other' | 'current'): Observable<any> {
+    return this.postRequest(Endpoint.LOGOUT, {}, { session }).pipe(
       tap(() => {
         this.clearAccessToken();
         this.stopRefresh();
