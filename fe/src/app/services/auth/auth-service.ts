@@ -107,7 +107,7 @@ export class AuthService extends BaseService {
     );
   }
 
-  getProfile(): IUser | null {
+  getProfile(): IUser | undefined {
     return this.session.getItem('profile');
     // return {
     //   modules: [

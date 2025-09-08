@@ -17,12 +17,12 @@ export class SessionStorageService {
     }
   }
 
-  getItem<T>(key: string): T | null {
+  getItem<T>(key: string): T | undefined {
     if (this.isBrowser) {
       const item = sessionStorage.getItem(key);
-      return item ? JSON.parse(item) : null;
+      return item ? JSON.parse(item) : undefined;
     }
-    return null;
+    return undefined;
   }
 
   removeItem(key: string): void {
