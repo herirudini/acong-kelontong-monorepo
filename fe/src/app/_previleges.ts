@@ -3,7 +3,9 @@ import { Menus } from './types/constants/menus';
 import { IMenu } from './types/interfaces/menu.interface';
 import { AuthService } from './services/auth/auth-service';
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class Previleges {
     constructor(private authSvc: AuthService) { }
 

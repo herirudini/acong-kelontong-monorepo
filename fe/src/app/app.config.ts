@@ -24,9 +24,6 @@ export const appConfig: ApplicationConfig = {
         tokenInterceptor,
         errorInterceptor, // order matters, loader runs first, error last
       ])
-    ),
-
-    BaseService,
-    Previleges
+    )
   ]
 };
