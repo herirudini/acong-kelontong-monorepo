@@ -8,54 +8,63 @@ import { Router } from '@angular/router';
 import { AlertService } from '../../shared/components/alert/alert-service';
 import { IAuth } from '../../types/interfaces/common.interface';
 import { sessionMinutes } from '../../types/constants/common.constants';
-import { SessionStorageService } from '../tools/session-storage-service';
-import { CookieService } from 'ngx-cookie-service';
-import { environment } from '../../../environments/environment';
+import { StorageService } from '../tools/storage-service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService extends BaseService {
-  private refreshIntervalId: any = null;
+  private refreshIntervalId: any = undefined;
 
   constructor(
     override http: HttpClient,
     private router: Router,
     private alert: AlertService,
-    private session: SessionStorageService,
-    private cookies: CookieService,
+    private storage: StorageService,
   ) {
     super(http);
   }
 
-  
+
   /** ✅ Auth check works in SSR and browser */
   isAuthenticated(): boolean {
-    const token = this.getAccessToken();
-    return !!token;
+    return !!this.getAccessToken();
   }
 
   setAccessToken(token: string) {
-    // Store in cookie so both SSR and browser can read it
-    // httpOnly cookie is better if set by backend
-    this.cookies.set('access_token', token, {
-      path: '/',
-      secure: environment.production, // set true if https
-      sameSite: 'Lax',
-    });
+    return this.storage.setItem('access_token', token);
   }
 
-  getAccessToken(): string | null {
-    const token = this.cookies.get('access_token');
-    return token || null;
+  getAccessToken(): string | undefined {
+    return this.storage.getItem('access_token')
   }
 
   clearAccessToken() {
-    this.cookies.delete('access_token', '/');
+    this.storage.removeItem('access_token')
   }
 
   setProfile(profile: IUser) {
-    this.session.setItem('profile', profile);
+    this.storage.setItem('profile', profile);
+  }
+
+  getProfile(): IUser | undefined {
+    return this.storage.getItem('profile');
+    // return {
+    //   modules: [
+    //     'dashboard.view',
+    //     'dashboard.update',
+    //     'dashboard.create',
+    //     'dashboard-v1.view',
+    //     'dashboard-v1.update',
+    //     'dashboard-v1.create',
+    //     'dashboard-v2.view',
+    //     'dashboard-v3.view',
+    //     'tables.view',
+    //     'tables-simple.view',
+    //     'forms.view',
+    //     'forms-general.view',
+    //   ],
+    // } as IUser;
   }
 
   login(userCreds: { email: string, password: string }): Observable<any> {
@@ -100,31 +109,11 @@ export class AuthService extends BaseService {
   logout(session?: 'all' | 'other' | 'current'): Observable<any> {
     return this.postRequest(Endpoint.LOGOUT, {}, { session }).pipe(
       tap(() => {
-        this.clearAccessToken();
         this.stopRefresh();
-        this.router.navigate(['/login']);
+        this.storage.clear();
+        this.router.parseUrl('/login');
       })
     );
-  }
-
-  getProfile(): IUser | undefined {
-    return this.session.getItem('profile');
-    // return {
-    //   modules: [
-    //     'dashboard.view',
-    //     'dashboard.update',
-    //     'dashboard.create',
-    //     'dashboard-v1.view',
-    //     'dashboard-v1.update',
-    //     'dashboard-v1.create',
-    //     'dashboard-v2.view',
-    //     'dashboard-v3.view',
-    //     'tables.view',
-    //     'tables-simple.view',
-    //     'forms.view',
-    //     'forms-general.view',
-    //   ],
-    // } as IUser;
   }
 
   isImmediateChangePassword() {
