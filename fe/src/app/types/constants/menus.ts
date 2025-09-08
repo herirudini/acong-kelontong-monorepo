@@ -1,6 +1,82 @@
 import { IMenu } from "../interfaces/menu.interface";
 
 export const Menus: { [key: string]: IMenu } = {
+    CASHIER: {
+        code: 'cashier',
+        url: 'cashier',
+        icon: 'nav-icon bi bi-cart3',
+        labelKey: 'Cashier',
+        permissions: ['cashier.view', 'cashier.create', 'cashier.update', 'cashier.delete'],
+    },
+    INVENTORY: {
+        code: 'inventory',
+        url: 'inventory',
+        icon: 'nav-icon bi bi-box-seam',
+        labelKey: 'Inventory',
+        permissions: ['inventory.view', 'inventory.create', 'inventory.update', 'inventory.delete'],
+        children: {
+            PRODUCTS: {
+                code: 'products',
+                url: 'products',
+                icon: '',
+                labelKey: 'Products',
+                permissions: ['products.view', 'products.create', 'products.update', 'products.delete'],
+            },
+            BRANDS: {
+                code: 'brands',
+                url: 'brands',
+                icon: '',
+                labelKey: 'Brands',
+                permissions: ['brands.view', 'brands.create', 'brands.update', 'brands.delete'],
+            },
+            SUPPLIERS: {
+                code: 'suppliers',
+                url: 'suppliers',
+                icon: '',
+                labelKey: 'Suppliers',
+                permissions: ['suppliers.view', 'suppliers.create', 'suppliers.update', 'suppliers.delete'],
+            },
+        }
+    },
+    FINANCE: {
+        code: 'finance',
+        url: 'finance',
+        icon: 'nav-icon bi bi-coin',
+        labelKey: 'Finance',
+        permissions: ['finance.view', 'finance.create', 'finance.update', 'finance.delete'],
+        children: {
+            INCOME: {
+                code: 'income',
+                url: 'income',
+                icon: '',
+                labelKey: 'Income',
+                permissions: ['income.view', 'income.create', 'income.update', 'income.delete'],
+            },
+            EXPENSES: {
+                code: 'expenses',
+                url: 'expenses',
+                icon: '',
+                labelKey: 'Expenses',
+                permissions: ['expenses.view', 'expenses.create', 'expenses.update', 'expenses.delete'],
+            },
+        }
+    },
+    ADMIN: {
+        code: 'admin',
+        url: 'admin',
+        icon: 'nav-icon bi bi-person-gear',
+        labelKey: 'Admin',
+        permissions: ['admin.view', 'admin.create', 'admin.update', 'admin.delete'],
+        children: {
+            USERS: {
+                code: 'users',
+                url: 'users',
+                icon: '',
+                labelKey: 'Users',
+                permissions: ['users.view', 'users.create', 'users.update', 'users.delete'],
+            }
+        }
+    },
     DASHBOARD: {
         code: 'dashboard',
         url: 'home',

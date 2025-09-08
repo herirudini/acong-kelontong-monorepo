@@ -31,6 +31,16 @@ export class UserSeederService {
             'tables-simple.view',
             'forms.view',
             'forms-general.view',
+            'admin.view', 'admin.create', 'admin.update', 'admin.delete',
+            'users.view', 'users.create', 'users.update', 'users.delete',
+            'cashier.view', 'cashier.create', 'cashier.update', 'cashier.delete',
+            'inventory.view', 'inventory.create', 'inventory.update', 'inventory.delete',
+            'products.view', 'products.create', 'products.update', 'products.delete',
+            'brands.view', 'brands.create', 'brands.update', 'brands.delete',
+            'suppliers.view', 'suppliers.create', 'suppliers.update', 'suppliers.delete',
+            'finance.view', 'finance.create', 'finance.update', 'finance.delete',
+            'income.view', 'income.create', 'income.update', 'income.delete',
+            'expenses.view', 'expenses.create', 'expenses.update', 'expenses.delete',
         ];
         const masterUser = new this.userModel({
             first_name: 'Acong',

@@ -208,7 +208,7 @@
                     aria-label="Main navigation" data-accordion="false" id="navigation">
                     @for(menu of menuItems; track menu.code) {
                     <li class="nav-item">
-                        <a [routerLink]="[menu.url]" routerLinkActive="active" class="nav-link">
+                        <a [routerLink]="[menu.url]" routerLinkActive="active" class="nav-link bg-transparent menu-color">
                             <i [ngClass]="menu.icon"></i>
                             <p>
                                 {{ menu.labelKey }}

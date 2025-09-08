@@ -83,7 +83,85 @@ export const routes: Routes = [
             loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
           },
         ]
-      }
+      },
+      {
+        path: Menus['CASHIER'].url,
+        data: { ...Menus['CASHIER'] },
+        canActivate: [PageGuardService],
+        loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+      },
+      {
+        path: Menus['INVENTORY'].url,
+        data: { ...Menus['INVENTORY'] },
+        canActivate: [PageGuardService],
+        children: [
+          {
+            path: '',
+            redirectTo: Menus['INVENTORY'].children?.['PRODUCTS'].url,
+            pathMatch: 'full',
+          },
+          {
+            path: Menus['INVENTORY'].children?.['PRODUCTS'].url,
+            canActivate: [PageGuardService],
+            data: { ...Menus['INVENTORY'].children?.['PRODUCTS'] },
+            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+          },
+          {
+            path: Menus['INVENTORY'].children?.['BRANDS'].url,
+            canActivate: [PageGuardService],
+            data: { ...Menus['INVENTORY'].children?.['BRANDS'] },
+            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+          },
+          {
+            path: Menus['INVENTORY'].children?.['SUPPLIERS'].url,
+            canActivate: [PageGuardService],
+            data: { ...Menus['INVENTORY'].children?.['SUPPLIERS'] },
+            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+          },
+        ]
+      },
+      {
+        path: Menus['FINANCE'].url,
+        data: { ...Menus['FINANCE'] },
+        canActivate: [PageGuardService],
+        children: [
+          {
+            path: '',
+            redirectTo: Menus['FINANCE'].children?.['INCOME'].url,
+            pathMatch: 'full',
+          },
+          {
+            path: Menus['FINANCE'].children?.['INCOME'].url,
+            canActivate: [PageGuardService],
+            data: { ...Menus['FINANCE'].children?.['INCOME'] },
+            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+          },
+          {
+            path: Menus['FINANCE'].children?.['EXPENSES'].url,
+            canActivate: [PageGuardService],
+            data: { ...Menus['FINANCE'].children?.['EXPENSES'] },
+            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+          },
+        ]
+      },
+      {
+        path: Menus['ADMIN'].url,
+        data: { ...Menus['ADMIN'] },
+        canActivate: [PageGuardService],
+        children: [
+          {
+            path: '',
+            redirectTo: Menus['ADMIN'].children?.['USERS'].url,
+            pathMatch: 'full',
+          },
+          {
+            path: Menus['ADMIN'].children?.['USERS'].url,
+            canActivate: [PageGuardService],
+            data: { ...Menus['ADMIN'].children?.['USERS'] },
+            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+          },
+        ]
+      },
     ]
   },
   { path: 'login', component: Login },
