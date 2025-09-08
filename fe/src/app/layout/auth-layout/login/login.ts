@@ -30,7 +30,9 @@ export class Login implements OnInit {
       {
         next: (res: IAuth) => {
           this.router.navigate(["/"]).then(() => {
-            window.location.reload(); // TODO: This is quick fix to solve issue related to SSR and auth guard (AdminLTE menu toggle not working)
+            setTimeout(() => {
+              window.location.reload();
+            }, 1000);
           });
           this.alert.success("Logged in succesfully!")
         },
