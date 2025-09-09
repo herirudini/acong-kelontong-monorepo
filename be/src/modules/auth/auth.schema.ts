@@ -1,7 +1,7 @@
 // token-blacklist.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { User } from '../user/user.schema';
+import { User } from '../../shared/shared-user/user.schema';
 import { addDays } from 'src/utils/helper';
 import { sessionDays } from 'src/types/constants';
 

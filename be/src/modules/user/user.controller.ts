@@ -1,9 +1,15 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
+import { AuthGuard } from '../../shared/shared-auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
+  @Get('')
+  list() {
+    return this.userService.findAll();
+  }
 
   @Post('create')
   create(
@@ -26,10 +32,5 @@ export class UserController {
       role: body.role,
     };
     return this.userService.create(data);
-  }
-
-  @Get('list')
-  list() {
-    return this.userService.findAll();
   }
 }

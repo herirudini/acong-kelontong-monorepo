@@ -1,11 +1,11 @@
 import { Controller, Post, Body, Res, UseGuards, Put } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../user/user.schema';
+import { User, UserDocument } from '../../shared/shared-user/user.schema';
 import type { Response } from 'express';
 import { AdminService } from './admin.service';
 import { InviteUserDto } from 'src/dto/invite-user.dto';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard } from '../../shared/shared-auth/auth.guard';
 import { MailerService } from '@nestjs-modules/mailer';
 import { encodeBase64 } from 'src/utils/helper';
 

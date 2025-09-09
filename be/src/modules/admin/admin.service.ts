@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { addDays, decodeBase64, generateRandomToken } from 'src/utils/helper';
-import { User, TmpUser } from '../user/user.schema';
+import { User, TmpUser } from '../../shared/shared-user/user.schema';
 import * as bcrypt from 'bcrypt';
 import { salts, sessionDays } from 'src/types/constants';
 @Injectable()

@@ -1,14 +1,14 @@
 import { Controller, Post, Body, Res, Req, Query, UseGuards } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User, UserDocument } from '../user/user.schema';
+import { User, UserDocument } from '../../shared/shared-user/user.schema';
 import type { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
 import { AuthDocument } from './auth.schema';
 import { SessionQueryDto } from 'src/dto/session-query.dto';
 import { LoginDto } from 'src/dto/login.dto';
-import { AuthGuard } from './auth.guard';
+import { AuthGuard } from '../../shared/shared-auth/auth.guard';
 import { sessionDays } from 'src/types/constants';
 
 @Controller('auth')
