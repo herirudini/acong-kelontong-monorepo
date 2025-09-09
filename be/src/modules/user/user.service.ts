@@ -19,16 +19,29 @@ export class UserService {
       role
     } = data;
     const password = data.password ? await bcrypt.hash(data.password, salts) : undefined;
-
-    const user = this.userModel.findByIdAndUpdate(user_id, {
-      first_name,
-      last_name,
-      email,
-      password,
-      modules,
-      role
-    });
-    return user;
+    try {
+      console.log('data', data);
+      const user = await this.userModel.findByIdAndUpdate(
+        user_id,
+        {
+          $set: {
+            first_name,
+            last_name,
+            email,
+            password,
+            modules,
+            role
+          }
+        },
+        {
+          new: true,         // return the updated doc
+          runValidators: true, // validate before saving
+        },
+      ).exec();
+      return user;
+    } catch (e) {
+      throw new Error('Failed to edit: ' + e.message);
+    }
   }
 
   async findAll(): Promise<UserDocument[]> {

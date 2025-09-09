@@ -34,10 +34,10 @@ export class BrandController {
     ) {
         try {
             const brand = await this.service.editBrand(brandId, body);
-            return res.status(200).json({ success: true, message: 'Success create brand', brand });
+            return res.status(200).json({ success: true, message: 'Success edit brand', brand });
         } catch (err) {
             console.error(err);
-            return res.status(500).json({ message: 'Create brand failed' });
+            return res.status(500).json({ message: 'Edit brand failed' });
         }
     }
 }

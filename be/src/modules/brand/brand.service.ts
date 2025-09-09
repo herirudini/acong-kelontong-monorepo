@@ -17,13 +17,20 @@ export class BrandService {
             throw new Error('Failed to create')
         }
     }
-
     async editBrand(id: string, data: Brand): Promise<BrandDocument | null> {
         try {
-            const updatedBrand = await this.brandModel.findByIdAndUpdate(id, data);
+            console.log('data', data);
+            const updatedBrand = await this.brandModel.findByIdAndUpdate(
+                id,
+                { $set: data },
+                {
+                    new: true,         // return the updated doc
+                    runValidators: true, // validate before saving
+                },
+            ).exec();
             return updatedBrand;
-        } catch {
-            throw new Error('Failed to edit')
+        } catch (e) {
+            throw new Error('Failed to edit: ' + e.message);
         }
     }
 }

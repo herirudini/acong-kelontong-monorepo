@@ -25,7 +25,7 @@ export class BrandSeederService {
             {
                 brand_code: 'GULAKU_100GR',
                 brand_name: 'Gulaku 100gr',
-                unit_of_measure: unitOfMeasure.G,
+                unit_of_measure: unitOfMeasure.PCS,
                 barcode: 'GULAKU_100GR',
                 description: 'Sugar money',
                 is_active: true,
@@ -38,6 +38,14 @@ export class BrandSeederService {
                 description: 'Cigarette mild',
                 is_active: true,
             },
+            {
+                brand_code: "MINYAKITA_100ML",
+                brand_name: "Minyakita 100ml",
+                unit_of_measure: unitOfMeasure.PCS,
+                barcode: "MINYAKITA_100ML",
+                description: "Oily liquid",
+                is_active: true
+            }
         ];
 
         for (const brand of seedData) {
