@@ -1,11 +1,11 @@
 import { IsIn, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
-
-export type TSession = 'all' | 'other' | 'current';
+import { logoutOption } from 'src/types/enums';
+import type { TLogoutOption } from 'src/types/interfaces';
 
 export class SessionQueryDto {
   @IsOptional() // allow missing query param
-  @IsIn(['all', 'other', 'current'])
+  @IsIn([Object.values(logoutOption)])
   @Type(() => String) // ensure it's treated as string
-  session?: TSession;
+  type?: TLogoutOption;
 }

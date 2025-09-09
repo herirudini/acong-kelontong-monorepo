@@ -17,7 +17,7 @@ export class Auth {
     @Prop({ type: [String], ref: User.name, required: true })
     modules: string[];
     @Prop({ type: Date, default: addDays(new Date(), sessionDays) })
-    expiresAt?: Date;
+    expires_at?: Date;
     
 }
 
@@ -25,4 +25,4 @@ export type AuthDocument = Auth & Document;
 export const AuthSchema = SchemaFactory.createForClass(Auth);
 
 // Add index for automatic cleanup (MongoDB TTL)
-AuthSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
+AuthSchema.index({ expires_at: 1 }, { expireAfterSeconds: 0 });

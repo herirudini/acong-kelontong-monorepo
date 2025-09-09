@@ -1,7 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsEmail, IsIn, IsNotEmpty } from 'class-validator';
+import { roles } from 'src/types/enums';
 
-export type IRole = 'inventory' | 'finance' | 'cashier';
+import type { TRole } from 'src/types/interfaces'
 
 export class InviteUserDto {
     @IsEmail()
@@ -13,7 +14,7 @@ export class InviteUserDto {
     last_name: string;
     @IsNotEmpty({ each: true })
     modules: string[];
-    @IsIn(['all', 'other', 'current'])
+    @IsIn([Object.values(roles)])
     @Type(() => String) // ensure it's treated as string
-    role: IRole;
+    role: TRole;
 }

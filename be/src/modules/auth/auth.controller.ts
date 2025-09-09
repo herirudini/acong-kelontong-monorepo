@@ -112,7 +112,7 @@ export class AuthController {
                 return res.status(401).json({ success: false, message: 'Unauthorized' });
             }
             const token = authHeader.split(' ')[1]; // remove "Bearer"
-            await this.authService.logout(token, query.session);
+            await this.authService.logout(token, query.type);
             res.clearCookie('refresh_token', { path: '/auth/refresh' });
             return res.status(200).json({ success: true, message: 'Logout success' });
         } catch (err) {

@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { GlobalVar, ITokenPayload } from 'src/types/many.interface';
+import { GlobalVar, ITokenPayload } from 'src/types/interfaces';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

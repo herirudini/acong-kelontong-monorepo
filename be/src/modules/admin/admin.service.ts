@@ -2,9 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { addDays, decodeBase64, generateRandomToken } from 'src/utils/helper';
-import { User, TmpUser } from '../user/user.schema';
+import { User } from '../user/user.schema';
 import * as bcrypt from 'bcrypt';
 import { salts, sessionDays } from 'src/types/constants';
+import { TmpUser } from 'src/types/interfaces';
 @Injectable()
 export class AdminService {
     constructor(@InjectModel(User.name) private userModel: Model<User>) { }
@@ -20,7 +21,7 @@ export class AdminService {
         const password = await bcrypt.hash(tmpPassword, salts);
         tmpUser.password = password;
         tmpUser.verified = false;
-        tmpUser.verifyDueTime = addDays(new Date(), sessionDays);
+        tmpUser.verify_due_time = addDays(new Date(), sessionDays);
         await tmpUser.save();
         return { tmpUser, tmpPassword } as unknown as { tmpUser: TmpUser, tmpPassword: string };
     }

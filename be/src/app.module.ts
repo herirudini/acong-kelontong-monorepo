@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SeederModule } from './database/seeder/seeder.module';
-import { UserSeederService } from './database/seeder/user/user-seeder.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { toNumber } from './utils/helper';
@@ -17,6 +16,10 @@ import { UserService } from './modules/user/user.service';
 import { User, UserSchema } from './modules/user/user.schema';
 import { AdminController } from './modules/admin/admin.controller';
 import { AdminService } from './modules/admin/admin.service';
+import { BrandService } from './modules/brand/brand.service';
+import { BrandController } from './modules/brand/brand.controller';
+import { Brand, BrandSchema } from './modules/brand/brand.schema';
+import { SeederService } from './database/seeder/seeder.service';
 
 @Module({
   imports: [
@@ -65,16 +68,17 @@ import { AdminService } from './modules/admin/admin.service';
     MongooseModule.forFeature([
       { name: Auth.name, schema: AuthSchema },
       { name: User.name, schema: UserSchema },
+      { name: Brand.name, schema: BrandSchema },
     ]),
     SeederModule,
   ],
-  controllers: [AppController, AuthController, UserController, AdminController],
-  providers: [AppService, AuthService, AuthGuard, UserService, AdminService]
+  controllers: [AppController, AuthController, UserController, AdminController, BrandController],
+  providers: [AppService, AuthService, AuthGuard, UserService, AdminService, BrandService]
 })
 export class AppModule implements OnModuleInit {
-  constructor(private readonly seederService: UserSeederService) { }
+  constructor(private readonly seederService: SeederService) { }
 
   async onModuleInit() {
-    await this.seederService.run();
+    await this.seederService.seedAll();
   }
 }

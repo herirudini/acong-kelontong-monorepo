@@ -28,17 +28,13 @@ export class User {
   role: string;
 
   @Prop({ type: Date, default: addDays(new Date(), sessionDays) })
-  verifyDueTime?: Date;
+  verify_due_time?: Date;
 }
 
 export type UserDocument = User & Document;
 export const UserSchema = SchemaFactory.createForClass(User);
-export interface TmpUser extends UserDocument {
-  tmpPassword: string;
-}
-
 // Add index for automatic cleanup (MongoDB TTL)
 UserSchema.index(
-  { verifyDueTime: 1 },
+  { verify_due_time: 1 },
   { expireAfterSeconds: 0, partialFilterExpression: { verified: false } }
 );

@@ -7,8 +7,9 @@ import { Auth, AuthDocument } from './auth.schema';
 import { Model, Types } from 'mongoose';
 import { UserDocument } from '../user/user.schema';
 import { sha256Base64 } from 'src/utils/helper';
-import { ITokenPayload, IRefreshTokenPayload } from 'src/types/many.interface';
+import { ITokenPayload, IRefreshTokenPayload, TLogoutOption } from 'src/types/interfaces';
 import { salts, sessionDays, sessionMinutes } from 'src/types/constants';
+import { logoutOption } from 'src/types/enums';
 
 @Injectable()
 export class AuthService {
@@ -69,19 +70,15 @@ export class AuthService {
         await this.authModel.findByIdAndUpdate(authId, { token: crypted }).exec();
     }
 
-    async logout(token: string, session?: string): Promise<void> {
+    async logout(token: string, option?: TLogoutOption): Promise<void> {
         try {
             const decoded: jwt.JwtPayload | string = jwt.decode(token) as { id: string };
-            console.log('logoutbe', session,decoded)
-            if (session === 'all') {
+            if (option === logoutOption.all) {
                 await this.authModel.deleteMany({ user_id: new Types.ObjectId(decoded.id0 as string) }).exec();
-                console.log('all')
-            } else if (session === 'other') {
+            } else if (option === logoutOption.other) {
                 await this.authModel.deleteMany({ user_id: new Types.ObjectId(decoded.id0 as string), _id: { $ne: new Types.ObjectId(decoded.id as string) } }).exec();
-                console.log('other')
             } else {
                 await this.authModel.findByIdAndDelete(decoded.id).exec();
-                console.log('current')
             }
         } catch (err) {
             console.error(err);

@@ -6,7 +6,7 @@ import { Endpoint } from '../../types/constants/endpoint';
 import { IUser } from '../../types/interfaces/user.interface';
 import { Router } from '@angular/router';
 import { AlertService } from '../../shared/components/alert/alert-service';
-import { IAuth } from '../../types/interfaces/common.interface';
+import { IAuth, TLogoutOption } from '../../types/interfaces/common.interface';
 import { sessionMinutes } from '../../types/constants/common.constants';
 import { StorageService } from '../tools/storage-service';
 
@@ -106,8 +106,8 @@ export class AuthService extends BaseService {
     );
   }
 
-  logout(session?: 'all' | 'other' | 'current'): Observable<any> {
-    return this.postRequest(Endpoint.LOGOUT, {}, { session }).pipe(
+  logout(type?: TLogoutOption): Observable<any> {
+    return this.postRequest(Endpoint.LOGOUT, {}, { type }).pipe(
       tap(() => {
         this.stopRefresh();
         this.storage.clear();
