@@ -5,7 +5,7 @@ import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
 import { Auth, AuthDocument } from './auth.schema';
 import { Model, Types } from 'mongoose';
-import { UserDocument } from '../../shared/shared-user/user.schema';
+import { UserDocument } from '../user/user.schema';
 import { sha256Base64 } from 'src/utils/helper';
 import { ITokenPayload, IRefreshTokenPayload } from 'src/types/many.interface';
 import { salts, sessionDays, sessionMinutes } from 'src/types/constants';
@@ -23,6 +23,15 @@ export class AuthService {
 
     generateRefreshToken(payload: IRefreshTokenPayload): string {
         return jwt.sign(payload, process.env.JWT_SECRET as string, { expiresIn: sessionDays + 'd' });
+    }
+
+    verifyToken(token: string): jwt.JwtPayload | string {
+        try {
+            return jwt.verify(token, process.env.JWT_SECRET as string);
+        } catch (err) {
+            console.error(err);
+            throw new UnauthorizedException('Invalid token');
+        }
     }
 
     async getAuthItem(token: string): Promise<AuthDocument | null> {

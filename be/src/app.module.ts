@@ -11,7 +11,6 @@ import { AdminModule } from './modules/admin/admin.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { toNumber } from './utils/helper';
-import { SharedModule } from './shared/shared.module';
 
 @Module({
   imports: [
@@ -61,7 +60,6 @@ import { SharedModule } from './shared/shared.module';
     SeederModule,
     AuthModule,
     AdminModule,
-    SharedModule,
   ],
   controllers: [AppController],
   providers: [AppService],

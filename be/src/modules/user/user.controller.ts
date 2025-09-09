@@ -1,15 +1,11 @@
 import { Body, Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
-import { AuthGuard } from '../../shared/shared-auth/auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 
-@UseGuards(AuthGuard)
+UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) { }
-  @Get('')
-  list() {
-    return this.userService.findAll();
-  }
 
   @Put(':user_id/edit-profile')
   editProfile(
@@ -35,5 +31,10 @@ export class UserController {
     },
   ) {
     return this.userService.editUser(user_id, body);
+  }
+
+  @Get('list')
+  list() {
+    return this.userService.findAll();
   }
 }
