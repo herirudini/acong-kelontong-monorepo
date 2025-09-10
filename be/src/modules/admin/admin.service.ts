@@ -6,6 +6,7 @@ import { User } from '../user/user.schema';
 import * as bcrypt from 'bcrypt';
 import { salts, sessionDays } from 'src/types/constants';
 import { TmpUser } from 'src/types/interfaces';
+import { BaseResponse } from 'src/utils/base-response';
 @Injectable()
 export class AdminService {
     constructor(@InjectModel(User.name) private userModel: Model<User>) { }
@@ -13,7 +14,7 @@ export class AdminService {
     async resendVerification(email: string): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
         const tmpUser = await this.userModel.findOne({ email });
         if (!tmpUser) {
-            throw new Error("User not found");
+            return BaseResponse.notFound({ err: 'resendVerification tmpUser not found' });
         }
         // generate raw random password
         const tmpPassword = generateRandomToken()
@@ -32,9 +33,9 @@ export class AdminService {
         const last_name = body.last_name;
         const email = body.email;
         const modules = body.modules;
-        const exists = await this.userModel.findOne({ email });
-        if (exists) {
-            throw new Error("User already exists");
+        const exist = await this.userModel.findOne({ email });
+        if (exist) {
+            return BaseResponse.forbidden({ err: 'inviteUser exist' });
         }
         // generate raw random password
         const tmpPassword = generateRandomToken()

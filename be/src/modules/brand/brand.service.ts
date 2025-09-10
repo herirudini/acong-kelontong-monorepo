@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Brand, BrandDocument } from './brand.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { BaseResponse } from 'src/utils/base-response';
 
 @Injectable()
 export class BrandService {
@@ -19,8 +20,8 @@ export class BrandService {
                 ],
             }).exec();
             return listBrand
-        } catch {
-            throw new Error('Failed to get list')
+        } catch (err) {
+            return BaseResponse.unexpected({ err: { text: 'listBrand catch', err } })
         }
     }
 
@@ -28,8 +29,8 @@ export class BrandService {
         try {
             const newBrand = await this.brandModel.create(data);
             return newBrand;
-        } catch {
-            throw new Error('Failed to create')
+        } catch (err) {
+            return BaseResponse.unexpected({ err: { text: 'createBrand catch', err } })
         }
     }
 
@@ -45,8 +46,8 @@ export class BrandService {
                 },
             ).exec();
             return updatedBrand;
-        } catch (e) {
-            throw new Error('Failed to edit: ' + e.message);
+        } catch (err) {
+            return BaseResponse.unexpected({ err: { text: 'editBrand catch', err } })
         }
     }
 
@@ -54,8 +55,8 @@ export class BrandService {
         try {
             const detailBrand = await this.brandModel.findById(id).exec();
             return detailBrand;
-        } catch (e) {
-            throw new Error('Failed to get detail: ' + e.message);
+        } catch (err) {
+            return BaseResponse.unexpected({ err: { text: 'detailBrand catch', err } })
         }
     }
 }

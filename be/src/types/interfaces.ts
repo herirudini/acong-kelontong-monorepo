@@ -1,4 +1,5 @@
 import { UserDocument } from "src/modules/user/user.schema";
+import type { Response } from 'express';
 
 export interface IRefreshTokenPayload {
   id: string;
@@ -26,7 +27,20 @@ export interface IEditUser {
 }
 
 export type TRole = 'inventory' | 'finance' | 'cashier';
-
-export type TUOM = 'G'|'KG'|'ML'|'L'|'PCS'|'BOX'
-
+export type TUOM = 'G' | 'KG' | 'ML' | 'L' | 'PCS' | 'BOX'
 export type TLogoutOption = 'all' | 'other' | 'current';
+
+export interface IResponse {
+  message?: string;
+  list?: object[];
+  detail?: object;
+  error_code?: string;
+}
+
+export interface IBaseResponse {
+  res?: Response;
+  err?: any;
+  option?: IResponse;
+}
+
+

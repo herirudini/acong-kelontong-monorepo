@@ -7,5 +7,5 @@ export class SessionQueryDto {
   @IsOptional() // allow missing query param
   @IsIn([Object.values(logoutOption)])
   @Type(() => String) // ensure it's treated as string
-  type?: TLogoutOption;
+  option?: TLogoutOption;
 }

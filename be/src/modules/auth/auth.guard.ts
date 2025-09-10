@@ -1,6 +1,8 @@
-import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { GlobalVar, ITokenPayload } from 'src/types/interfaces';
+import { BaseResponse } from 'src/utils/base-response';
+import { errCodes } from 'src/types/constants';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -10,8 +12,7 @@ export class AuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
-      console.error('Auth Guard Missing token');
-      throw new UnauthorizedException('Unauthorized');
+      return BaseResponse.unauthorized({ err: 'Auth Guard Missing token', option: { message: 'Unauthorized' } });
     }
 
     const accesToken = authHeader.split(' ')[1];
@@ -29,6 +30,6 @@ export class AuthGuard implements CanActivate {
       req.user = user;
       return true;
     }
-    return false;
+    return BaseResponse.unauthorized({ err: 'Auth Guard unverified', option: { message: 'Unauthorized', error_code: errCodes.authGuard } });
   }
 }

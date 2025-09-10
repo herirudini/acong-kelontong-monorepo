@@ -20,6 +20,7 @@ import { BrandService } from './modules/brand/brand.service';
 import { BrandController } from './modules/brand/brand.controller';
 import { Brand, BrandSchema } from './modules/brand/brand.schema';
 import { SeederService } from './database/seeder/seeder.service';
+import { BaseResponse } from './utils/base-response';
 
 @Module({
   imports: [
@@ -73,7 +74,7 @@ import { SeederService } from './database/seeder/seeder.service';
     SeederModule,
   ],
   controllers: [AppController, AuthController, UserController, AdminController, BrandController],
-  providers: [AppService, AuthService, AuthGuard, UserService, AdminService, BrandService]
+  providers: [AppService, AuthService, AuthGuard, UserService, AdminService, BrandService, BaseResponse]
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly seederService: SeederService) { }

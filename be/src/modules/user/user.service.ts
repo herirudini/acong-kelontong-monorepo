@@ -5,6 +5,7 @@ import { User, UserDocument } from './user.schema';
 import * as bcrypt from 'bcrypt';
 import { salts } from 'src/types/constants';
 import { IEditUser } from 'src/types/interfaces';
+import { BaseResponse } from 'src/utils/base-response';
 
 @Injectable()
 export class UserService {
@@ -40,7 +41,7 @@ export class UserService {
       ).exec();
       return user;
     } catch (e) {
-      throw new Error('Failed to edit: ' + e.message);
+      return BaseResponse.unexpected({ err: { text: 'editUser', err: e.message} })
     }
   }
 
