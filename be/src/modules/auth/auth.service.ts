@@ -1,14 +1,15 @@
 // auth.service.ts
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { Injectable } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
 import { Auth, AuthDocument } from './auth.schema';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { UserDocument } from '../user/user.schema';
-import { sha256Base64 } from 'src/utils/helper';
-import { ITokenPayload, IRefreshTokenPayload } from 'src/types/many.interface';
-import { salts, sessionDays, sessionMinutes } from 'src/types/constants';
+import { encrypt, decrypt } from 'src/utils/helper';
+import { ITokenPayload, IRefreshTokenPayload, TLogoutOption } from 'src/types/interfaces';
+import { sessionDays, sessionMinutes } from 'src/types/constants';
+import { logoutOption } from 'src/types/enums';
+import { BaseResponse } from 'src/utils/base-response';
 
 @Injectable()
 export class AuthService {
@@ -29,8 +30,7 @@ export class AuthService {
         try {
             return jwt.verify(token, process.env.JWT_SECRET as string);
         } catch (err) {
-            console.error(err);
-            throw new UnauthorizedException('Invalid token');
+            return BaseResponse.unauthorized({ err: { text: 'auth verifyToken catch', err } });
         }
     }
 
@@ -40,8 +40,7 @@ export class AuthService {
             const result = await this.authModel.findById(decoded.id);
             return result;
         } catch (err) {
-            console.error(err);
-            throw new UnauthorizedException('Invalid token');
+            return BaseResponse.unauthorized({ err });
         }
     }
 
@@ -58,34 +57,35 @@ export class AuthService {
         return { access_token: accessToken, refresh_token: refreshToken };
     }
 
-    compareDBToken(accessToken: string, hashedToken: string) {
-        const digest = sha256Base64(accessToken);
-        return bcrypt.compare(digest, hashedToken);
+    async compareDBToken(accessToken: string): Promise<AuthDocument | null> {
+        const auth: AuthDocument | null = await this.getAuthItem(accessToken);
+        if (!auth) {
+            await this.logout(accessToken);
+            return BaseResponse.unauthorized({ err: 'compareDBToken !auth' });
+        }
+        const decrypted = decrypt(auth.token) as string;
+        if (accessToken === decrypted) return auth;
+        return null;
     }
 
-    async updateToken(authId: string, accessToken: string): Promise<void> {
-        const digest = sha256Base64(accessToken); // Digest first because bcrypt only uses the first 72 bytes of the input, where the jwt (128 bytes) new token's first 72 bytes mostly similar with the old one's
-        const crypted = await bcrypt.hash(digest, salts);
-        await this.authModel.findByIdAndUpdate(authId, { token: crypted }).exec();
+    async updateToken(authId: string, accessToken: string): Promise<AuthDocument> {
+        const encrypted = encrypt(accessToken);
+        const updated = await this.authModel.findByIdAndUpdate(authId, { token: encrypted }).exec();
+        if (!updated) return BaseResponse.unexpected({ err: 'login !updated' })
+        return updated
     }
 
-    async logout(token: string, session?: string): Promise<void> {
+    async logout(token: string, option?: TLogoutOption): Promise<any> {
         try {
             const decoded: jwt.JwtPayload | string = jwt.decode(token) as { id: string };
-            console.log('logoutbe', session,decoded)
-            if (session === 'all') {
-                await this.authModel.deleteMany({ user_id: new Types.ObjectId(decoded.id0 as string) }).exec();
-                console.log('all')
-            } else if (session === 'other') {
-                await this.authModel.deleteMany({ user_id: new Types.ObjectId(decoded.id0 as string), _id: { $ne: new Types.ObjectId(decoded.id as string) } }).exec();
-                console.log('other')
-            } else {
-                await this.authModel.findByIdAndDelete(decoded.id).exec();
-                console.log('current')
+            if (option === logoutOption.all) {
+                return await this.authModel.deleteMany({ user_id: decoded.id0 }).exec();
+            } else if (option === logoutOption.other) {
+                return await this.authModel.deleteMany({ user_id: decoded.id0, _id: { $ne: decoded.id } }).exec();
             }
+            return await this.authModel.findByIdAndDelete(decoded.id).exec();
         } catch (err) {
-            console.error(err);
-            throw new UnauthorizedException('Invalid token');
+            return BaseResponse.unauthorized({ err: { text: 'logout catch', err } });
         }
     }
 }

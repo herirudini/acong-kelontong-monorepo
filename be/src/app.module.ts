@@ -2,15 +2,25 @@ import { Module, OnModuleInit } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserModule } from './modules/user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { SeederModule } from './database/seeder/seeder.module';
-import { UserSeederService } from './database/seeder/user/user-seeder.service';
-import { AuthModule } from './modules/auth/auth.module';
-import { AdminModule } from './modules/admin/admin.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { toNumber } from './utils/helper';
+import { Auth, AuthSchema } from './modules/auth/auth.schema';
+import { AuthController } from './modules/auth/auth.controller';
+import { AuthService } from './modules/auth/auth.service';
+import { AuthGuard } from './modules/auth/auth.guard';
+import { UserController } from './modules/user/user.controller';
+import { UserService } from './modules/user/user.service';
+import { User, UserSchema } from './modules/user/user.schema';
+import { AdminController } from './modules/admin/admin.controller';
+import { AdminService } from './modules/admin/admin.service';
+import { BrandService } from './modules/brand/brand.service';
+import { BrandController } from './modules/brand/brand.controller';
+import { Brand, BrandSchema } from './modules/brand/brand.schema';
+import { SeederService } from './database/seeder/seeder.service';
+import { BaseResponse } from './utils/base-response';
 
 @Module({
   imports: [
@@ -56,18 +66,20 @@ import { toNumber } from './utils/helper';
         }
       },
     }),
-    UserModule,
+    MongooseModule.forFeature([
+      { name: Auth.name, schema: AuthSchema },
+      { name: User.name, schema: UserSchema },
+      { name: Brand.name, schema: BrandSchema },
+    ]),
     SeederModule,
-    AuthModule,
-    AdminModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, AuthController, UserController, AdminController, BrandController],
+  providers: [AppService, AuthService, AuthGuard, UserService, AdminService, BrandService, BaseResponse]
 })
 export class AppModule implements OnModuleInit {
-  constructor(private readonly seederService: UserSeederService) { }
+  constructor(private readonly seederService: SeederService) { }
 
   async onModuleInit() {
-    await this.seederService.run();
+    await this.seederService.seedAll();
   }
 }

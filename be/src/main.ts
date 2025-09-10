@@ -1,9 +1,12 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { RequestMethod } from '@nestjs/common';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+  app.use(cookieParser());
+  
   // set global prefix
   app.setGlobalPrefix('api', {
     exclude: [{ path: '', method: RequestMethod.OPTIONS }],
