@@ -1,12 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Model, FilterQuery } from 'mongoose';
-
-export interface IPaginationRes {
-    total: number;
-    page: number;
-    size: number;
-    totalPages: number;
-}
+import { IPaginationRes } from 'src/types/interfaces';
 
 @Injectable()
 export class GlobalService {
