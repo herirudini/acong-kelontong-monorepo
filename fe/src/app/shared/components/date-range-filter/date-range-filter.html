@@ -1,0 +1,45 @@
+<form [formGroup]="datesForm">
+    <div class="multiselect">
+        <div class="selectBox pointer" (click)="expanded = !expanded">
+            <select class="form-select text-primary" [class.expanded]="expanded">
+                @if (value) {
+                <option>
+                    {{value.start_date | date : 'MM/dd/YYY'}} - {{value.end_date | date : 'MM/dd/YYY'}}
+                </option>
+                } @else {
+                <option>Filter By Date</option>
+                }
+            </select>
+            <div class="overSelect"></div>
+        </div>
+        @if (expanded) {
+        <div class="date-range-container rounded">
+            <div class="w-100 p-16px">
+                <h4 class="m-0">Filter By Date</h4>
+            </div>
+            <div class="w-100 border border-left-0 border-right-0">
+                <div class="p-16px">
+                    <div class="mb-24px">
+                        <label for="start_date" class="form-label">
+                            Start Date
+                        </label>
+                        <input id="start_date" type="date" formControlName="start_date"
+                            class="form-control form-icon-date" placeholder="YYYY-MM-DD">
+                    </div>
+                    <div>
+                        <label for="start_date" class="form-label">
+                            End Date
+                        </label>
+                        <input id="end_date" type="date" formControlName="end_date" class="form-control form-icon-date"
+                            placeholder="YYYY-MM-DD">
+                    </div>
+                </div>
+            </div>
+            <div class="w-100 p-16px d-flex flex-row justify-content-end">
+                <button>Reset</button>
+                <button>Apply</button>
+            </div>
+        </div>
+        }
+    </div>
+</form>

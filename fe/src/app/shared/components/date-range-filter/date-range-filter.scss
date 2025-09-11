@@ -1,0 +1,40 @@
+.multiselect {
+  position: relative;
+  width: 100%;
+
+  .selectBox {
+    position: relative;
+    select {
+      width: 100%;
+      border-color: var(--bs-gray-300) !important;
+      &.expanded {
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        border-bottom: 0;
+      }
+    }
+  }
+
+  .overSelect {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+
+  .date-range-container {
+    border: 1px solid var(--bs-gray-300);
+    width: calc(100% + 20em);
+    position: absolute;
+    z-index: 10;
+    background: white;
+    min-width: 100%;
+    max-height: 50vh;
+    overflow: scroll;
+    &.rounded {
+      border-top-right-radius: 0 !important;
+      border-top-left-radius: 0 !important;
+    }
+  }
+}

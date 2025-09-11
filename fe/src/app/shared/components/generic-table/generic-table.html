@@ -1,0 +1,153 @@
+<div class="card mb-4 p-4">
+    @if(useSearch || useFilter || useDownloadButton || useFilterSelect || useFilterByDate || useCustomToolbar) {
+    <div class="d-flex flex-row align-items-center justify-content-between pb-24px flex-wrap gap-12px py-2">
+        <div [ngClass]="useSearch ? 'col-md-7' : 'col-md-12'">
+            <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-12px">
+                @if (useFilterSelect) {
+                <div>
+                    <app-select-filter></app-select-filter>
+                </div>
+                }
+
+                <!-- @if (useFilter) {
+                <div>
+                    <app-dropdown-option-checkbox [label]="filterLabel" [options]="filterOptions"
+                        (checkboxesChange)="filtersChanged($event)"></app-dropdown-option-checkbox>
+                </div>
+                } -->
+
+                @if (useFilterByDate) {
+                <div>
+                    <app-date-range-filter [patchedValue]="filterByDateDefaultValue"
+                        (OnChanges)="filterByDateChanged($event)"></app-date-range-filter>
+                </div>
+                }
+
+                @if (useDownloadButton) {
+                <div>
+                    <button type="button" (click)="downloadButtonClicked()"
+                        class="btn btn btn-outline btn-outline-solid text-primary d-flex flex-row align-items-center justify-content-center gap-8px px-24px py-10px">
+                        {{ "BUTTON.DOWNLOAD_DATA_TABLE" }}
+                        <i class="fa-solid fa-download text-primary"></i>
+                    </button>
+                </div>
+                }
+
+                @if (useCustomToolbar) {
+                <ng-content select="[CustomToolbar]"></ng-content>
+                }
+            </div>
+        </div>
+
+        @if (useSearch) {
+        <div class="col-md-4">
+            <div class="input-group col-4">
+                <input type="text" class="form-control" placeholder="{{ (searchPlaceholder || 'PLACEHOLDER.SEARCH') }}"
+                    [(ngModel)]="search" (input)="onSearch()" />
+                <span class="input-group-text py-14px px-25px" id="basic-addon2">
+                    <i class="fa-solid fa-magnifying-glass text-white fa-3xs"></i>
+                </span>
+            </div>
+        </div>
+        }
+    </div>
+    }
+
+    <div class="table-responsive scrollShadow py-2">
+        <table class="table table-row-bordered mb-0" aria-describedby="Generic Table">
+            <thead>
+                <tr class="fw-bold fs-6 text-gray-800 text-uppercase">
+                    <ng-container headTH>
+                        @if (useCheckbox) {
+                        <th>
+                            <div class="d-flex flex-row ailgn-items center">
+                                <input class="form-check-input pointer" type="checkbox"
+                                    [disabled]="!data || !data.length"
+                                    [checked]="(!data || !data.length) ? false : isCheckedAll()"
+                                    (click)="onCheckedAll($event)">
+                            </div>
+                        </th>
+                        }
+
+                        @for (column of columns; track column.id) {
+                        <th [class.pointer]="column.sort" [ngStyle]="generateInlineStyle(column)" (click)="
+                  column.sort && datalength > 0
+                    ? sortChanged(column.id)
+                    : $event.stopPropagation()
+                " [ngClass]="'whitespace-nowrap ' +  headerClass(column.id) + ' ' + column.extraHeaderClass">
+                            {{ column.label | dynamicPipe:
+                            column.customHeaderPipe?.pipeType:column.customHeaderPipe?.pipeArgs ?? [] }}
+                        </th>
+                        }
+                    </ng-container>
+                </tr>
+            </thead>
+            <tbody>
+                @if (isLoading) {
+                <!-- Show loading state -->
+                @for (_ of [].constructor(selectedSize); track $index) {
+                <tr>
+                    @for (_ of [].constructor(columns.length); let i = $index; track $index) {
+                    <td [ngStyle]="generateInlineStyle(columns[i])">
+                        <div class="badge-loading"></div>
+                    </td>
+                    }
+                </tr>
+                }
+                } @else {
+                <!-- Check if there is or no data -->
+                @if (!!data.length) {
+                @for (row of data; let index = $index; track row.id) {
+                <tr>
+                    @if (useCheckbox) {
+                    <td [ngStyle]="{'vertical-align': 'middle'}">
+                        <div class="d-flex flex-row ailgn-items center">
+                            <input class="form-check-input pointer" type="checkbox" [checked]="isChecked(row)"
+                                (click)="onChecked(row)">
+                        </div>
+                    </td>
+                    }
+
+                    @for (column of columns; let i = $index; track column.id) {
+                    <td [ngStyle]="generateInlineStyle(column)" [ngClass]="{
+                      'whitespace-nowrap': column.customElementId === 'action'
+                    }">
+                        @if (column.customElementId) {
+                        <ng-container [ngTemplateOutlet]="columnTemplates[column.customElementId]"
+                            [ngTemplateOutletContext]="{
+                          $implicit: row,
+                          value: transformValueIfNeeded(getRowDataValue(row, column.id), column)
+                        }">
+                        </ng-container>
+                        } @else {
+                        <!-- | dynamicPipe: (isDateColumn(column) ? datePipe : null): [getDateFormat(column)] -->
+                        {{ (
+                        transformValueIfNeeded(getRowDataValue(row, column.id), column)
+                        | dynamicPipe: column.customPipe?.pipeType:column.customPipe?.pipeArgs ?? []
+                        ) || "-" }}
+                        }
+                    </td>
+                    }
+                </tr>
+                }
+                <ng-content></ng-content>
+                } @else {
+                <tr>
+                    <td [attr.colspan]="columns.length">
+                        <div class="nodata">{{ 'COMMON.NO_DATA' }}</div>
+                    </td>
+                </tr>
+                }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Add TableFooter component here -->
+    @if (usePagination) {
+    <div class="card-footer pb-0 px-0">
+        <app-pagination [selectedSize]="selectedSize" [activePage]="activePage" [totalData]="datalength"
+            (paginationChanged)="changePage($event)"></app-pagination>
+    </div>
+    }
+</div>
