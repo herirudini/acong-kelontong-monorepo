@@ -4,12 +4,16 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from './user.schema';
 import * as bcrypt from 'bcrypt';
 import { salts } from 'src/types/constants';
-import { IEditUser } from 'src/types/interfaces';
+import { IEditUser, IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
+import { GlobalService } from 'src/global/global.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private global: GlobalService
+  ) { }
 
   async editUser(user_id: string, data: IEditUser): Promise<UserDocument | undefined> {
     const {
@@ -45,7 +49,25 @@ export class UserService {
     }
   }
 
-  async findAll(): Promise<UserDocument[]> {
-    return await this.userModel.find().exec();
+  async getListUser(
+    page: number,
+    size: number,
+    sortBy?: string,
+    sortDir: 'asc' | 'desc' = 'asc',
+    search?: string,
+    searchFields: string[] = [], // ✅ Add searchable fields
+    filter?: { column: string; value: string },
+  ): Promise<{ data: User[]; meta: IPaginationRes }> {
+    return this.global.getList<User>(
+      this.userModel,
+      page,
+      size,
+      sortBy,
+      sortDir,
+      search,
+      searchFields,
+      filter
+    )
   }
+
 }

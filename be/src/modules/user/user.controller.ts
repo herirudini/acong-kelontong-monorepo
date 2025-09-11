@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Put, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { BaseResponse } from 'src/utils/base-response';
 import type { Response } from 'express';
+import { PaginationDto } from 'src/dto/pagination.dto';
 
 UseGuards(AuthGuard)
 @Controller('users')
@@ -40,11 +41,15 @@ export class UserController {
 
   @Get('')
   async list(
-    @Req() req: Request,
+    @Query() { page, size }: PaginationDto,
     @Res() res: Response,
   ) {
-    const list = await this.userService.findAll();
-    return BaseResponse.success({ res, option: { message: 'Success get list user', list } })
+    const { data, meta } = await this.userService.getListUser(page, size);
+    return BaseResponse.success({
+      res,
+      option: { message: 'Success get list user', list: data, meta },
+    });
   }
+
 
 }

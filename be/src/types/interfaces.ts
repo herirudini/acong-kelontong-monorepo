@@ -30,11 +30,18 @@ export type TRole = 'inventory' | 'finance' | 'cashier';
 export type TUOM = 'G' | 'KG' | 'ML' | 'L' | 'PCS' | 'BOX'
 export type TLogoutOption = 'all' | 'other' | 'current';
 
+export interface IPaginationRes {
+  total: number;
+  totalPages: number;
+  page: number;
+  size: number;
+}
 export interface IResponse {
   message?: string;
   list?: object[];
   detail?: object;
   error_code?: string;
+  meta?: IPaginationRes
 }
 
 export interface IBaseResponse {
