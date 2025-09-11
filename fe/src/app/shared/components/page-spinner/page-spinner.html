@@ -1,5 +1,7 @@
-<ng-template #content let-modal>
-	<div class="spinner-border d-flex align-self-center" style="width: 3rem; height: 3rem;" role="status">
-		<span class="sr-only">Loading...</span>
+@if (isSpinning) {
+<div class="spinner-container d-flex justify-content-center align-items-center">
+	<div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+		<span class="visually-hidden">Loading...</span>
 	</div>
-</ng-template>
+</div>
+}

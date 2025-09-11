@@ -1,37 +1,24 @@
-import { afterNextRender, Component, ElementRef, ViewChild } from '@angular/core';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
+import { Component, Inject, PLATFORM_ID } from '@angular/core';
 import { PageSpinnerService } from './page-spinner-service';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-page-spinner',
-  imports: [],
   templateUrl: './page-spinner.html',
-  styleUrl: './page-spinner.scss'
+  styleUrls: ['./page-spinner.scss']
 })
 export class PageSpinner {
+  isSpinning: boolean = false;
 
-  @ViewChild('content') content?: ElementRef;
-  private spinnerModal?: NgbModalRef;
-
-  constructor(private modalService: NgbModal, private pageSpinnerService: PageSpinnerService) {
-    afterNextRender(() => {
+  constructor(
+    private pageSpinnerService: PageSpinnerService,
+    @Inject(PLATFORM_ID) private platformId: Object,
+  ) {
+    if (isPlatformBrowser(this.platformId)) {
       this.pageSpinnerService.getSpinnerStatus().subscribe((status: 'on' | 'off') => {
-        if (status === 'on') {
-          this.openVerticallyCentered(this.content);
-        } else {
-          this.spinnerModal?.dismiss();
-        }
+        console.log('getSpinnerStatus', status);
+        this.isSpinning = status === 'on';
       });
-    });
+    }
   }
-
-  openVerticallyCentered(content?: ElementRef) {
-    this.spinnerModal = this.modalService.open(content, {
-      backdrop: 'static',
-      centered: true,
-      windowClass: 'modalClass',
-      keyboard: false
-    });
-  }
-
 }
