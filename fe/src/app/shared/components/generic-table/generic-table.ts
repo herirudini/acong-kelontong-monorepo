@@ -95,7 +95,7 @@ export class GenericTable implements OnInit, OnDestroy {
 
   @Input() filterSelectData: ISelectFilter[] = [];
   @Input() selectedFilterSelect: ISelectValue[] = [];
-  @Input() filterByDateDefaultValue?: IDateRangeFilter;
+  @Input() filterByDateDefaultValue: IDateRangeFilter = {} as IDateRangeFilter;
   @Input() usePagination: boolean = true;
   @Input() useDownloadButton: boolean = false;
   @Input() useCustomToolbar: boolean = false;

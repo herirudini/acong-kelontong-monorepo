@@ -15,12 +15,11 @@ import { StorageService } from '../tools/storage-service';
 export class AuthService extends BaseService {
 
   constructor(
-    override http: HttpClient,
     private router: Router,
     private alert: AlertService,
     private storage: StorageService,
   ) {
-    super(http);
+    super();
   }
 
   /** ✅ Auth check works in SSR and browser */

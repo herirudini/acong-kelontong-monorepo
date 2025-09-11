@@ -1,8 +1,8 @@
-<div class="card mb-4 p-4">
+<div class="mb-4 p-4 border rounded">
     @if(useSearch || useFilter || useDownloadButton || useFilterSelect || useFilterByDate || useCustomToolbar) {
-    <div class="d-flex flex-row align-items-center justify-content-between pb-24px flex-wrap gap-12px py-2">
+    <div class="d-flex flex-row align-items-center justify-content-between pb-24px flex-wrap gap-2 mb-4">
         <div [ngClass]="useSearch ? 'col-md-7' : 'col-md-12'">
-            <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-12px">
+            <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-2">
                 @if (useFilterSelect) {
                 <div>
                     <app-select-filter></app-select-filter>
@@ -26,7 +26,7 @@
                 @if (useDownloadButton) {
                 <div>
                     <button type="button" (click)="downloadButtonClicked()"
-                        class="btn btn btn-outline btn-outline-solid text-primary d-flex flex-row align-items-center justify-content-center gap-8px px-24px py-10px">
+                        class="btn btn btn-outline btn-outline-solid text-primary d-flex flex-row align-items-center justify-content-center gap-2 px-24px py-10px">
                         {{ "BUTTON.DOWNLOAD_DATA_TABLE" }}
                         <i class="fa-solid fa-download text-primary"></i>
                     </button>
@@ -42,7 +42,7 @@
         @if (useSearch) {
         <div class="col-md-4">
             <div class="input-group col-4">
-                <input type="text" class="form-control" placeholder="{{ (searchPlaceholder || 'PLACEHOLDER.SEARCH') }}"
+                <input type="text" class="form-control" placeholder="{{ (searchPlaceholder || 'Search') }}"
                     [(ngModel)]="search" (input)="onSearch()" />
                 <span class="input-group-text py-14px px-25px" id="basic-addon2">
                     <i class="fa-solid fa-magnifying-glass text-white fa-3xs"></i>

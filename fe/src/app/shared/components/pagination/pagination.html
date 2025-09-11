@@ -1,5 +1,5 @@
-<div class="d-flex flex-column flex-md-row flex-center flex-md-stack gap-20px">
-    <div class="pagination-size order-2 order-md-1 d-flex flex-sm-row flex-sm-stack gap-20px">
+<div class="d-flex flex-column flex-md-row flex-center flex-md-stack gap-2 w-100 justify-content-between align-items-baseline px-4">
+    <div class="pagination-size order-2 order-md-1 d-flex flex-md-row flex-sm-stack gap-2 align-items-baseline">
         <select class="form-select size-selector pointer" aria-label="Select Size" (change)="changeSize($event)">
             @for (size of sizeOptions; track $index) {
             <option [selected]="size === selectedSize">

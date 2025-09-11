@@ -158,7 +158,7 @@ export const routes: Routes = [
             path: Menus['ADMIN'].children?.['USERS'].url,
             canActivate: [PageGuardService],
             data: { ...Menus['ADMIN'].children?.['USERS'] },
-            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+            loadComponent: () => import('./pages/admin/users/users').then(c => c.Users)
           },
         ]
       },

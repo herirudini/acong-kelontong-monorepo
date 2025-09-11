@@ -11,7 +11,7 @@ import { BaseResponse } from 'src/utils/base-response';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) { }
 
-  async editUser(user_id: string, data: IEditUser): Promise<UserDocument | null> {
+  async editUser(user_id: string, data: IEditUser): Promise<UserDocument | undefined> {
     const {
       first_name,
       last_name,
@@ -39,13 +39,13 @@ export class UserService {
           runValidators: true, // validate before saving
         },
       ).exec();
-      return user;
+      return user || undefined;
     } catch (e) {
-      return BaseResponse.unexpected({ err: { text: 'editUser', err: e.message} })
+      return BaseResponse.unexpected({ err: { text: 'editUser', err: e.message } })
     }
   }
 
   async findAll(): Promise<UserDocument[]> {
-    return this.userModel.find().exec();
+    return await this.userModel.find().exec();
   }
 }

@@ -16,6 +16,10 @@ export interface IPaginationOutput {
   selectedSize: number
 }
 
+export interface IPaginationInput extends IPaginationOutput {
+  totalData: number
+}
+
 export interface ISelectFilter {
   id: string
   labelKey: string;
@@ -29,4 +33,11 @@ export interface ISelectFilter {
 export interface ISelectValue {
   id: string;
   selectedData: string;
+}
+
+export interface IResponse<T> {
+  message?: string;
+  list?: T[];
+  detail?: T;
+  error_code?: string;
 }

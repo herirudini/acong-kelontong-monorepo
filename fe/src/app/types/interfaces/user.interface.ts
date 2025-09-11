@@ -5,5 +5,6 @@ export interface IUser {
     verified?: boolean;
     modules: string[];
     role: string;
+    [key: string]: any;
     // add more user properties here...
 }
