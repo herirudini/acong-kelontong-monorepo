@@ -1,0 +1,32 @@
+.input-group-text {
+  background: var(--applicationcolors-blue, #0c69b0) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--applicationcolors-blue, #0c69b0) !important;
+}
+
+tr {
+  vertical-align: middle;
+}
+
+// .scrollShadow {
+//   background-image: 
+	
+//   /* Shadows */ 
+//   linear-gradient(to right, white, white),
+//   linear-gradient(to right, white, white),
+//   /* Shadow covers */
+//   linear-gradient(to right, rgba(206, 206, 206, 1), rgba(255, 255, 255, 0)),
+//   linear-gradient(to left, rgba(206, 206, 206, 1), rgba(255, 255, 255, 0));
+
+//   background-position: left center, right center, left center, right center;
+//   background-repeat: no-repeat;
+//   background-color: white;
+//   background-size: 20px 100%, 20px 100%, 10px 100%, 10px 100%;
+
+//   /* Opera doesn't support this in the shorthand */
+//   background-attachment: local, local, scroll, scroll;
+// }
+
+.card-footer {
+  border-color: #e3e3e3;
+}

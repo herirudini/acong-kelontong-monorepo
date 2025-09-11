@@ -40,11 +40,9 @@ export class NavigationService {
       if (labelKey) breadcrumbs.push({ labelKey, url, disabled: false } as IBreadcrumb);
     }
     this.updateBreadcrumbs(breadcrumbs);
-    setTimeout(() => {
-      if (breadcrumbs[breadcrumbs.length - 1]?.labelKey !== this.lastState) {
-        this.lastState = breadcrumbs[breadcrumbs.length - 1]?.labelKey;
-      }
-    }, 500);
+    if (breadcrumbs[breadcrumbs.length - 1]?.labelKey !== this.lastState) {
+      this.lastState = breadcrumbs[breadcrumbs.length - 1]?.labelKey;
+    }
     return breadcrumbs;
   }
 }

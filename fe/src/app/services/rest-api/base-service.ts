@@ -1,12 +1,12 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BaseService {
-  constructor(protected http: HttpClient) { }
+  protected http = inject(HttpClient);
 
   getRequest(url: string, params?: any, spinneroff?: 'spinneroff'): Observable<any> {
     const headers = {

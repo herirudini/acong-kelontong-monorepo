@@ -14,7 +14,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
       const errCode = err?.error?.error_code;
       const errorMessage = err?.error?.message ?? `Error: ${err?.status}`;
-      console.error('HTTP error intercepted:', { errCode, errorMessage, err: err.json() });
+      console.error('HTTP error intercepted:', { errCode, errorMessage, err });
 
       if (errCode === errCodes.authGuard) {
         // Attempt token refresh and retry request

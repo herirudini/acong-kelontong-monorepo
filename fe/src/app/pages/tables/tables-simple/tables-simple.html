@@ -1,3 +1,18 @@
+<app-generic-table ngSkipHydration [columns]="columns" [data]="list" [usePagination]="false"
+[useSearch]="true"
+[useFilter]="true"
+[useFilterByDate]="true"
+[useFilterSelect]="true"
+>
+    <div appTableColumn customColumnId="action">
+        <ng-template let-item>
+            <a class="text-primary pointer">
+                <i class="fa-solid fa-download text-primary"></i> Download List
+            </a>
+        </ng-template>
+    </div>
+</app-generic-table>
+
 <!--begin::Row-->
 <div class="row">
     <div class="col-md-6">

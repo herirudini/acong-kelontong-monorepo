@@ -13,6 +13,8 @@ export const Endpoint = {
   RESEND_VERIFICATION: `${api}admin/resend-verification`,
   VERIFY_USER: `${api}admin/verify-user`,
 
+  USERS: `${api}users`,
+
   // /* Account endpoints */
   // ACCOUNT_SETUP: `${api}account/setup`,
   // ACCOUNT_PROFILE: `${api}account/profile`,

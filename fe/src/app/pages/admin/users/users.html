@@ -1,0 +1,15 @@
+<div class="card mb-4 p-4">
+    <div class="card-header mb-4">
+        <h3 class="card-title">User List</h3>
+    </div>
+    <app-generic-table ngSkipHydration [columns]="columns" [data]="listUser" [usePagination]="true" [useSearch]="true"
+        [datalength]="pagination.totalData" (OnDataRefresh)="getList($event)">
+        <div appTableColumn customColumnId="action">
+            <ng-template let-item>
+                <a class="text-primary pointer">
+                    <i class="fa-solid fa-pencil text-primary"></i> Edit
+                </a>
+            </ng-template>
+        </div>
+    </app-generic-table>
+</div>
