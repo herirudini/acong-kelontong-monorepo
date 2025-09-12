@@ -6,8 +6,8 @@
         [total]="pagination.total" (OnDataRefresh)="getList($event)" [isLoading]="isLoading">
         <div appTableColumn customColumnId="action">
             <ng-template let-item>
-                <a class="text-primary pointer">
-                    <i class="fa-solid fa-pencil text-primary"></i> Edit
+                <a class="text-warning pointer">
+                    <i class="fa-solid fa-pencil"></i>
                 </a>
             </ng-template>
         </div>

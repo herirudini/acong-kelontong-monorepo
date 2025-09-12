@@ -1,10 +1,10 @@
 <div class="mb-4 p-4 border rounded">
     @if(useSearch || useFilter || useDownloadButton || useFilterSelect || useFilterByDate || useCustomToolbar) {
-    <div class="d-flex flex-row align-items-center justify-content-between pb-24px flex-wrap gap-2 mb-4">
+    <div class="d-flex flex-row justify-content-between flex-wrap gap-2 mb-4">
         <div [ngClass]="useSearch ? 'col-md-7' : 'col-md-12'">
-            <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-2">
+            <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-4">
                 @if (useFilterSelect) {
-                <div>
+                <div class="flex-1">
                     <app-select-filter></app-select-filter>
                 </div>
                 }
@@ -17,24 +17,26 @@
                 } -->
 
                 @if (useFilterByDate) {
-                <div>
-                    <app-date-range-filter [patchedValue]="filterByDateDefaultValue"
-                        (OnChanges)="filterByDateChanged($event)"></app-date-range-filter>
+                <div class="flex-1">
+                    <app-date-range-filter [defaultVal]="filterByDateDefaultValue"
+                        (OnDateChange)="filterByDateChanged($event)"></app-date-range-filter>
                 </div>
                 }
 
                 @if (useDownloadButton) {
-                <div>
+                <div class="flex-1">
                     <button type="button" (click)="downloadButtonClicked()"
-                        class="btn btn btn-outline btn-outline-solid text-primary d-flex flex-row align-items-center justify-content-center gap-2 px-24px py-10px">
-                        {{ "BUTTON.DOWNLOAD_DATA_TABLE" }}
+                        class="btn btn btn-outline btn-outline-solid text-primary d-flex flex-row align-items-center justify-content-center gap-2 px-2 py-1">
+                        Download
                         <i class="fa-solid fa-download text-primary"></i>
                     </button>
                 </div>
                 }
 
                 @if (useCustomToolbar) {
-                <ng-content select="[CustomToolbar]"></ng-content>
+                <div class="flex-1">
+                    <ng-content select="[CustomToolbar]"></ng-content>
+                </div>
                 }
             </div>
         </div>
@@ -44,7 +46,7 @@
             <div class="input-group col-4">
                 <input type="text" class="form-control" placeholder="{{ (searchPlaceholder || 'Search') }}"
                     [(ngModel)]="search" (input)="onSearch()" />
-                <span class="input-group-text py-14px px-25px" id="basic-addon2">
+                <span class="input-group-text py-1 px-2" id="basic-addon2">
                     <i class="fa-solid fa-magnifying-glass text-white fa-3xs"></i>
                 </span>
             </div>
@@ -71,7 +73,7 @@
                         </th>
                         }
 
-                        @for (column of columns; track column.id) {
+                        @for (column of columns; track $index) {
                         <th [class.pointer]="column.sort" [ngStyle]="generateInlineStyle(column)"
                             (click)="column.sort && total > 0 ? sortChanged(column.id) : $event.stopPropagation()"
                             [ngClass]="'whitespace-nowrap ' + ' ' + column.extraHeaderClass">
@@ -92,9 +94,9 @@
                 <!-- Show loading state -->
                 @for (_ of [].constructor(size); track $index) {
                 <tr>
-                    @for (_ of [].constructor(columns.length); let i = $index; track $index) {
+                    @for (_ of [].constructor(columns.length+1); let i = $index; track $index) {
                     <td [ngStyle]="generateInlineStyle(columns[i])">
-                        <div class="badge-loading">Loading</div>
+                        <div class="badge-loading"></div>
                     </td>
                     }
                 </tr>
@@ -102,7 +104,7 @@
                 } @else {
                 <!-- Check if there is or no data -->
                 @if (!!data.length) {
-                @for (row of data; let index = $index; track row.id) {
+                @for (row of data; let index = $index; track $index) {
                 <tr>
                     <td>{{index+1}}</td>
 
@@ -115,7 +117,7 @@
                     </td>
                     }
 
-                    @for (column of columns; track column.id) {
+                    @for (column of columns; track $index) {
                     <td [ngStyle]="generateInlineStyle(column)" [ngClass]="{
                       'whitespace-nowrap': column.customElementId === 'action'
                     }">
@@ -150,7 +152,7 @@
 
     <!-- Add TableFooter component here -->
     @if (usePagination) {
-    <div class="card-footer pb-0 px-0">
+    <div class="card-footer px-4 py-2">
         <app-pagination [size]="size" [page]="page" [totalData]="total"
             (paginationChanged)="changePage($event)"></app-pagination>
     </div>

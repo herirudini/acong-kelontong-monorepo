@@ -9,7 +9,7 @@ export type TLogoutOption = 'all' | 'other' | 'current';
 
 export interface ICheckboxOption { id: string; label: string; value: boolean }
 
-export interface IDateRangeFilter { start_date: Date | string | number, end_date: Date | string | number }
+export interface IDateRangeFilter { start_date?: Date, end_date?: Date }
 
 export type TSortDir = 'asc' | 'desc' | '';
 export interface ISort {
