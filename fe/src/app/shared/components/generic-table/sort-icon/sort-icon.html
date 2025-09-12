@@ -1,1 +1,4 @@
-<p>sort-icon works!</p>
+<div class="sort-icon d-flex flex-column">
+    <i class="bi bi-caret-up-fill" [class.on]="sortId==sortVal.sortBy&&sortVal.sortDir==DIR.ASC"></i>
+    <i class="bi bi-caret-down-fill" [class.on]="sortId==sortVal.sortBy&&sortVal.sortDir==DIR.DESC"></i>
+</div>

@@ -13,6 +13,7 @@ import { SORT_DIR } from '../../../types/constants/common.constants';
   styleUrl: './users.scss'
 })
 export class Users implements OnInit {
+  isLoading: boolean = false;
   listUser: IUser[] = [];
   pagination: IPaginationInput = {
     page: 1,
@@ -25,6 +26,8 @@ export class Users implements OnInit {
       label: 'Name',
       id: 'name',
       extraHeaderClass: 'uppercase-text',
+      backendPropName: 'first_name',
+      sort: true
     },
     {
       label: 'Role',
@@ -40,7 +43,6 @@ export class Users implements OnInit {
       label: 'Status',
       id: 'status',
       extraHeaderClass: 'uppercase-text',
-      sort: true
     },
     {
       label: 'Action',
@@ -53,21 +55,26 @@ export class Users implements OnInit {
   constructor(private service: UsersService) { }
 
   getList(evt: ITableQueryData) {
+    this.isLoading = true;
     this.service.getUsers({
       page: evt.page,
       size: evt.size,
-      sortBy:evt.sortBy,
-      sortDir:evt.sortDir,
-      search:evt.search,
+      sortBy: evt.sortBy,
+      sortDir: evt.sortDir,
+      search: evt.search,
       verified: undefined
-    }).subscribe((res) => {
-      console.log('val', {res})
-      this.listUser = res.list ?? [];
-      this.pagination = {
-        page: res.meta.page,
-        total: res.meta.total,
-        size: res.meta.size,
-        totalPages: res.meta.totalPages
+    }).subscribe({
+      next: (res) => {
+        this.listUser = res.list ?? [];
+        this.pagination = {
+          page: res.meta.page,
+          total: res.meta.total,
+          size: res.meta.size,
+          totalPages: res.meta.totalPages
+        }
+        this.isLoading = false;
+      }, error: () => {
+        this.isLoading = false;
       }
     });
   }

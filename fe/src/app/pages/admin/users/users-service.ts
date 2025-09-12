@@ -21,9 +21,8 @@ export class UsersService extends BaseService {
   }
 
   getUsers(params: IParamsUser): Observable<{ list: IUser[], meta: IPaginationInput }> {
-    return this.getRequest(Endpoint.USERS, params).pipe(
+    return this.getRequest(Endpoint.USERS, params, 'spinneroff').pipe(
       map((res: IResponse<IUser>) => {
-        console.log('getUsers', { res, list: res.list })
         const val = {
           meta: res?.meta as IPaginationInput,
           list: res?.list?.map(item => {

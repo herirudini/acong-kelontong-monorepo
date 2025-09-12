@@ -18,7 +18,7 @@ import {
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 // import { AppConstants } from 'src/app/types/constants/app.constant';
 import { TableColumn } from '../../directives/table-column/table-column';
-import { ICheckboxOption, IDateRangeFilter, IPaginationOutput, ISelectFilter, ISelectValue } from '../../../types/interfaces/common.interface';
+import { ICheckboxOption, IDateRangeFilter, IPaginationOutput, ISelectFilter, ISelectValue, ISort, TSortDir } from '../../../types/interfaces/common.interface';
 import { getNestedProperty, trackByFn } from '../../../utils/helper';
 import { DATE_FORMAT, SORT_DIR } from '../../../types/constants/common.constants';
 import { DynamicPipe } from '../../pipes/dynamic-pipe/dynamic-pipe';
@@ -26,6 +26,7 @@ import { FormsModule } from '@angular/forms';
 import { SelectFilter } from '../select-filter/select-filter';
 import { DateRangeFilter } from '../date-range-filter/date-range-filter';
 import { Pagination } from '../pagination/pagination';
+import { SortIcon } from './sort-icon/sort-icon';
 
 export interface ColumnProps {
   id: string;
@@ -72,7 +73,7 @@ export const defaultComonQueryData = {
 
 @Component({
   selector: 'app-generic-table',
-  imports: [CommonModule, DynamicPipe, FormsModule, SelectFilter, DateRangeFilter, Pagination],
+  imports: [CommonModule, DynamicPipe, FormsModule, SelectFilter, DateRangeFilter, Pagination, SortIcon],
   templateUrl: './generic-table.html',
   styleUrl: './generic-table.scss'
 })
@@ -187,16 +188,6 @@ export class GenericTable implements OnInit, OnDestroy {
     return iStyle;
   }
 
-  headerClass(value: any): string {
-    return (
-      (this.sortBy === value
-        ? this.sortDir === 'desc'
-          ? ' table-sort-desc'
-          : ' table-sort-asc'
-        : '')
-    );
-  }
-
   isDateColumn(column: ColumnProps): boolean {
     return column?.dataType === typeof Date;
   }
@@ -246,6 +237,7 @@ export class GenericTable implements OnInit, OnDestroy {
   }
 
   refreshData() {
+    console.log('refreshData qData', this.queryData)
     this.OnDataRefresh.emit(this.queryData);
   }
 
@@ -255,7 +247,7 @@ export class GenericTable implements OnInit, OnDestroy {
 
   get queryData(): ITableQueryData {
     const selectedOptions = this.filterOptions?.filter(i => i.value) ?? [];
-    return {
+    const qData = {
       page: this.page ?? 0,
       size: this.size ?? 10,
       filterData: {
@@ -269,6 +261,7 @@ export class GenericTable implements OnInit, OnDestroy {
       sortBy: this.getColumnById(this.sortBy)?.backendPropName ?? this.sortBy ?? '',
       sortDir: this.sortDir ?? SORT_DIR.NONE
     };
+    return qData;
   }
 
   checkBoxVal: any[] = [];

@@ -58,6 +58,8 @@
             <thead>
                 <tr class="fw-bold fs-6 text-gray-800 text-uppercase">
                     <ng-container headTH>
+                        <th>#</th>
+
                         @if (useCheckbox) {
                         <th>
                             <div class="d-flex flex-row ailgn-items center">
@@ -70,13 +72,16 @@
                         }
 
                         @for (column of columns; track column.id) {
-                        <th [class.pointer]="column.sort" [ngStyle]="generateInlineStyle(column)" (click)="
-                  column.sort && total > 0
-                    ? sortChanged(column.id)
-                    : $event.stopPropagation()
-                " [ngClass]="'whitespace-nowrap ' +  headerClass(column.id) + ' ' + column.extraHeaderClass">
-                            {{ column.label | dynamicPipe:
-                            column.customHeaderPipe?.pipeType:column.customHeaderPipe?.pipeArgs ?? [] }}
+                        <th [class.pointer]="column.sort" [ngStyle]="generateInlineStyle(column)"
+                            (click)="column.sort && total > 0 ? sortChanged(column.id) : $event.stopPropagation()"
+                            [ngClass]="'whitespace-nowrap ' + ' ' + column.extraHeaderClass">
+                            <div class="d-flex gap-1">
+                                @if(column.sort) {
+                                <app-sort-icon [sortId]="column.id" [sortVal]="{sortBy, sortDir}"></app-sort-icon>
+                                }
+                                {{ column.label | dynamicPipe:
+                                column.customHeaderPipe?.pipeType:column.customHeaderPipe?.pipeArgs ?? [] }}
+                            </div>
                         </th>
                         }
                     </ng-container>
@@ -89,7 +94,7 @@
                 <tr>
                     @for (_ of [].constructor(columns.length); let i = $index; track $index) {
                     <td [ngStyle]="generateInlineStyle(columns[i])">
-                        <div class="badge-loading"></div>
+                        <div class="badge-loading">Loading</div>
                     </td>
                     }
                 </tr>
@@ -99,6 +104,8 @@
                 @if (!!data.length) {
                 @for (row of data; let index = $index; track row.id) {
                 <tr>
+                    <td>{{index+1}}</td>
+
                     @if (useCheckbox) {
                     <td [ngStyle]="{'vertical-align': 'middle'}">
                         <div class="d-flex flex-row ailgn-items center">
@@ -108,7 +115,7 @@
                     </td>
                     }
 
-                    @for (column of columns; let i = $index; track column.id) {
+                    @for (column of columns; track column.id) {
                     <td [ngStyle]="generateInlineStyle(column)" [ngClass]="{
                       'whitespace-nowrap': column.customElementId === 'action'
                     }">
@@ -121,10 +128,8 @@
                         </ng-container>
                         } @else {
                         <!-- | dynamicPipe: (isDateColumn(column) ? datePipe : null): [getDateFormat(column)] -->
-                        {{ (
-                        transformValueIfNeeded(getRowDataValue(row, column.id), column)
-                        | dynamicPipe: column.customPipe?.pipeType:column.customPipe?.pipeArgs ?? []
-                        ) || "-" }}
+                        {{ ( transformValueIfNeeded(getRowDataValue(row, column.id), column) | dynamicPipe:
+                        column.customPipe?.pipeType:column.customPipe?.pipeArgs ?? []) || "-" }}
                         }
                     </td>
                     }

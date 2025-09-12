@@ -37,7 +37,6 @@ export class Login implements OnInit {
           this.alert.success("Logged in succesfully!")
         },
         error: (error: any) => {
-          console.log(error)
           this.alert.error(`Login failed! ${error.error.message}`)
         }
       }

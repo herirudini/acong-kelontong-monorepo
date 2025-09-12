@@ -11,7 +11,6 @@ export class Previleges {
 
     public getMenuList(): IMenu[] {
         const previlege: string[] = this.getAllowedModuleCodes();
-        console.log('previlege', previlege);
         const modules = Menus;
         const permitted: IMenu[] = []
         Object.values(modules).forEach((menu: IMenu) => {

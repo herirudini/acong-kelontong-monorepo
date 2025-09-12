@@ -79,7 +79,7 @@ export class AuthService extends BaseService {
           this.router.parseUrl('/login');
         },
         error: (err) => {
-          console.log('the errorr', err)
+          console.error('the errorr', err)
         }
       })
     );

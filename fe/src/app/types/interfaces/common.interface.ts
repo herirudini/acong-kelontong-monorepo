@@ -11,7 +11,7 @@ export interface ICheckboxOption { id: string; label: string; value: boolean }
 
 export interface IDateRangeFilter { start_date: Date | string | number, end_date: Date | string | number }
 
-export type TSortDir = 'asc'|'desc'|'';
+export type TSortDir = 'asc' | 'desc' | '';
 export interface ISort {
   sortBy: string, sortDir: TSortDir
 }
