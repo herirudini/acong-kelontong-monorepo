@@ -11,13 +11,18 @@ export interface ICheckboxOption { id: string; label: string; value: boolean }
 
 export interface IDateRangeFilter { start_date: Date | string | number, end_date: Date | string | number }
 
+export type TSortDir = 'asc'|'desc'|'';
+export interface ISort {
+  sortBy: string, sortDir: TSortDir
+}
 export interface IPaginationOutput {
-  activePage: number,
-  selectedSize: number
+  page: number,
+  size: number
 }
 
 export interface IPaginationInput extends IPaginationOutput {
-  totalData: number
+  total: number,
+  totalPages: number
 }
 
 export interface ISelectFilter {
@@ -40,4 +45,5 @@ export interface IResponse<T> {
   list?: T[];
   detail?: T;
   error_code?: string;
+  meta?: IPaginationInput;
 }

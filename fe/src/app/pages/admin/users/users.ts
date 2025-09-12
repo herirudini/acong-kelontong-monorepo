@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { GenericTable, ITableQueryData, SortDirection } from '../../../shared/components/generic-table/generic-table';
+import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { IUser } from '../../../types/interfaces/user.interface';
 import { UsersService } from './users-service';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { IPaginationInput } from '../../../types/interfaces/common.interface';
+import { SORT_DIR } from '../../../types/constants/common.constants';
 
 @Component({
   selector: 'app-users',
@@ -14,14 +15,15 @@ import { IPaginationInput } from '../../../types/interfaces/common.interface';
 export class Users implements OnInit {
   listUser: IUser[] = [];
   pagination: IPaginationInput = {
-    activePage: 1,
-    totalData: 100,
-    selectedSize: 10
+    page: 1,
+    total: 100,
+    size: 10,
+    totalPages: 1
   };
   columns = [
     {
       label: 'Name',
-      id: 'first_name',
+      id: 'name',
       extraHeaderClass: 'uppercase-text',
     },
     {
@@ -38,6 +40,7 @@ export class Users implements OnInit {
       label: 'Status',
       id: 'status',
       extraHeaderClass: 'uppercase-text',
+      sort: true
     },
     {
       label: 'Action',
@@ -50,24 +53,32 @@ export class Users implements OnInit {
   constructor(private service: UsersService) { }
 
   getList(evt: ITableQueryData) {
-    this.service.getUsers().subscribe((val) => {
-      console.log('val', val)
-      this.listUser = val ?? [];
+    this.service.getUsers({
+      page: evt.page,
+      size: evt.size,
+      sortBy:evt.sortBy,
+      sortDir:evt.sortDir,
+      search:evt.search,
+      verified: undefined
+    }).subscribe((res) => {
+      console.log('val', {res})
+      this.listUser = res.list ?? [];
       this.pagination = {
-        activePage: 1,
-        totalData: 100,
-        selectedSize: 10
+        page: res.meta.page,
+        total: res.meta.total,
+        size: res.meta.size,
+        totalPages: res.meta.totalPages
       }
     });
   }
 
   ngOnInit(): void {
     this.getList({
-      activePage: this.pagination.activePage,
-      pageSize: this.pagination.selectedSize,
+      page: this.pagination.page,
+      size: this.pagination.size,
       sortBy: 'status', // column ID
-      sortDirection: SortDirection.ASC,
-      searchKeyword: '',
+      sortDir: SORT_DIR.ASC,
+      search: '',
     })
   }
 }

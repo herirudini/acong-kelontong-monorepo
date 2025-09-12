@@ -55,18 +55,22 @@ export class UserService {
     sortBy?: string,
     sortDir: 'asc' | 'desc' = 'asc',
     search?: string,
-    searchFields: string[] = [], // ✅ Add searchable fields
-    filter?: { column: string; value: string },
+    verified?: boolean,
   ): Promise<{ data: User[]; meta: IPaginationRes }> {
+    const searchFields: string[] = ['first_name', 'last_name']; // ✅ Add searchable fields
+    const filter = { column: 'verified', value: verified }
+
     return this.global.getList<User>(
       this.userModel,
-      page,
-      size,
-      sortBy,
-      sortDir,
-      search,
-      searchFields,
-      filter
+      {
+        page,
+        size,
+        sortBy,
+        sortDir,
+        search,
+        searchFields,
+        filter
+      }
     )
   }
 

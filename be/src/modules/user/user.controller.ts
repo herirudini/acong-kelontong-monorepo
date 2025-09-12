@@ -41,10 +41,10 @@ export class UserController {
 
   @Get('')
   async list(
-    @Query() { page, size }: PaginationDto,
+    @Query() { page, size, sortBy, sortDir, search, verified }: PaginationDto,
     @Res() res: Response,
   ) {
-    const { data, meta } = await this.userService.getListUser(page, size);
+    const { data, meta } = await this.userService.getListUser(page, size, sortBy, sortDir, search, Boolean(verified));
     return BaseResponse.success({
       res,
       option: { message: 'Success get list user', list: data, meta },

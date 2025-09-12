@@ -3,7 +3,7 @@
         <h3 class="card-title">User List</h3>
     </div>
     <app-generic-table ngSkipHydration [columns]="columns" [data]="listUser" [usePagination]="true" [useSearch]="true"
-        [datalength]="pagination.totalData" (OnDataRefresh)="getList($event)">
+        [total]="pagination.total" (OnDataRefresh)="getList($event)">
         <div appTableColumn customColumnId="action">
             <ng-template let-item>
                 <a class="text-primary pointer">

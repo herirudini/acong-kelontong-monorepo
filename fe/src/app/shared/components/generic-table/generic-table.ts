@@ -20,7 +20,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { TableColumn } from '../../directives/table-column/table-column';
 import { ICheckboxOption, IDateRangeFilter, IPaginationOutput, ISelectFilter, ISelectValue } from '../../../types/interfaces/common.interface';
 import { getNestedProperty, trackByFn } from '../../../utils/helper';
-import { DATE_FORMAT } from '../../../types/constants/common.constants';
+import { DATE_FORMAT, SORT_DIR } from '../../../types/constants/common.constants';
 import { DynamicPipe } from '../../pipes/dynamic-pipe/dynamic-pipe';
 import { FormsModule } from '@angular/forms';
 import { SelectFilter } from '../select-filter/select-filter';
@@ -50,11 +50,11 @@ export interface ColumnProps {
 }
 
 export interface ITableQueryData {
-  activePage: number,
-  pageSize: number,
+  page: number,
+  size: number,
   sortBy: string, // column ID
-  sortDirection: SortDirection,
-  searchKeyword: string,
+  sortDir: SORT_DIR,
+  search: string,
   filterData?: {
     allOptions: ICheckboxOption[],
     selectedOptions: ICheckboxOption[],
@@ -66,14 +66,8 @@ export interface ITableQueryData {
 
 export interface IFilterOption extends ICheckboxOption { }
 
-export enum SortDirection {
-  ASC = 'asc',
-  DESC = 'desc',
-  NONE = ''
-}
-
 export const defaultComonQueryData = {
-  activePage: 0, pageSize: 10, searchKeyword: '', sortBy: '', sortDirection: SortDirection.NONE
+  page: 0, size: 10, search: '', sortBy: '', sortDir: SORT_DIR.NONE
 };
 
 @Component({
@@ -86,7 +80,7 @@ export class GenericTable implements OnInit, OnDestroy {
   // trackByFn = trackByFn;
   @Input() columns: Array<ColumnProps> = [];
   @Input() data: any[] = [];
-  @Input() datalength: number = 0;
+  @Input() total: number = 0;
   //turn on / off function
   @Input() useSearch: boolean = false;
   @Input() useFilter: boolean = false;
@@ -101,8 +95,8 @@ export class GenericTable implements OnInit, OnDestroy {
   @Input() useCustomToolbar: boolean = false;
   @Input() useCheckbox: boolean = false;
   // for pagination
-  @Input() selectedSize: number = 10;
-  @Input() activePage: number = 0;
+  @Input() size: number = 10;
+  @Input() page: number = 0;
   //for filter dropdown
   @Input() filterLabel: string = '';
   @Input() filterOptions: IFilterOption[] = [];
@@ -110,10 +104,8 @@ export class GenericTable implements OnInit, OnDestroy {
   @Input() searchPlaceholder: string = '';
   @Input() search: string = '';
   @Input() sortBy: string = '';
-  @Input() sortDirection: SortDirection = SortDirection.NONE;
+  @Input() sortDir: SORT_DIR = SORT_DIR.NONE;
   @Input() isLoading: boolean = false;
-
-  @Input() searchKeyword: string = '';
 
   @Output() OnDataRefresh: EventEmitter<ITableQueryData> = new EventEmitter<ITableQueryData>();
   @Output() DownloadButtonClicked: EventEmitter<any> = new EventEmitter<any>();
@@ -148,8 +140,8 @@ export class GenericTable implements OnInit, OnDestroy {
         debounceTime(this.debounceTimeMs),
         distinctUntilChanged()
       ).subscribe((searchValue) => {
-        this.searchKeyword = searchValue;
-        this.activePage = 0;
+        this.search = searchValue;
+        this.page = 0;
         this.refreshData();
       });
   }
@@ -164,8 +156,8 @@ export class GenericTable implements OnInit, OnDestroy {
   }
 
   changePage(paginationData: IPaginationOutput) {
-    this.selectedSize = paginationData.selectedSize;
-    this.activePage = paginationData.activePage;
+    this.size = paginationData.size;
+    this.page = paginationData.page;
     this.refreshData();
   }
 
@@ -198,7 +190,7 @@ export class GenericTable implements OnInit, OnDestroy {
   headerClass(value: any): string {
     return (
       (this.sortBy === value
-        ? this.sortDirection === 'desc'
+        ? this.sortDir === 'desc'
           ? ' table-sort-desc'
           : ' table-sort-asc'
         : '')
@@ -228,27 +220,27 @@ export class GenericTable implements OnInit, OnDestroy {
 
   sortChanged(columnId: string): void {
     if (columnId === this.sortBy) {
-      this.sortDirection = this.sortDirection === SortDirection.ASC ? SortDirection.DESC : SortDirection.ASC;
+      this.sortDir = this.sortDir === SORT_DIR.ASC ? SORT_DIR.DESC : SORT_DIR.ASC;
     } else {
-      this.sortDirection = SortDirection.ASC;
+      this.sortDir = SORT_DIR.ASC;
     }
     this.sortBy = columnId;
     this.refreshData();
   }
 
   filtersChanged(options: any) {
-    this.activePage = 0;
+    this.page = 0;
     this.refreshData();
   }
 
   filterByDateChanged(evt: IDateRangeFilter) {
-    this.activePage = 0;
+    this.page = 0;
     this.filterByDateDefaultValue = evt;
     this.refreshData();
   }
 
   filterSelectDataArrayChange(evt: ISelectValue[]) {
-    this.activePage = 0;
+    this.page = 0;
     this.selectedFilterSelect = evt
     this.refreshData();
   }
@@ -258,14 +250,14 @@ export class GenericTable implements OnInit, OnDestroy {
   }
 
   public backToFirstPage() {
-    this.activePage = 0;
+    this.page = 0;
   }
 
   get queryData(): ITableQueryData {
     const selectedOptions = this.filterOptions?.filter(i => i.value) ?? [];
     return {
-      activePage: this.activePage ?? 0,
-      pageSize: this.selectedSize ?? 10,
+      page: this.page ?? 0,
+      size: this.size ?? 10,
       filterData: {
         allOptions: this.filterOptions,
         selectedOptions: selectedOptions,
@@ -273,9 +265,9 @@ export class GenericTable implements OnInit, OnDestroy {
       },
       filterByDate: this.filterByDateDefaultValue,
       filterSelect: this.selectedFilterSelect,
-      searchKeyword: this.searchKeyword ?? '',
+      search: this.search ?? '',
       sortBy: this.getColumnById(this.sortBy)?.backendPropName ?? this.sortBy ?? '',
-      sortDirection: this.sortDirection ?? SortDirection.NONE
+      sortDir: this.sortDir ?? SORT_DIR.NONE
     };
   }
 

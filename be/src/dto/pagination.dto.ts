@@ -47,4 +47,7 @@ export class PaginationDto {
     @ValidateNested()
     @Type(() => FilterDto)
     filter?: FilterDto;
+
+    // Let other params
+    [key: string]: any;
 }
