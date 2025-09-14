@@ -5,10 +5,9 @@ import { User, UserDocument } from '../user/user.schema';
 import type { Request, Response } from 'express';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from './auth.service';
-import { SessionQueryDto } from 'src/dto/session-query.dto';
-import { LoginDto } from 'src/dto/login.dto';
 import { sessionDays } from 'src/types/constants';
 import { BaseResponse } from 'src/utils/base-response';
+import { LoginDto, LogoutDto } from './auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -87,7 +86,7 @@ export class AuthController {
     @Post('logout')
     async logout(
         @Req() req: Request,
-        @Query() query: SessionQueryDto,
+        @Query() query: LogoutDto,
         @Res() res: Response,
     ) {
         try {

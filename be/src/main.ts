@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { RequestMethod } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
+import { SanitizePipe } from './global/sanitizer.pipe';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -17,6 +18,7 @@ async function bootstrap(): Promise<void> {
     methods: ['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
+  app.useGlobalPipes(new SanitizePipe());
 
   await app.listen(process.env.PORT ?? 3000);
 }

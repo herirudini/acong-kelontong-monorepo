@@ -30,7 +30,7 @@ export class GlobalService {
         }
 
         // 🎯 Custom filter
-        if (params.filter?.column && params.filter?.value) {
+        if (params.filter && params.filter?.column && params.filter?.value !== undefined) {
             (conditions as any)[params.filter.column] = params.filter.value;
         }
 
@@ -44,6 +44,8 @@ export class GlobalService {
             model.find(conditions).sort(sort).skip(skip).limit(pageSize).exec(),
             model.countDocuments(conditions).exec(),
         ]);
+
+        console.log('params', {params})
 
         return {
             data,

@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { BaseResponse } from 'src/utils/base-response';
 import type { Response } from 'express';
-import { PaginationDto } from 'src/dto/pagination.dto';
+import { GetUserListDto } from './user.dto';
 
 UseGuards(AuthGuard)
 @Controller('users')
@@ -41,10 +41,10 @@ export class UserController {
 
   @Get('')
   async list(
-    @Query() { page, size, sortBy, sortDir, search, verified }: PaginationDto,
+    @Query() { page, size, sortBy, sortDir, search, verified }: GetUserListDto,
     @Res() res: Response,
   ) {
-    const { data, meta } = await this.userService.getListUser(page, size, sortBy, sortDir, search, Boolean(verified));
+    const { data, meta } = await this.userService.getListUser(page, size, sortBy, sortDir, search, verified);
     return BaseResponse.success({
       res,
       option: { message: 'Success get list user', list: data, meta },

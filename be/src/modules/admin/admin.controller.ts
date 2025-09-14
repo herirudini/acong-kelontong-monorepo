@@ -4,10 +4,10 @@ import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/user.schema';
 import type { Response } from 'express';
 import { AdminService } from './admin.service';
-import { InviteUserDto } from 'src/dto/invite-user.dto';
 import { AuthGuard } from '../auth/auth.guard';
 import { MailerService } from '@nestjs-modules/mailer';
 import { encodeBase64 } from 'src/utils/helper';
+import { InviteUserDto } from '../user/user.dto';
 
 @Controller('admin')
 export class AdminController {
