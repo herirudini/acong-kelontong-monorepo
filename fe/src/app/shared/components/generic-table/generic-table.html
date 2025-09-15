@@ -1,20 +1,13 @@
 <div class="mb-4 p-4 border rounded">
-    @if(useSearch || useFilter || useDownloadButton || useFilterSelect || useFilterByDate || useCustomToolbar) {
+    @if(useSearch || useDownloadButton || filterSelect || useFilterByDate || useCustomToolbar) {
     <div class="d-flex flex-row justify-content-between flex-wrap gap-2 mb-4">
         <div [ngClass]="useSearch ? 'col-md-7' : 'col-md-12'">
             <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-4">
-                @if (useFilterSelect) {
+                @if (filterSelect) {
                 <div class="flex-1">
-                    <app-select-filter></app-select-filter>
+                    <app-select-filter [filterSelect]="filterSelect" (OnChangeFilter)="filterSelectChange($event)"></app-select-filter>
                 </div>
                 }
-
-                <!-- @if (useFilter) {
-                <div>
-                    <app-dropdown-option-checkbox [label]="filterLabel" [options]="filterOptions"
-                        (checkboxesChange)="filtersChanged($event)"></app-dropdown-option-checkbox>
-                </div>
-                } -->
 
                 @if (useFilterByDate) {
                 <div class="flex-1">

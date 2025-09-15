@@ -26,18 +26,14 @@ export interface IPaginationInput extends IPaginationOutput {
 }
 
 export interface ISelectFilter {
-  id: string
-  labelKey: string;
-  placeholder: string;
-  selectedData: ISelectValue;
-  selectLabel: string;
-  selectValue: string;
-  selectOption: any[];
+  title: string;
+  value?: ISelectValue;
+  selectOptions: ISelectValue[];
 }
 
 export interface ISelectValue {
-  id: string;
-  selectedData: string;
+  label: string;
+  value: any;
 }
 
 export interface IResponse<T> {

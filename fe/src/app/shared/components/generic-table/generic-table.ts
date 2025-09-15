@@ -1,25 +1,21 @@
-// table.component.ts
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   Component,
   ContentChildren,
   EventEmitter,
-  Inject,
   Input,
   OnDestroy,
   OnInit,
   Output,
-  Pipe,
   PipeTransform,
   QueryList,
   TemplateRef,
   Type,
 } from '@angular/core';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
-// import { AppConstants } from 'src/app/types/constants/app.constant';
 import { TableColumn } from '../../directives/table-column/table-column';
-import { ICheckboxOption, IDateRangeFilter, IPaginationOutput, ISelectFilter, ISelectValue, ISort, TSortDir } from '../../../types/interfaces/common.interface';
-import { getNestedProperty, trackByFn } from '../../../utils/helper';
+import { IDateRangeFilter, IPaginationOutput, ISelectFilter, ISelectValue } from '../../../types/interfaces/common.interface';
+import { getNestedProperty } from '../../../utils/helper';
 import { DATE_FORMAT, SORT_DIR } from '../../../types/constants/common.constants';
 import { DynamicPipe } from '../../pipes/dynamic-pipe/dynamic-pipe';
 import { FormsModule } from '@angular/forms';
@@ -56,16 +52,9 @@ export interface ITableQueryData {
   sortBy: string, // column ID
   sortDir: SORT_DIR,
   search: string,
-  filterData?: {
-    allOptions: ICheckboxOption[],
-    selectedOptions: ICheckboxOption[],
-    selectedIds: string[]
-  }
-  filterByDate?: IDateRangeFilter,
-  filterSelect?: ISelectValue[],
+  filterByDateVal?: IDateRangeFilter,
+  filterSelectVal?: ISelectValue,
 }
-
-export interface IFilterOption extends ICheckboxOption { }
 
 export const defaultComonQueryData = {
   page: 0, size: 10, search: '', sortBy: '', sortDir: SORT_DIR.NONE
@@ -84,12 +73,11 @@ export class GenericTable implements OnInit, OnDestroy {
   @Input() total: number = 0;
   //turn on / off function
   @Input() useSearch: boolean = false;
-  @Input() useFilter: boolean = false;
   @Input() useFilterByDate: boolean = false;
-  @Input() useFilterSelect: boolean = false;
 
-  @Input() filterSelectData: ISelectFilter[] = [];
-  @Input() selectedFilterSelect: ISelectValue[] = [];
+  @Input() filterSelect?: ISelectFilter;
+  @Input() filterSelectVal?: ISelectValue;
+
   @Input() filterByDateDefaultValue?: IDateRangeFilter;
   @Input() usePagination: boolean = true;
   @Input() useDownloadButton: boolean = false;
@@ -98,9 +86,6 @@ export class GenericTable implements OnInit, OnDestroy {
   // for pagination
   @Input() size: number = 10;
   @Input() page: number = 0;
-  //for filter dropdown
-  @Input() filterLabel: string = '';
-  @Input() filterOptions: IFilterOption[] = [];
   // for sorting & search
   @Input() searchPlaceholder: string = '';
   @Input() search: string = '';
@@ -219,20 +204,15 @@ export class GenericTable implements OnInit, OnDestroy {
     this.refreshData();
   }
 
-  filtersChanged(options: any) {
-    this.page = 0;
-    this.refreshData();
-  }
-
   filterByDateChanged(evt: IDateRangeFilter) {
     this.page = 0;
     this.filterByDateDefaultValue = evt;
     this.refreshData();
   }
 
-  filterSelectDataArrayChange(evt: ISelectValue[]) {
+  filterSelectChange(evt: ISelectValue) {
     this.page = 0;
-    this.selectedFilterSelect = evt
+    this.filterSelectVal = evt
     this.refreshData();
   }
 
@@ -246,17 +226,11 @@ export class GenericTable implements OnInit, OnDestroy {
   }
 
   get queryData(): ITableQueryData {
-    const selectedOptions = this.filterOptions?.filter(i => i.value) ?? [];
     const qData = {
       page: this.page ?? 0,
       size: this.size ?? 10,
-      filterData: {
-        allOptions: this.filterOptions,
-        selectedOptions: selectedOptions,
-        selectedIds: selectedOptions?.map(i => i.id)
-      },
-      filterByDate: this.filterByDateDefaultValue,
-      filterSelect: this.selectedFilterSelect,
+      filterByDateVal: this.filterByDateDefaultValue,
+      filterSelectVal: this.filterSelectVal,
       search: this.search ?? '',
       sortBy: this.getColumnById(this.sortBy)?.backendPropName ?? this.sortBy ?? '',
       sortDir: this.sortDir ?? SORT_DIR.NONE

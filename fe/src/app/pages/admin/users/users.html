@@ -2,7 +2,7 @@
     <div class="card-header mb-4">
         <h3 class="card-title">User List</h3>
     </div>
-    <app-generic-table ngSkipHydration [columns]="columns" [data]="listUser" [usePagination]="true" [useSearch]="true"
+    <app-generic-table ngSkipHydration [columns]="columns" [data]="listUser" [usePagination]="true" [useSearch]="true" [filterSelect]="filterSelect"
         [total]="pagination.total" (OnDataRefresh)="getList($event)" [isLoading]="isLoading">
         <div appTableColumn customColumnId="action">
             <ng-template let-item>

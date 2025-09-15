@@ -3,7 +3,7 @@ import { GenericTable, ITableQueryData } from '../../../shared/components/generi
 import { IUser } from '../../../types/interfaces/user.interface';
 import { UsersService } from './users-service';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
-import { IPaginationInput } from '../../../types/interfaces/common.interface';
+import { IPaginationInput, ISelectFilter } from '../../../types/interfaces/common.interface';
 import { SORT_DIR } from '../../../types/constants/common.constants';
 
 @Component({
@@ -15,6 +15,19 @@ import { SORT_DIR } from '../../../types/constants/common.constants';
 export class Users implements OnInit {
   isLoading: boolean = false;
   listUser: IUser[] = [];
+  filterSelect: ISelectFilter = {
+    title: 'Filter status',
+    selectOptions: [
+      {
+        label: 'Verified',
+        value: true
+      },
+      {
+        label: 'Unverified',
+        value: false
+      }
+    ]
+  }
   pagination: IPaginationInput = {
     page: 1,
     total: 100,
@@ -62,7 +75,7 @@ export class Users implements OnInit {
       sortBy: evt.sortBy,
       sortDir: evt.sortDir,
       search: evt.search,
-      verified: undefined
+      verified: evt.filterSelectVal?.value
     }).subscribe({
       next: (res) => {
         this.listUser = res.list ?? [];
