@@ -135,14 +135,11 @@ export class UserService {
   getPermissions() {
     return [
       'cashier.view', 'cashier.create', 'cashier.edit', 'cashier.delete',
-      // 'inventory.view','inventory.create','inventory.edit', 'inventory.delete',
       'products.view', 'products.create', 'products.edit', 'products.delete',
       'brands.view', 'brands.create', 'brands.edit', 'brands.delete',
       'suppliers.view', 'suppliers.create', 'suppliers.edit', 'suppliers.delete',
-      // 'finance.view','finance.create','finance.edit', 'finance.delete',
       'income.view', 'income.create', 'income.edit', 'income.delete',
       'expenses.view', 'expenses.create', 'expenses.edit', 'expenses.delete',
-      // 'admin.view','admin.create','admin.edit', 'admin.delete',
       'users.view', 'users.create', 'users.edit', 'users.delete',
     ]
   }

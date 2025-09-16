@@ -22,69 +22,6 @@ export const routes: Routes = [
     canActivate: [AuthGuardService],
     children: [
       {
-        path: Menus['DASHBOARD'].url,
-        data: { ...Menus['DASHBOARD'] },
-        children: [
-          {
-            path: '',
-            redirectTo: Menus['DASHBOARD'].children?.['DASHBOARD_V1'].url,
-            pathMatch: 'full',
-          },
-          {
-            path: Menus['DASHBOARD'].children?.['DASHBOARD_V1'].url,
-            canActivate: [PageGuardService],
-            data: { ...Menus['DASHBOARD'].children?.['DASHBOARD_V1'] },
-            loadComponent: () => import('./pages/dashboard-v1/dashboard-v1').then(c => c.DashboardV1)
-          },
-          {
-            path: Menus['DASHBOARD'].children?.['DASHBOARD_V2'].url,
-            canActivate: [PageGuardService],
-            data: { ...Menus['DASHBOARD'].children?.['DASHBOARD_V2'] },
-            loadComponent: () => import('./pages/dashboard-v2/dashboard-v2').then(c => c.DashboardV2)
-          },
-          {
-            path: Menus['DASHBOARD'].children?.['DASHBOARD_V3'].url,
-            canActivate: [PageGuardService],
-            data: { ...Menus['DASHBOARD'].children?.['DASHBOARD_V3'] },
-            loadComponent: () => import('./pages/dashboard-v3/dashboard-v3').then(c => c.DashboardV3)
-          },
-        ]
-      },
-      {
-        path: Menus['FORMS'].url,
-        data: { ...Menus['FORMS'] },
-        children: [
-          {
-            path: '',
-            redirectTo: Menus['FORMS'].children?.['GENERAL'].url,
-            pathMatch: 'full',
-          },
-          {
-            path: Menus['FORMS'].children?.['GENERAL'].url,
-            canActivate: [PageGuardService],
-            data: { ...Menus['FORMS'].children?.['GENERAL'] },
-            loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
-          },
-        ]
-      },
-      {
-        path: Menus['TABLES'].url,
-        data: { ...Menus['TABLES'] },
-        children: [
-          {
-            path: '',
-            redirectTo: Menus['TABLES'].children?.['SIMPLE'].url,
-            pathMatch: 'full',
-          },
-          {
-            path: Menus['TABLES'].children?.['SIMPLE'].url,
-            canActivate: [PageGuardService],
-            data: { ...Menus['TABLES'].children?.['SIMPLE'] },
-            component: TablesSimple
-          },
-        ]
-      },
-      {
         path: CASHIER.url,
         data: { ...CASHIER },
         canActivate: [PageGuardService],
@@ -165,6 +102,66 @@ export const routes: Routes = [
           },
         ]
       },
+      
+      // TODO: remove this dummy later
+      {
+        path: Menus['DASHBOARD'].url,
+        data: { ...Menus['DASHBOARD'] },
+        children: [
+          {
+            path: '',
+            redirectTo: Menus['DASHBOARD'].children?.['DASHBOARD_V1'].url,
+            pathMatch: 'full',
+          },
+          {
+            path: Menus['DASHBOARD'].children?.['DASHBOARD_V1'].url,
+            data: { ...Menus['DASHBOARD'].children?.['DASHBOARD_V1'] },
+            loadComponent: () => import('./pages/dashboard-v1/dashboard-v1').then(c => c.DashboardV1)
+          },
+          {
+            path: Menus['DASHBOARD'].children?.['DASHBOARD_V2'].url,
+            data: { ...Menus['DASHBOARD'].children?.['DASHBOARD_V2'] },
+            loadComponent: () => import('./pages/dashboard-v2/dashboard-v2').then(c => c.DashboardV2)
+          },
+          {
+            path: Menus['DASHBOARD'].children?.['DASHBOARD_V3'].url,
+            data: { ...Menus['DASHBOARD'].children?.['DASHBOARD_V3'] },
+            loadComponent: () => import('./pages/dashboard-v3/dashboard-v3').then(c => c.DashboardV3)
+          },
+        ]
+      },
+      {
+        path: Menus['FORMS'].url,
+        data: { ...Menus['FORMS'] },
+        children: [
+          {
+            path: '',
+            redirectTo: Menus['FORMS'].children?.['GENERAL'].url,
+            pathMatch: 'full',
+          },
+          {
+            path: Menus['FORMS'].children?.['GENERAL'].url,
+            data: { ...Menus['FORMS'].children?.['GENERAL'] },
+            loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
+          },
+        ]
+      },
+      {
+        path: Menus['TABLES'].url,
+        data: { ...Menus['TABLES'] },
+        children: [
+          {
+            path: '',
+            redirectTo: Menus['TABLES'].children?.['SIMPLE'].url,
+            pathMatch: 'full',
+          },
+          {
+            path: Menus['TABLES'].children?.['SIMPLE'].url,
+            data: { ...Menus['TABLES'].children?.['SIMPLE'] },
+            component: TablesSimple
+          },
+        ]
+      }
     ]
   },
   { path: 'login', component: Login },

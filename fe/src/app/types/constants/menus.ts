@@ -1,39 +1,43 @@
 import { IMenu } from "../interfaces/menu.interface";
 
-export const INVENTORY: IMenu = {
-    code: 'inventory',
-    url: 'inventory',
-    icon: 'nav-icon bi bi-box-seam',
-    labelKey: 'Inventory',
-    permissions: ['inventory.view', 'inventory.create', 'inventory.update', 'inventory.delete'],
-}
+// IMPORTANT NOTES: 
+// UI management of Menu is managed by FE, whether it'd be child or independent, its up to FE.
+// Permission from BE only to flag if particular module is eligible tobe shown
+
 export const CASHIER: IMenu = {
     code: 'cashier',
     url: 'cashier',
     icon: 'nav-icon bi bi-cart3',
     labelKey: 'Cashier',
-    permissions: ['cashier.view', 'cashier.create', 'cashier.update', 'cashier.delete'],
+    permissions: ['cashier.view', 'cashier.create', 'cashier.edit', 'cashier.delete'],
 };
+
+export const INVENTORY: IMenu = {
+    code: 'inventory',
+    url: 'inventory',
+    icon: 'nav-icon bi bi-box-seam',
+    labelKey: 'Inventory',
+}
 export const PRODUCTS: IMenu = {
     code: 'products',
     url: 'products',
     icon: '',
     labelKey: 'Products',
-    permissions: ['products.view', 'products.create', 'products.update', 'products.delete'],
+    permissions: ['products.view', 'products.create', 'products.edit', 'products.delete'],
 }
 export const BRANDS: IMenu = {
     code: 'brands',
     url: 'brands',
     icon: '',
     labelKey: 'Brands',
-    permissions: ['brands.view', 'brands.create', 'brands.update', 'brands.delete'],
+    permissions: ['brands.view', 'brands.create', 'brands.edit', 'brands.delete'],
 }
 export const SUPPLIERS: IMenu = {
     code: 'suppliers',
     url: 'suppliers',
     icon: '',
     labelKey: 'Suppliers',
-    permissions: ['suppliers.view', 'suppliers.create', 'suppliers.update', 'suppliers.delete'],
+    permissions: ['suppliers.view', 'suppliers.create', 'suppliers.edit', 'suppliers.delete'],
 }
 
 export const FINANCE: IMenu = {
@@ -41,21 +45,20 @@ export const FINANCE: IMenu = {
     url: 'finance',
     icon: 'nav-icon bi bi-coin',
     labelKey: 'Finance',
-    permissions: ['finance.view', 'finance.create', 'finance.update', 'finance.delete'],
 }
 export const INCOME: IMenu = {
     code: 'income',
     url: 'income',
     icon: '',
     labelKey: 'Income',
-    permissions: ['income.view', 'income.create', 'income.update', 'income.delete'],
+    permissions: ['income.view', 'income.create', 'income.edit', 'income.delete'],
 }
 export const EXPENSES: IMenu = {
     code: 'expenses',
     url: 'expenses',
     icon: '',
     labelKey: 'Expenses',
-    permissions: ['expenses.view', 'expenses.create', 'expenses.update', 'expenses.delete'],
+    permissions: ['expenses.view', 'expenses.create', 'expenses.edit', 'expenses.delete'],
 }
 
 export const ADMIN: IMenu = {
@@ -63,22 +66,23 @@ export const ADMIN: IMenu = {
     url: 'admin',
     icon: 'nav-icon bi bi-person-gear',
     labelKey: 'Admin',
-    permissions: ['admin.view', 'admin.create', 'admin.update', 'admin.delete'],
 }
 export const USERS: IMenu = {
     code: 'users',
     url: 'users',
     icon: '',
     labelKey: 'Users',
-    permissions: ['users.view', 'users.create', 'users.update', 'users.delete']
+    permissions: ['users.view', 'users.create', 'users.edit', 'users.delete']
 }
 export const INVITEUSER: IMenu = {
     code: 'users/form',
     url: 'users/form',
     icon: '',
     labelKey: 'Users',
-    permissions: ['users.view', 'users.create', 'users.update', 'users.delete'],
+    permissions: ['users.view', 'users.create', 'users.edit', 'users.delete'],
 }
+
+// This is to manage menu UI, please make sure routers are matched
 export const Menus: { [key: string]: IMenu } = {
     CASHIER,
     INVENTORY: {
@@ -107,19 +111,19 @@ export const Menus: { [key: string]: IMenu } = {
             }
         }
     },
+
+    // TODO: remove this dummy later
     DASHBOARD: {
         code: 'dashboard',
         url: 'home',
         icon: 'nav-icon bi bi-speedometer',
         labelKey: 'Dashboard',
-        permissions: ['dashboard.view', 'dashboard.create', 'dashboard.update', 'dashboard.delete'],
         children: {
             DASHBOARD_V1: {
                 code: 'dashboard-v1',
                 url: 'dashboard1',
                 icon: '',
                 labelKey: 'Dashboard v1',
-                permissions: ['dashboard-v1.view', 'dashboard-v1.create', 'dashboard-v1.update'],
             },
             DASHBOARD_V2: {
                 code: 'dashboard-v2',
@@ -142,13 +146,11 @@ export const Menus: { [key: string]: IMenu } = {
         url: 'forms',
         icon: 'nav-icon bi bi-pencil-square',
         labelKey: 'Forms',
-        permissions: ['forms.view', 'forms.create', 'forms.update', 'forms.delete'],
         children: {
             GENERAL: {
                 code: 'forms-general',
                 url: 'forms-general',
                 labelKey: 'General Elements',
-                permissions: ['forms-general.view', 'forms-general.create', 'forms-general.update', 'forms-general.delete'],
             },
         }
     },
@@ -157,13 +159,11 @@ export const Menus: { [key: string]: IMenu } = {
         url: 'tables',
         icon: 'nav-icon bi bi-table',
         labelKey: 'Tables',
-        permissions: ['tables.view', 'tables.create', 'tables.update', 'tables.delete'],
         children: {
             SIMPLE: {
                 code: 'tables-simple',
                 url: 'tables-simple',
                 labelKey: 'Simple Tables',
-                permissions: ['tables.view', 'tables.create', 'tables.update', 'tables.delete'],
             },
         }
     }

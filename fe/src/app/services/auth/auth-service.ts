@@ -52,6 +52,20 @@ export class AuthService extends BaseService {
       tap((res: { detail: IAuth }) => {
         const token = res.detail.access_token;
         const profile: IUser = res.detail.profile;
+        profile.modules = profile.modules.concat([ // TODO: remove this dummy later
+          'dashboard.view',
+          'dashboard.edit',
+          'dashboard.create',
+          'dashboard-v1.view',
+          'dashboard-v1.edit',
+          'dashboard-v1.create',
+          'dashboard-v2.view',
+          'dashboard-v3.view',
+          'tables.view',
+          'tables-simple.view',
+          'forms.view',
+          'forms-general.view',
+        ])
         if (token) {
           this.setProfile(profile);
           this.setAccessToken(token);
