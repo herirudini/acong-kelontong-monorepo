@@ -57,11 +57,10 @@ export class AdminController {
                 .catch((err) => {
                     console.error(err)
                 });
-            res.status(200).json({ success: true, message: "Success to invite user", data: { invite, url: linkChangePassword } })
+            return BaseResponse.success({ res, option: { message: "Success to invite user", detail: { url: linkChangePassword } } });
         }
         catch (err) {
-            console.error(err);
-            res.status(422).json({ success: false, message: "Failed to create user" });
+            return BaseResponse.unexpected({ res, err });
         }
     }
 
@@ -92,11 +91,10 @@ export class AdminController {
                 .catch((err) => {
                     console.error(err)
                 });
-            res.status(200).json({ success: true, message: "Success to resend verification", data: { invite, url: linkChangePassword } })
+            return BaseResponse.success({ res, option: { message: "Success to resend verification", detail: { url: linkChangePassword } } });
         }
         catch (err) {
-            console.error(err);
-            res.status(422).json({ success: false, message: "Failed to resend verification" });
+            return BaseResponse.unexpected({ res, err });
         }
     }
 
@@ -109,13 +107,12 @@ export class AdminController {
         try {
             const isVerified = await this.adminService.verifyUser(tmpPassword, newPassword);
             if (isVerified) {
-                res.status(200).json({ success: true, message: "User verified successfully" });
+                return BaseResponse.success({ res, option: { message: "User verified successfully" } });
             } else {
-                res.status(422).json({ success: false, message: "Invalid or expired verification token" });
+                return BaseResponse.unauthorized({ res, option: { message: "Invalid or expired verification token" } });
             }
         } catch (err) {
-            console.error(err)
-            res.status(500).json({ success: false, message: "Internal server error" });
+            return BaseResponse.unexpected({ res, err });
         }
     }
 }

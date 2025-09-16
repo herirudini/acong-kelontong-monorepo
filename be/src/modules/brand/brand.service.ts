@@ -34,7 +34,7 @@ export class BrandService {
         }
     }
 
-    async editBrand(id: string, data: Brand): Promise<BrandDocument | null> {
+    async editBrand(id: string, data: Brand): Promise<BrandDocument | undefined> {
         try {
             console.log('data', data);
             const updatedBrand = await this.brandModel.findByIdAndUpdate(
@@ -45,16 +45,16 @@ export class BrandService {
                     runValidators: true, // validate before saving
                 },
             ).exec();
-            return updatedBrand;
+            return updatedBrand || undefined;
         } catch (err) {
             return BaseResponse.unexpected({ err: { text: 'editBrand catch', err } })
         }
     }
 
-    async detailBrand(id: string): Promise<BrandDocument | null> {
+    async detailBrand(id: string): Promise<BrandDocument | undefined> {
         try {
             const detailBrand = await this.brandModel.findById(id).exec();
-            return detailBrand;
+            return detailBrand || undefined;
         } catch (err) {
             return BaseResponse.unexpected({ err: { text: 'detailBrand catch', err } })
         }
