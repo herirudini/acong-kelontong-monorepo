@@ -45,7 +45,7 @@ export class Users implements OnInit {
     },
     {
       label: 'Role',
-      id: 'role',
+      id: 'role.role_name',
       extraHeaderClass: 'uppercase-text',
     },
     {

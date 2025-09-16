@@ -1,13 +1,27 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../rest-api/base-service';
-import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Endpoint } from '../../types/constants/endpoint';
-import { IUser } from '../../types/interfaces/user.interface';
+import { IUser, TModules } from '../../types/interfaces/user.interface';
 import { Router } from '@angular/router';
 import { AlertService } from '../../shared/components/alert/alert-service';
 import { IAuth, TLogoutOption } from '../../types/interfaces/common.interface';
 import { StorageService } from '../tools/storage-service';
+
+const dummyModules: TModules[] = [ // TODO: remove this dummy later
+  'dashboard.view',
+  'dashboard.edit',
+  'dashboard.create',
+  'dashboard-v1.view',
+  'dashboard-v1.edit',
+  'dashboard-v1.create',
+  'dashboard-v2.view',
+  'dashboard-v3.view',
+  'tables.view',
+  'tables-simple.view',
+  'forms.view',
+  'forms-general.view',
+]
 
 @Injectable({
   providedIn: 'root'
@@ -52,20 +66,7 @@ export class AuthService extends BaseService {
       tap((res: { detail: IAuth }) => {
         const token = res.detail.access_token;
         const profile: IUser = res.detail.profile;
-        profile.modules = profile.modules.concat([ // TODO: remove this dummy later
-          'dashboard.view',
-          'dashboard.edit',
-          'dashboard.create',
-          'dashboard-v1.view',
-          'dashboard-v1.edit',
-          'dashboard-v1.create',
-          'dashboard-v2.view',
-          'dashboard-v3.view',
-          'tables.view',
-          'tables-simple.view',
-          'forms.view',
-          'forms-general.view',
-        ])
+        profile.role.modules = profile.role.modules.concat(dummyModules)
         if (token) {
           this.setProfile(profile);
           this.setAccessToken(token);

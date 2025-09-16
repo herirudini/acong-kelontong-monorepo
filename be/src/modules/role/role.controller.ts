@@ -6,7 +6,7 @@ import type { Response } from 'express';
 import type { RoleDocument } from './role.schema';
 import { AuthGuard } from '../auth/auth.guard';
 
-@Controller('role')
+@Controller('roles')
 export class RoleController {
   constructor(
     private readonly roleService: RoleService,

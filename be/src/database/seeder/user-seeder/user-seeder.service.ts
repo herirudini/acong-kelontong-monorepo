@@ -3,8 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/modules/user/user.schema';
 import * as bcrypt from 'bcrypt';
-import { salts } from 'src/types/constants';
+import { modules, salts } from 'src/types/constants';
 import { Role, RoleDocument } from 'src/modules/role/role.schema';
+
 @Injectable()
 export class UserSeederService {
     constructor(
@@ -14,15 +15,6 @@ export class UserSeederService {
 
     async run() {
         const hashedPassword = await bcrypt.hash('master@admin.123', salts);
-        const modules = [
-            'cashier.view', 'cashier.create', 'cashier.edit', 'cashier.delete',
-            'products.view', 'products.create', 'products.edit', 'products.delete',
-            'brands.view', 'brands.create', 'brands.edit', 'brands.delete',
-            'suppliers.view', 'suppliers.create', 'suppliers.edit', 'suppliers.delete',
-            'income.view', 'income.create', 'income.edit', 'income.delete',
-            'expenses.view', 'expenses.create', 'expenses.edit', 'expenses.delete',
-            'users.view', 'users.create', 'users.edit', 'users.delete',
-        ];
 
         let master;
 

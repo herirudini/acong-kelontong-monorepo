@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UsersService } from '../users-service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { IRole } from '../../../../types/interfaces/user.interface';
 
 @Component({
   selector: 'app-user-form',
@@ -11,6 +12,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 export class UserForm implements OnInit {
   isLoading: boolean = false;
 
+  roles: IRole[] = [];
   columns = [
     {
       label: 'Module',
@@ -53,13 +55,21 @@ export class UserForm implements OnInit {
   constructor(private userService: UsersService) { }
 
   ngOnInit(): void {
-    this.getPermissions()
+    this.getRoles();
+    this.getPermissions();
+  }
+
+  getRoles() {
+    this.isLoading = true;
+    this.userService.getRoles().subscribe((res) => {
+      this.roles = res
+    })
   }
 
   getPermissions() {
     this.isLoading = true;
     this.userService.getPermissions().subscribe((res) => {
-      const { permissions } = res
+      const permissions = res
 
       const result = Object.values(
         permissions.reduce((acc: any, item: string) => {

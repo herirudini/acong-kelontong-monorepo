@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './user.schema';
 import * as bcrypt from 'bcrypt';
-import { salts, sessionDays } from 'src/types/constants';
+import { modules, salts, sessionDays } from 'src/types/constants';
 import { IEditUser, IPaginationRes, TmpUser } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { GlobalService } from 'src/global/global.service';
@@ -140,15 +140,7 @@ export class UserService {
   }
 
   getPermissions() {
-    return [
-      'cashier.view', 'cashier.create', 'cashier.edit', 'cashier.delete',
-      'products.view', 'products.create', 'products.edit', 'products.delete',
-      'brands.view', 'brands.create', 'brands.edit', 'brands.delete',
-      'suppliers.view', 'suppliers.create', 'suppliers.edit', 'suppliers.delete',
-      'income.view', 'income.create', 'income.edit', 'income.delete',
-      'expenses.view', 'expenses.create', 'expenses.edit', 'expenses.delete',
-      'users.view', 'users.create', 'users.edit', 'users.delete',
-    ]
+    return modules;
   }
 
 }

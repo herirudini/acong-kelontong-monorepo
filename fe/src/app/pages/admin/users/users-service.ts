@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { BaseService } from '../../../services/rest-api/base-service';
 import { AlertService } from '../../../shared/components/alert/alert-service';
 import { catchError, map, Observable, of, tap } from 'rxjs';
-import { IUser } from '../../../types/interfaces/user.interface';
+import { IRole, IUser, TModules } from '../../../types/interfaces/user.interface';
 import { Endpoint } from '../../../types/constants/endpoint';
 import {
   IPaginationInput,
@@ -10,6 +10,7 @@ import {
   IResponse,
   ISort,
 } from '../../../types/interfaces/common.interface';
+
 interface IParamsUser extends IPaginationOutput, ISort {
   search?: string;
   verified?: boolean;
@@ -48,14 +49,27 @@ export class UsersService extends BaseService {
     ) as any;
   }
 
-  getPermissions(): Observable<{ permissions: string[] }> {
+  getPermissions(): Observable<TModules[]> {
     return this.getRequest(Endpoint.PERMISSIONS, undefined, 'spinneroff').pipe(
-      map((res: IResponse<string[]>) => {
+      map((res: IResponse<TModules[]>) => {
         return res.detail;
       }),
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get list permission');
+        return of(undefined); // emit undefined so the stream completes gracefully
+      })
+    ) as any;
+  }
+
+  getRoles(): Observable<IRole[]> {
+    return this.getRequest(Endpoint.ROLES, undefined, 'spinneroff').pipe(
+      map((res: IResponse<IRole[]>) => {
+        return res.list;
+      }),
+      catchError((err) => {
+        console.error(err);
+        this.alert.error('Cannot get list role');
         return of(undefined); // emit undefined so the stream completes gracefully
       })
     ) as any;

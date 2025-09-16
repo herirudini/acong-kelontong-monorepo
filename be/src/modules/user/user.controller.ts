@@ -77,7 +77,7 @@ export class UserController {
     const data = this.userService.getPermissions();
     return BaseResponse.success({
       res,
-      option: { message: 'Success get list user', detail: { permissions: data } },
+      option: { message: 'Success get list user', detail: data },
     });
   }
 

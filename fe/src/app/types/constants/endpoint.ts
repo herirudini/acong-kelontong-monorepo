@@ -9,6 +9,7 @@ export const Endpoint = {
   REFRESH: `${api}auth/refresh`,
 
   USERS: `${api}users`,
+  ROLES: `${api}roles`,
 
   /* Admin endpoints */
   INVITE_USER: `${api}users/invite-user`,

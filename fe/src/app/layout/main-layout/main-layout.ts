@@ -34,7 +34,7 @@ export class MainLayout {
     });
     this.profile = this.auth?.getProfile() ?? {} as IUser;
     this.userName = `${this.profile?.first_name ?? 'User'} ${this.profile?.last_name ?? 'Name'}`;
-    this.role = this.profile?.role ?? 'Role' as string;
+    this.role = this.profile?.role?.role_name ?? 'Role' as string;
   }
   navigate(url:any) {
     this.router.navigate([url]);

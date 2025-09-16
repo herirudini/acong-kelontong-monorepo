@@ -3,14 +3,13 @@ import { Role, RoleDocument } from './role.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GlobalService } from 'src/global/global.service';
-import { User } from '../user/user.schema';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 
 @Injectable()
 export class RoleService {
   constructor(
-    @InjectModel(User.name) private roleModel: Model<RoleDocument>,
+    @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
     private global: GlobalService
   ) { }
 

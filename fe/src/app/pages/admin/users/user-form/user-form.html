@@ -1,7 +1,7 @@
-<div class="card card-info card-outline mb-4">
+<div class="card mb-4">
   <!--begin::Header-->
   <div class="card-header">
-    <div class="card-title">Invite User</div>
+    <div class="card-title">User Form</div>
   </div>
   <!--end::Header-->
   <!--begin::Form-->
@@ -31,7 +31,9 @@
           <label for="validationCustom04" class="form-label">Role</label>
           <select class="form-select" id="validationCustom04" required>
             <option selected disabled value="">Choose...</option>
-            <option>...</option>
+            @for (role of roles; track $index) {
+            <option [value]="role._id">{{role.role_name}}</option>
+            }
           </select>
           <div class="invalid-feedback">Please select a valid role.</div>
         </div>
@@ -76,7 +78,7 @@
   <!--end::Body-->
   <!--begin::Footer-->
   <div class="card-footer">
-    <button class="btn btn-info" type="submit">Submit form</button>
+    <button class="btn btn-primary" type="submit">Submit form</button>
   </div>
   <!--end::Footer-->
   <!--end::Form-->

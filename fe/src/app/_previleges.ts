@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Menus } from './types/constants/menus';
-import { IMenu, TPermission } from './types/interfaces/menu.interface';
+import { IMenu } from './types/interfaces/menu.interface';
 import { AuthService } from './services/auth/auth-service';
+import { TModules } from './types/interfaces/user.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -10,7 +11,7 @@ export class Previleges {
     constructor(private authSvc: AuthService) { }
 
     public getMenuList(): IMenu[] {
-        const previlege: TPermission[] = this.getAllowedModuleCodes() as TPermission[];
+        const previlege: TModules[] = this.getAllowedModuleCodes() as TModules[];
         const modules = Menus;
         const permitted: IMenu[] = []
         Object.values(modules).forEach((menu: IMenu) => {
@@ -33,7 +34,7 @@ export class Previleges {
     }
 
     public getAllowedModuleCodes(): string[] {
-        const modules = this.authSvc.getProfile()?.modules || [];
+        const modules = this.authSvc.getProfile()?.role?.modules || [];
         return [...modules]
     }
 }
