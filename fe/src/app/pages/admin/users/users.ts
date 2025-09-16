@@ -5,10 +5,11 @@ import { UsersService } from './users-service';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { IPaginationInput, ISelectFilter } from '../../../types/interfaces/common.interface';
 import { SORT_DIR } from '../../../types/constants/common.constants';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-users',
-  imports: [GenericTable, TableColumn],
+  imports: [GenericTable, TableColumn, RouterLink],
   templateUrl: './users.html',
   styleUrl: './users.scss'
 })

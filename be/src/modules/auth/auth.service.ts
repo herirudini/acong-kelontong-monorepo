@@ -27,11 +27,7 @@ export class AuthService {
     }
 
     verifyToken(token: string): jwt.JwtPayload | string {
-        try {
-            return jwt.verify(token, process.env.JWT_SECRET as string);
-        } catch (err) {
-            return BaseResponse.unauthorized({ err: { text: 'auth verifyToken catch', err } });
-        }
+        return jwt.verify(token, process.env.JWT_SECRET as string);
     }
 
     async getAuthItem(token: string): Promise<AuthDocument | null> {

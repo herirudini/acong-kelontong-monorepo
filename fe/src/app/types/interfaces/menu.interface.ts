@@ -6,4 +6,5 @@ export interface IMenu {
     permissions?: string[];
     children?: { [key: string]: IMenu };
     mappedChildren?: IMenu[];
+    active?: boolean;
 }

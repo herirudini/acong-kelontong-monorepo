@@ -17,14 +17,19 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       console.error('HTTP error intercepted:', { errCode, errorMessage, err });
 
       if (errCode === errCodes.authGuard) {
-        // Attempt token refresh and retry request
+        // Try to refresh token
         return auth.refreshToken().pipe(
-          switchMap(() => {
-            return next(req); // retry original request
+          switchMap((res) => {
+            const clone = req.clone({
+              setHeaders: {
+                Authorization: `Bearer ${res.detail.access_token}`,
+              },
+            });
+            return next(clone); // retry request
           }),
-          catchError(refreshErr => {
-            // Refresh also failed → logout or alert
+          catchError((refreshErr) => {
             alert.error('Session expired. Please login again.');
+            console.error('Session expired. Please login again.');
             auth.logout();
             return throwError(() => refreshErr);
           })

@@ -12,6 +12,7 @@ export const Endpoint = {
   INVITE_USER: `${api}admin/invite-user`,
   RESEND_VERIFICATION: `${api}admin/resend-verification`,
   VERIFY_USER: `${api}admin/verify-user`,
+  PERMISSIONS: `${api}admin/permissions`,
 
   USERS: `${api}users`,
 

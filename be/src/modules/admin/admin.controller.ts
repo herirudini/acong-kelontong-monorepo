@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Res, UseGuards, Put } from '@nestjs/common';
+import { Controller, Post, Body, Res, UseGuards, Put, Get } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/user.schema';
@@ -8,6 +8,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { MailerService } from '@nestjs-modules/mailer';
 import { encodeBase64 } from 'src/utils/helper';
 import { InviteUserDto } from '../user/user.dto';
+import { BaseResponse } from 'src/utils/base-response';
 
 @Controller('admin')
 export class AdminController {
@@ -16,6 +17,18 @@ export class AdminController {
         private readonly adminService: AdminService,
         private readonly mailerService: MailerService
     ) { }
+
+    @UseGuards(AuthGuard)
+    @Get('permissions')
+    list(
+        @Res() res: Response,
+    ) {
+        const data = this.adminService.getPermissions();
+        return BaseResponse.success({
+            res,
+            option: { message: 'Success get list user', detail: { permissions: data } },
+        });
+    }
 
     @UseGuards(AuthGuard)
     @Post('invite-user')

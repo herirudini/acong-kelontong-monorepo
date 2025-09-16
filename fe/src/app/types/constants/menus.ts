@@ -1,79 +1,109 @@
 import { IMenu } from "../interfaces/menu.interface";
 
+export const INVENTORY: IMenu = {
+    code: 'inventory',
+    url: 'inventory',
+    icon: 'nav-icon bi bi-box-seam',
+    labelKey: 'Inventory',
+    permissions: ['inventory.view', 'inventory.create', 'inventory.update', 'inventory.delete'],
+}
+export const CASHIER: IMenu = {
+    code: 'cashier',
+    url: 'cashier',
+    icon: 'nav-icon bi bi-cart3',
+    labelKey: 'Cashier',
+    permissions: ['cashier.view', 'cashier.create', 'cashier.update', 'cashier.delete'],
+};
+export const PRODUCTS: IMenu = {
+    code: 'products',
+    url: 'products',
+    icon: '',
+    labelKey: 'Products',
+    permissions: ['products.view', 'products.create', 'products.update', 'products.delete'],
+}
+export const BRANDS: IMenu = {
+    code: 'brands',
+    url: 'brands',
+    icon: '',
+    labelKey: 'Brands',
+    permissions: ['brands.view', 'brands.create', 'brands.update', 'brands.delete'],
+}
+export const SUPPLIERS: IMenu = {
+    code: 'suppliers',
+    url: 'suppliers',
+    icon: '',
+    labelKey: 'Suppliers',
+    permissions: ['suppliers.view', 'suppliers.create', 'suppliers.update', 'suppliers.delete'],
+}
+
+export const FINANCE: IMenu = {
+    code: 'finance',
+    url: 'finance',
+    icon: 'nav-icon bi bi-coin',
+    labelKey: 'Finance',
+    permissions: ['finance.view', 'finance.create', 'finance.update', 'finance.delete'],
+}
+export const INCOME: IMenu = {
+    code: 'income',
+    url: 'income',
+    icon: '',
+    labelKey: 'Income',
+    permissions: ['income.view', 'income.create', 'income.update', 'income.delete'],
+}
+export const EXPENSES: IMenu = {
+    code: 'expenses',
+    url: 'expenses',
+    icon: '',
+    labelKey: 'Expenses',
+    permissions: ['expenses.view', 'expenses.create', 'expenses.update', 'expenses.delete'],
+}
+
+export const ADMIN: IMenu = {
+    code: 'admin',
+    url: 'admin',
+    icon: 'nav-icon bi bi-person-gear',
+    labelKey: 'Admin',
+    permissions: ['admin.view', 'admin.create', 'admin.update', 'admin.delete'],
+}
+export const USERS: IMenu = {
+    code: 'users',
+    url: 'users',
+    icon: '',
+    labelKey: 'Users',
+    permissions: ['users.view', 'users.create', 'users.update', 'users.delete']
+}
+export const INVITEUSER: IMenu = {
+    code: 'users/form',
+    url: 'users/form',
+    icon: '',
+    labelKey: 'Users',
+    permissions: ['users.view', 'users.create', 'users.update', 'users.delete'],
+}
 export const Menus: { [key: string]: IMenu } = {
-    CASHIER: {
-        code: 'cashier',
-        url: 'cashier',
-        icon: 'nav-icon bi bi-cart3',
-        labelKey: 'Cashier',
-        permissions: ['cashier.view', 'cashier.create', 'cashier.update', 'cashier.delete'],
-    },
+    CASHIER,
     INVENTORY: {
-        code: 'inventory',
-        url: 'inventory',
-        icon: 'nav-icon bi bi-box-seam',
-        labelKey: 'Inventory',
-        permissions: ['inventory.view', 'inventory.create', 'inventory.update', 'inventory.delete'],
+        ...INVENTORY,
         children: {
-            PRODUCTS: {
-                code: 'products',
-                url: 'products',
-                icon: '',
-                labelKey: 'Products',
-                permissions: ['products.view', 'products.create', 'products.update', 'products.delete'],
-            },
-            BRANDS: {
-                code: 'brands',
-                url: 'brands',
-                icon: '',
-                labelKey: 'Brands',
-                permissions: ['brands.view', 'brands.create', 'brands.update', 'brands.delete'],
-            },
-            SUPPLIERS: {
-                code: 'suppliers',
-                url: 'suppliers',
-                icon: '',
-                labelKey: 'Suppliers',
-                permissions: ['suppliers.view', 'suppliers.create', 'suppliers.update', 'suppliers.delete'],
-            },
+            PRODUCTS,
+            BRANDS,
+            SUPPLIERS,
         }
     },
     FINANCE: {
-        code: 'finance',
-        url: 'finance',
-        icon: 'nav-icon bi bi-coin',
-        labelKey: 'Finance',
-        permissions: ['finance.view', 'finance.create', 'finance.update', 'finance.delete'],
+        ...FINANCE,
         children: {
-            INCOME: {
-                code: 'income',
-                url: 'income',
-                icon: '',
-                labelKey: 'Income',
-                permissions: ['income.view', 'income.create', 'income.update', 'income.delete'],
-            },
-            EXPENSES: {
-                code: 'expenses',
-                url: 'expenses',
-                icon: '',
-                labelKey: 'Expenses',
-                permissions: ['expenses.view', 'expenses.create', 'expenses.update', 'expenses.delete'],
-            },
+            INCOME,
+            EXPENSES,
         }
     },
     ADMIN: {
-        code: 'admin',
-        url: 'admin',
-        icon: 'nav-icon bi bi-person-gear',
-        labelKey: 'Admin',
-        permissions: ['admin.view', 'admin.create', 'admin.update', 'admin.delete'],
+        ...ADMIN,
         children: {
             USERS: {
-                code: 'users',
-                url: 'users',
-                icon: '',
-                labelKey: 'Users',
-                permissions: ['users.view', 'users.create', 'users.update', 'users.delete'],
+                ...USERS,
+                children: {
+                    INVITEUSER
+                }
             }
         }
     },

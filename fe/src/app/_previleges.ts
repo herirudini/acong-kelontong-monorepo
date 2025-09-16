@@ -4,7 +4,7 @@ import { IMenu } from './types/interfaces/menu.interface';
 import { AuthService } from './services/auth/auth-service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class Previleges {
     constructor(private authSvc: AuthService) { }
@@ -21,9 +21,11 @@ export class Previleges {
                         allowedChildrens.push(child);
                     }
                 });
-                menu.mappedChildren = allowedChildrens;
-            }
-            if (previlege?.find(item => menu.permissions?.includes(item))) {
+                if (allowedChildrens.length > 0) {
+                    menu.mappedChildren = allowedChildrens;
+                    permitted.push(menu)
+                }
+            } else if (previlege?.find(item => menu.permissions?.includes(item))) {
                 permitted.push(menu)
             }
         });

@@ -3,9 +3,12 @@ import { MainLayout } from './layout/main-layout/main-layout';
 import { Login } from './layout/auth-layout/login/login';
 import { Register } from './layout/auth-layout/register/register';
 import { PageNotFound } from './layout/error-layout/page-not-found/page-not-found';
-import { Menus } from './types/constants/menus';
+import { ADMIN, BRANDS, CASHIER, EXPENSES, FINANCE, INCOME, INVENTORY, Menus, PRODUCTS, SUPPLIERS, INVITEUSER, USERS } from './types/constants/menus';
 import { AuthGuardService } from './services/guards/auth-guard/auth-guard-service';
 import { PageGuardService } from './services/guards/page-guard/page-guard-service';
+import { Users } from './pages/admin/users/users';
+import { UserForm } from './pages/admin/users/user-form/user-form';
+import { TablesSimple } from './pages/tables/tables-simple/tables-simple';
 
 export const routes: Routes = [
   {
@@ -21,7 +24,6 @@ export const routes: Routes = [
       {
         path: Menus['DASHBOARD'].url,
         data: { ...Menus['DASHBOARD'] },
-        canActivate: [PageGuardService],
         children: [
           {
             path: '',
@@ -51,7 +53,6 @@ export const routes: Routes = [
       {
         path: Menus['FORMS'].url,
         data: { ...Menus['FORMS'] },
-        canActivate: [PageGuardService],
         children: [
           {
             path: '',
@@ -69,7 +70,6 @@ export const routes: Routes = [
       {
         path: Menus['TABLES'].url,
         data: { ...Menus['TABLES'] },
-        canActivate: [PageGuardService],
         children: [
           {
             path: '',
@@ -80,85 +80,88 @@ export const routes: Routes = [
             path: Menus['TABLES'].children?.['SIMPLE'].url,
             canActivate: [PageGuardService],
             data: { ...Menus['TABLES'].children?.['SIMPLE'] },
-            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+            component: TablesSimple
           },
         ]
       },
       {
-        path: Menus['CASHIER'].url,
-        data: { ...Menus['CASHIER'] },
+        path: CASHIER.url,
+        data: { ...CASHIER },
         canActivate: [PageGuardService],
-        loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+        component: TablesSimple
       },
       {
-        path: Menus['INVENTORY'].url,
-        data: { ...Menus['INVENTORY'] },
-        canActivate: [PageGuardService],
+        path: INVENTORY.url,
+        data: { ...INVENTORY },
         children: [
           {
             path: '',
-            redirectTo: Menus['INVENTORY'].children?.['PRODUCTS'].url,
+            redirectTo: PRODUCTS.url,
             pathMatch: 'full',
           },
           {
-            path: Menus['INVENTORY'].children?.['PRODUCTS'].url,
+            path: PRODUCTS.url,
             canActivate: [PageGuardService],
-            data: { ...Menus['INVENTORY'].children?.['PRODUCTS'] },
-            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+            data: { ...PRODUCTS },
+            component: TablesSimple
           },
           {
-            path: Menus['INVENTORY'].children?.['BRANDS'].url,
+            path: BRANDS.url,
             canActivate: [PageGuardService],
-            data: { ...Menus['INVENTORY'].children?.['BRANDS'] },
-            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+            data: { ...BRANDS },
+            component: TablesSimple
           },
           {
-            path: Menus['INVENTORY'].children?.['SUPPLIERS'].url,
+            path: SUPPLIERS.url,
             canActivate: [PageGuardService],
-            data: { ...Menus['INVENTORY'].children?.['SUPPLIERS'] },
-            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+            data: { ...SUPPLIERS },
+            component: TablesSimple
           },
         ]
       },
       {
-        path: Menus['FINANCE'].url,
-        data: { ...Menus['FINANCE'] },
-        canActivate: [PageGuardService],
+        path: FINANCE.url,
+        data: { ...FINANCE },
         children: [
           {
             path: '',
-            redirectTo: Menus['FINANCE'].children?.['INCOME'].url,
+            redirectTo: INCOME.url,
             pathMatch: 'full',
           },
           {
-            path: Menus['FINANCE'].children?.['INCOME'].url,
+            path: INCOME.url,
             canActivate: [PageGuardService],
-            data: { ...Menus['FINANCE'].children?.['INCOME'] },
-            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+            data: { ...INCOME },
+            component: TablesSimple
           },
           {
-            path: Menus['FINANCE'].children?.['EXPENSES'].url,
+            path: EXPENSES.url,
             canActivate: [PageGuardService],
-            data: { ...Menus['FINANCE'].children?.['EXPENSES'] },
-            loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+            data: { ...EXPENSES },
+            component: TablesSimple
           },
         ]
       },
       {
-        path: Menus['ADMIN'].url,
-        data: { ...Menus['ADMIN'] },
-        canActivate: [PageGuardService],
+        path: ADMIN.url,
+        data: { ...ADMIN },
         children: [
           {
             path: '',
-            redirectTo: Menus['ADMIN'].children?.['USERS'].url,
+            redirectTo: USERS.url,
             pathMatch: 'full',
           },
           {
-            path: Menus['ADMIN'].children?.['USERS'].url,
+            path: USERS.url,
             canActivate: [PageGuardService],
-            data: { ...Menus['ADMIN'].children?.['USERS'] },
-            loadComponent: () => import('./pages/admin/users/users').then(c => c.Users)
+            data: { ...USERS },
+            component: Users,
+          },
+          {
+            path: INVITEUSER.url,
+            canActivate: [PageGuardService],
+            data: { ...INVITEUSER },
+            component: UserForm
           },
         ]
       },
