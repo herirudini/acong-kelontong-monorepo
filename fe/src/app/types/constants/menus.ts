@@ -75,10 +75,10 @@ export const USERS: IMenu = {
     permissions: ['users.view', 'users.create', 'users.edit', 'users.delete']
 }
 export const INVITEUSER: IMenu = {
-    code: 'users/form',
-    url: 'users/form',
+    code: 'form',
+    url: 'form',
     icon: '',
-    labelKey: 'Users',
+    labelKey: 'Invite User',
     permissions: ['users.view', 'users.create', 'users.edit', 'users.delete'],
 }
 

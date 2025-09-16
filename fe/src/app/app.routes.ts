@@ -90,19 +90,24 @@ export const routes: Routes = [
           },
           {
             path: USERS.url,
-            canActivate: [PageGuardService],
             data: { ...USERS },
-            component: Users,
-          },
-          {
-            path: INVITEUSER.url,
-            canActivate: [PageGuardService],
-            data: { ...INVITEUSER },
-            component: UserForm
+            children: [
+              {
+                path: '',
+                canActivate: [PageGuardService],
+                component: Users,
+              },
+              {
+                path: INVITEUSER.url,
+                canActivate: [PageGuardService],
+                data: { ...INVITEUSER },
+                component: UserForm
+              },
+            ]
           },
         ]
       },
-      
+
       // TODO: remove this dummy later
       {
         path: Menus['DASHBOARD'].url,
