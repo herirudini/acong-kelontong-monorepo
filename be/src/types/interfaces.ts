@@ -23,7 +23,6 @@ export interface IEditUser {
   last_name?: string;
   email?: string;
   password?: string;
-  modules?: string[];
   role?: string;
 }
 

@@ -9,12 +9,14 @@ import { BaseResponse } from 'src/utils/base-response';
 import { GlobalService } from 'src/global/global.service';
 import { generateRandomToken, addDays, decodeBase64 } from 'src/utils/helper';
 import { InviteUserDto } from './user.dto';
+import { RoleService } from '../role/role.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name)
     private readonly userModel: Model<UserDocument>,
+    private roleService: RoleService,
     private global: GlobalService
   ) { }
 
@@ -28,29 +30,45 @@ export class UserService {
       first_name,
       last_name,
       email,
-      modules,
       role
     } = data;
+    let roleId: Types.ObjectId | null | undefined;
+    if (role) {
+      const findRole = await this.roleService.getDetailRole(role);
+      if (!findRole) {
+        return BaseResponse.notFound({ err: 'editUser !findRole' });
+      }
+      roleId = findRole._id as Types.ObjectId;
+    } else {
+      roleId = null; // explicit clear
+    }
     const password = data.password ? await bcrypt.hash(data.password, salts) : undefined;
     try {
+      const updateData: Partial<User> = {};
+      if (first_name) {
+        updateData.first_name = first_name;
+      }
+      if (last_name) {
+        updateData.last_name = last_name;
+      }
+      if (email) {
+        updateData.email = email
+      }
+      if (password) {
+        updateData.password = password;
+      }
+      if (roleId) {
+        updateData.role = roleId;
+      }
       const user = await this.userModel.findByIdAndUpdate(
         user_id,
+        { $set: updateData },
         {
-          $set: {
-            first_name,
-            last_name,
-            email,
-            password,
-            modules,
-            role: new Types.ObjectId(role) // convert string -> ObjectId
-
-          }
-        },
-        {
-          new: true,         // return the updated doc
-          runValidators: true, // validate before saving
+          new: true,
+          runValidators: true,
         },
       ).populate('role').exec();
+
       return user || undefined;
     } catch (e) {
       return BaseResponse.unexpected({ err: { text: 'editUser', err: e.message } })
@@ -67,7 +85,7 @@ export class UserService {
   ): Promise<{ data: User[]; meta: IPaginationRes }> {
     const searchFields: string[] = ['first_name', 'last_name']; // ✅ Add searchable fields
     const filter = { column: 'verified', value: verified };
-    const populate = { column: 'role'};
+    const populate = { column: 'role' };
 
     return this.global.getList<User, UserDocument>(
       this.userModel,
@@ -101,7 +119,9 @@ export class UserService {
   }
 
   async inviteUser(body: InviteUserDto): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
-    const role = new Types.ObjectId(body.role); // convert string -> ObjectId
+    const findRole = await this.roleService.getDetailRole(body.role)
+    if (!findRole) return BaseResponse.notFound({ err: 'inviteUser !findRole' });
+    const role = findRole._id;
     const first_name = body.first_name;
     const last_name = body.last_name;
     const email = body.email;

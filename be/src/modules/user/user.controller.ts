@@ -5,7 +5,6 @@ import { BaseResponse } from 'src/utils/base-response';
 import type { Response } from 'express';
 import { GetUserListDto, InviteUserDto } from './user.dto';
 import { encodeBase64 } from 'src/utils/helper';
-import { User } from './user.schema';
 import { MailerService } from '@nestjs-modules/mailer';
 
 UseGuards(AuthGuard)
@@ -60,7 +59,6 @@ export class UserController {
   async editPermission(
     @Param('user_id') user_id: string,
     @Body() body: {
-      modules: string[];
       role: string;
     },
     @Res() res: Response,
