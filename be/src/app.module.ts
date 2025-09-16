@@ -14,8 +14,6 @@ import { AuthGuard } from './modules/auth/auth.guard';
 import { UserController } from './modules/user/user.controller';
 import { UserService } from './modules/user/user.service';
 import { User, UserSchema } from './modules/user/user.schema';
-import { AdminController } from './modules/admin/admin.controller';
-import { AdminService } from './modules/admin/admin.service';
 import { BrandService } from './modules/brand/brand.service';
 import { BrandController } from './modules/brand/brand.controller';
 import { Brand, BrandSchema } from './modules/brand/brand.schema';
@@ -74,8 +72,8 @@ import { GlobalService } from './global/global.service';
     ]),
     SeederModule,
   ],
-  controllers: [AppController, AuthController, UserController, AdminController, BrandController],
-  providers: [AppService, AuthService, AuthGuard, UserService, AdminService, BrandService, BaseResponse, GlobalService]
+  controllers: [AppController, AuthController, UserController, BrandController],
+  providers: [AppService, AuthService, AuthGuard, UserService, BrandService, BaseResponse, GlobalService]
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly seederService: SeederService) { }

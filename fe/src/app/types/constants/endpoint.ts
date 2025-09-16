@@ -8,13 +8,14 @@ export const Endpoint = {
   LOGOUT: `${api}auth/logout`,
   REFRESH: `${api}auth/refresh`,
 
-  /* Admin endpoints */
-  INVITE_USER: `${api}admin/invite-user`,
-  RESEND_VERIFICATION: `${api}admin/resend-verification`,
-  VERIFY_USER: `${api}admin/verify-user`,
-  PERMISSIONS: `${api}admin/permissions`,
-
   USERS: `${api}users`,
+
+  /* Admin endpoints */
+  INVITE_USER: `${api}users/invite-user`,
+  RESEND_VERIFICATION: `${api}users/resend-verification`,
+  VERIFY_USER: `${api}users/verify-user`,
+  PERMISSIONS: `${api}users/permission-list`,
+
 
   // /* Account endpoints */
   // ACCOUNT_SETUP: `${api}account/setup`,
