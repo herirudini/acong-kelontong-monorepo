@@ -1,8 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { isEmail } from 'class-validator';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { sessionDays } from 'src/types/constants';
 import { addDays } from 'src/utils/helper';
+import { Role, RoleDocument } from '../role/role.schema';
 @Schema()
 export class User {
 
@@ -21,17 +22,14 @@ export class User {
   @Prop({ default: false })
   verified?: boolean;
 
-  @Prop({ type: [String], default: [] })
-  modules: string[];
-
-  @Prop({ required: true })
-  role: string;
+  @Prop({ type: Types.ObjectId, ref: Role.name, required: true })
+  role: Types.ObjectId;
 
   @Prop({ type: Date, default: addDays(new Date(), sessionDays) })
   verify_due_time?: Date;
 }
 
-export type UserDocument = User & Document;
+export type UserDocument = User & Document & { role: RoleDocument };
 export const UserSchema = SchemaFactory.createForClass(User);
 // Add index for automatic cleanup (MongoDB TTL)
 UserSchema.index(

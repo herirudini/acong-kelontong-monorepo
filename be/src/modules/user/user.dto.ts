@@ -2,14 +2,9 @@ import {
   IsBoolean,
   IsOptional,
   IsEmail,
-  IsIn,
   IsNotEmpty,
+  IsMongoId,
 } from 'class-validator';
-
-import { Type } from 'class-transformer';
-import { roles } from 'src/types/enums';
-
-import type { TRole } from 'src/types/interfaces';
 import { PaginationDto } from 'src/global/global.dto';
 
 export class GetUserListDto extends PaginationDto {
@@ -26,9 +21,6 @@ export class InviteUserDto {
   first_name: string;
   @IsNotEmpty()
   last_name: string;
-  @IsNotEmpty({ each: true })
-  modules: string[];
-  @IsIn([Object.values(roles)])
-  @Type(() => String) // ensure it's treated as string
-  role: TRole;
+  @IsMongoId() // ✅ checks it's a valid ObjectId string
+  role: string; // ✅ comes as string from request
 }

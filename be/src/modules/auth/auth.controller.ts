@@ -23,7 +23,7 @@ export class AuthController {
         @Res() res: Response,
     ) {
         try {
-            const user = await this.userModel.findOne({ email: body.email }).select('+password');
+            const user = await this.userModel.findOne({ email: body.email }).select('+password').populate('role');
             if (!user) {
                 return BaseResponse.unauthorized({ res, option: { message: 'Invalid email or password' } });
             }
@@ -50,7 +50,6 @@ export class AuthController {
                     first_name: user.first_name,
                     last_name: user.last_name,
                     role: user.role,
-                    modules: user.modules,
                 }
             }
             return BaseResponse.success({ res, option: { detail: resData } });
@@ -71,7 +70,7 @@ export class AuthController {
             const auth = await this.authService.compareDBToken(accessToken);
             if (auth && verifyRefreshToken) {
                 const authId = auth._id as string;
-                const newAccessToken = this.authService.generateAccessToken({ id: authId, id0: auth.user_id, modules: auth.modules });
+                const newAccessToken = this.authService.generateAccessToken({ id: authId, id0: auth.user_id, role: auth.role });
                 await this.authService.updateToken(authId, newAccessToken);
                 return BaseResponse.success({ res, option: { detail: { access_token: newAccessToken } } });
             } else {

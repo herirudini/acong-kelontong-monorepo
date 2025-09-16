@@ -36,7 +36,6 @@ export class BrandService {
 
     async editBrand(id: string, data: Brand): Promise<BrandDocument | undefined> {
         try {
-            console.log('data', data);
             const updatedBrand = await this.brandModel.findByIdAndUpdate(
                 id,
                 { $set: data },

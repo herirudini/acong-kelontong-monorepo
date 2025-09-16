@@ -24,7 +24,7 @@ export class AuthGuard implements CanActivate {
         const user: GlobalVar = {
           id: auth.id,
           id0: auth.id0,
-          modules: auth.modules,
+          role: auth.role,
           userAgent,
           accesToken
         };

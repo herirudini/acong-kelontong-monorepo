@@ -12,7 +12,7 @@ UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
   constructor(
-    private readonly userService: UserService, 
+    private readonly userService: UserService,
     private readonly mailerService: MailerService
   ) { }
 
@@ -25,6 +25,18 @@ export class UserController {
     return BaseResponse.success({
       res,
       option: { message: 'Success get list user', list: data, meta },
+    });
+  }
+
+  @Get('detail/:user_id')
+  async detail(
+    @Param('user_id') user_id: string,
+    @Res() res: Response,
+  ) {
+    const detail = await this.userService.getDetailUser(user_id);
+    return BaseResponse.success({
+      res,
+      option: { message: 'Success get detail user', detail },
     });
   }
 
@@ -76,7 +88,7 @@ export class UserController {
     @Res() res: Response,
   ) {
     try {
-      const invite = await this.userService.inviteUser(body as User)
+      const invite = await this.userService.inviteUser(body)
       const ticket = { pass1: invite.tmpUser._id, pass2: invite.tmpPassword }
       const base64 = encodeBase64(JSON.stringify(ticket))
       const linkChangePassword = `${process.env.URL_CHANGE_PASSWORD as string}/${base64}`;

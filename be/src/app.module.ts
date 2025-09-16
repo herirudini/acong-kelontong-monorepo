@@ -20,6 +20,9 @@ import { Brand, BrandSchema } from './modules/brand/brand.schema';
 import { SeederService } from './database/seeder/seeder.service';
 import { BaseResponse } from './utils/base-response';
 import { GlobalService } from './global/global.service';
+import { RoleService } from './modules/role/role.service';
+import { RoleController } from './modules/role/role.controller';
+import { Role, RoleSchema } from './modules/role/role.schema';
 
 @Module({
   imports: [
@@ -67,13 +70,14 @@ import { GlobalService } from './global/global.service';
     }),
     MongooseModule.forFeature([
       { name: Auth.name, schema: AuthSchema },
+      { name: Role.name, schema: RoleSchema },
       { name: User.name, schema: UserSchema },
       { name: Brand.name, schema: BrandSchema },
     ]),
     SeederModule,
   ],
-  controllers: [AppController, AuthController, UserController, BrandController],
-  providers: [AppService, AuthService, AuthGuard, UserService, BrandService, BaseResponse, GlobalService]
+  controllers: [AppController, AuthController, UserController, BrandController, RoleController],
+  providers: [AppService, AuthService, AuthGuard, UserService, BrandService, BaseResponse, GlobalService, RoleService]
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly seederService: SeederService) { }

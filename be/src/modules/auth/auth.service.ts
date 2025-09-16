@@ -4,12 +4,13 @@ import * as jwt from 'jsonwebtoken';
 import { InjectModel } from '@nestjs/mongoose';
 import { Auth, AuthDocument } from './auth.schema';
 import { Model } from 'mongoose';
-import { UserDocument } from '../user/user.schema';
+import { User, UserDocument } from '../user/user.schema';
 import { encrypt, decrypt } from 'src/utils/helper';
 import { ITokenPayload, IRefreshTokenPayload, TLogoutOption } from 'src/types/interfaces';
 import { sessionDays, sessionMinutes } from 'src/types/constants';
 import { logoutOption } from 'src/types/enums';
 import { BaseResponse } from 'src/utils/base-response';
+import { RoleDocument } from '../role/role.schema';
 
 @Injectable()
 export class AuthService {
@@ -33,21 +34,21 @@ export class AuthService {
     async getAuthItem(token: string): Promise<AuthDocument | null> {
         try {
             const decoded: jwt.JwtPayload | string = jwt.decode(token) as { id: string };
-            const result = await this.authModel.findById(decoded.id);
+            const result = await this.authModel.findById(decoded.id).populate('role');
             return result;
         } catch (err) {
             return BaseResponse.unauthorized({ err });
         }
     }
 
-    async login(user: UserDocument, userAgent: string): Promise<{ access_token: string; refresh_token: string }> {
+    async login(user: UserDocument & { role: RoleDocument }, userAgent: string): Promise<{ access_token: string; refresh_token: string }> {
         const createAuth = await this.authModel.create({
             user_id: user._id,
-            modules: user.modules,
+            role: user.role,
             user_agent: userAgent,
         });
         const id = createAuth._id as string;
-        const accessToken = this.generateAccessToken({ id, id0: user._id as string, modules: user.modules });
+        const accessToken = this.generateAccessToken({ id, id0: user._id as string, role: user.role });
         const refreshToken = this.generateRefreshToken({ id, id0: user._id as string });
         await this.updateToken(id, accessToken);
         return { access_token: accessToken, refresh_token: refreshToken };
@@ -66,7 +67,7 @@ export class AuthService {
 
     async updateToken(authId: string, accessToken: string): Promise<AuthDocument> {
         const encrypted = encrypt(accessToken);
-        const updated = await this.authModel.findByIdAndUpdate(authId, { token: encrypted }).exec();
+        const updated = await this.authModel.findByIdAndUpdate(authId, { token: encrypted }).populate('role').exec();
         if (!updated) return BaseResponse.unexpected({ err: 'login !updated' })
         return updated
     }

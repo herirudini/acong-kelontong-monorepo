@@ -5,11 +5,13 @@ import { User, UserSchema } from 'src/modules/user/user.schema';
 import { BrandSeederService } from './brand-seeder/brand-seeder.service';
 import { SeederService } from './seeder.service';
 import { Brand, BrandSchema } from 'src/modules/brand/brand.schema';
+import { Role, RoleSchema } from 'src/modules/role/role.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
+      { name: Role.name, schema: RoleSchema },
       { name: Brand.name, schema: BrandSchema }
     ]),
   ],

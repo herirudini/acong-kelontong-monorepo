@@ -1,9 +1,10 @@
 // token-blacklist.schema.ts
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { User } from '../user/user.schema';
 import { addDays } from 'src/utils/helper';
 import { sessionDays } from 'src/types/constants';
+import { Role, RoleDocument } from '../role/role.schema';
 
 @Schema({ timestamps: true })
 export class Auth {
@@ -14,14 +15,14 @@ export class Auth {
     token: string;
     @Prop()
     user_agent: string;
-    @Prop({ type: [String], ref: User.name, required: true })
-    modules: string[];
+    @Prop({ type: Types.ObjectId, ref: Role.name, required: true })
+    role: Types.ObjectId;
     @Prop({ type: Date, default: addDays(new Date(), sessionDays) })
     expires_at?: Date;
-    
+
 }
 
-export type AuthDocument = Auth & Document;
+export type AuthDocument = Auth & Document & { role: RoleDocument };
 export const AuthSchema = SchemaFactory.createForClass(Auth);
 
 // Add index for automatic cleanup (MongoDB TTL)

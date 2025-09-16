@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './user.schema';
 import * as bcrypt from 'bcrypt';
 import { salts, sessionDays } from 'src/types/constants';
@@ -8,13 +8,20 @@ import { IEditUser, IPaginationRes, TmpUser } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { GlobalService } from 'src/global/global.service';
 import { generateRandomToken, addDays, decodeBase64 } from 'src/utils/helper';
+import { InviteUserDto } from './user.dto';
 
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
     private global: GlobalService
   ) { }
+
+  async getDetailUser(user_id: string): Promise<UserDocument | undefined> {
+    const user = await this.userModel.findById(user_id).populate('role').exec();
+    return user || undefined;
+  }
 
   async editUser(user_id: string, data: IEditUser): Promise<UserDocument | undefined> {
     const {
@@ -26,7 +33,6 @@ export class UserService {
     } = data;
     const password = data.password ? await bcrypt.hash(data.password, salts) : undefined;
     try {
-      console.log('data', data);
       const user = await this.userModel.findByIdAndUpdate(
         user_id,
         {
@@ -36,14 +42,15 @@ export class UserService {
             email,
             password,
             modules,
-            role
+            role: new Types.ObjectId(role) // convert string -> ObjectId
+
           }
         },
         {
           new: true,         // return the updated doc
           runValidators: true, // validate before saving
         },
-      ).exec();
+      ).populate('role').exec();
       return user || undefined;
     } catch (e) {
       return BaseResponse.unexpected({ err: { text: 'editUser', err: e.message } })
@@ -56,12 +63,13 @@ export class UserService {
     sortBy?: string,
     sortDir: 'asc' | 'desc' = 'asc',
     search?: string,
-    verified?: boolean,
+    verified?: boolean
   ): Promise<{ data: User[]; meta: IPaginationRes }> {
     const searchFields: string[] = ['first_name', 'last_name']; // ✅ Add searchable fields
-    const filter = { column: 'verified', value: verified }
+    const filter = { column: 'verified', value: verified };
+    const populate = { column: 'role'};
 
-    return this.global.getList<User>(
+    return this.global.getList<User, UserDocument>(
       this.userModel,
       {
         page,
@@ -70,13 +78,14 @@ export class UserService {
         sortDir,
         search,
         searchFields,
-        filter
+        filter,
+        populate
       }
     )
   }
 
   async resendVerification(email: string): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
-    const tmpUser = await this.userModel.findOne({ email });
+    const tmpUser = await this.userModel.findOne({ email }).populate('role').exec();;
     if (!tmpUser) {
       return BaseResponse.notFound({ err: 'resendVerification tmpUser not found' });
     }
@@ -91,12 +100,11 @@ export class UserService {
     return { tmpUser, tmpPassword } as unknown as { tmpUser: TmpUser, tmpPassword: string };
   }
 
-  async inviteUser(body: User): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
-    const role = body.role.toLowerCase();
+  async inviteUser(body: InviteUserDto): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
+    const role = new Types.ObjectId(body.role); // convert string -> ObjectId
     const first_name = body.first_name;
     const last_name = body.last_name;
     const email = body.email;
-    const modules = body.modules;
     const exist = await this.userModel.findOne({ email });
     if (exist) {
       return BaseResponse.forbidden({ err: 'inviteUser exist' });
@@ -111,7 +119,6 @@ export class UserService {
       email,
       role,
       password,
-      modules,
       verified: false,
     });
 

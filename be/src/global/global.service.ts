@@ -8,12 +8,15 @@ export class IGetListParam {
     sortBy?: string;
     sortDir: 'asc' | 'desc' = 'asc';
     search?: string;
-    searchFields: string[] = []; // ✅ Add searchable fields
+    searchFields: string[] = [];
     filter?: { column: string; value: any };
+    // allow single or multiple populate options
+    populate?: { column: string; value?: any } | { column: string; value?: any }[];
 }
+
 @Injectable()
 export class GlobalService {
-    async getList<M>(model: Model<M>, params: IGetListParam): Promise<{ data: M[]; meta: IPaginationRes }> {
+    async getList<M,D>(model: Model<D>, params: IGetListParam): Promise<{ data: D[]; meta: IPaginationRes }> {
         const pageNum = Math.max(1, Number(params.page) || 1);
         const pageSize = Math.max(1, Number(params.size) || 10);
         const skip = (pageNum - 1) * pageSize;
@@ -40,12 +43,23 @@ export class GlobalService {
             sort[params.sortBy] = params.sortDir === 'desc' ? -1 : 1;
         }
 
+        const query = model.find(conditions).sort(sort).skip(skip).limit(pageSize);
+
+        // ✅ Handle populate (single or array)
+        if (params.populate) {
+            if (Array.isArray(params.populate)) {
+                params.populate.forEach((pop) => {
+                    query.populate(pop.column, pop.value);
+                });
+            } else {
+                query.populate(params.populate.column, params.populate.value);
+            }
+        }
+
         const [data, total] = await Promise.all([
-            model.find(conditions).sort(sort).skip(skip).limit(pageSize).exec(),
+            query.exec(),
             model.countDocuments(conditions).exec(),
         ]);
-
-        console.log('params', {params})
 
         return {
             data,
