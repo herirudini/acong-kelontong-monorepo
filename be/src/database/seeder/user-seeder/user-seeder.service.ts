@@ -32,7 +32,7 @@ export class UserSeederService {
         }
 
         // check for existing master user
-        const existing = await this.userModel.findOne({ role: master._id });
+        const existing = await this.userModel.findOne({ email: 'master@admin.com' });
         if (existing) {
             console.error('Master user already exists');
             return;

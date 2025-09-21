@@ -25,6 +25,3 @@ export class Brand {
 
 export type BrandDocument = Brand & Document;
 export const BrandSchema = SchemaFactory.createForClass(Brand);
-
-// Add custom indexes if needed
-BrandSchema.index({ brand_code: 1 });
