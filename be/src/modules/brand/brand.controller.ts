@@ -22,7 +22,7 @@ export class BrandController {
             const brand = await this.service.createBrand(body);
             return BaseResponse.success({ res, option: { message: "Success create brand", detail: brand } });
         } catch (err) {
-            return BaseResponse.unexpected({ res, err });
+            return BaseResponse.error({ res, err });
         }
     }
 
@@ -35,7 +35,7 @@ export class BrandController {
             const brands = await this.service.listBrand(search);
             return BaseResponse.success({ res, option: { message: 'Success list brand', list: brands } });
         } catch (err) {
-            return BaseResponse.unexpected({ res, err });
+            return BaseResponse.error({ res, err });
         }
     }
 
@@ -49,7 +49,7 @@ export class BrandController {
             const brand = await this.service.editBrand(brandId, body);
             return BaseResponse.success({ res, option: { message: "Success edit brand", detail: brand } });
         } catch (err) {
-            return BaseResponse.unexpected({ res, err });
+            return BaseResponse.error({ res, err });
         }
     }
 
@@ -62,7 +62,7 @@ export class BrandController {
             const brand = await this.service.detailBrand(brandId);
             return BaseResponse.success({ res, option: { message: "Success get detail brand", detail: brand } });
         } catch (err) {
-            return BaseResponse.unexpected({ res, err });
+            return BaseResponse.error({ res, err });
         }
     }
 }

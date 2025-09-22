@@ -20,11 +20,15 @@ export class UserController {
     @Query() { page, size, sortBy, sortDir, search, verified }: GetUserListDto,
     @Res() res: Response,
   ) {
-    const { data, meta } = await this.userService.getListUser(page, size, sortBy, sortDir, search, verified);
-    return BaseResponse.success({
-      res,
-      option: { message: 'Success get list user', list: data, meta },
-    });
+    try {
+      const { data, meta } = await this.userService.getListUser(page, size, sortBy, sortDir, search, verified);
+      return BaseResponse.success({
+        res,
+        option: { message: 'Success get list user', list: data, meta },
+      });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
   }
 
   @Get('detail/:user_id')
@@ -32,11 +36,15 @@ export class UserController {
     @Param('user_id') user_id: string,
     @Res() res: Response,
   ) {
-    const detail = await this.userService.getDetailUser(user_id);
-    return BaseResponse.success({
-      res,
-      option: { message: 'Success get detail user', detail },
-    });
+    try {
+      const detail = await this.userService.getDetailUser(user_id);
+      return BaseResponse.success({
+        res,
+        option: { message: 'Success get detail user', detail },
+      });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
   }
 
   @Put('detail/:user_id/edit-profile')
@@ -51,8 +59,12 @@ export class UserController {
     },
     @Res() res: Response,
   ) {
-    const detail = await this.userService.editUser(user_id, body);
-    return BaseResponse.success({ res, option: { message: 'Success edit user', detail } })
+    try {
+      const detail = await this.userService.editUser(user_id, body);
+      return BaseResponse.success({ res, option: { message: 'Success edit user', detail } })
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
   }
 
   @Put('detail/:user_id/edit-permission')
@@ -63,8 +75,12 @@ export class UserController {
     },
     @Res() res: Response,
   ) {
-    const detail = await this.userService.editUser(user_id, body);
-    return BaseResponse.success({ res, option: { message: 'Success edit user', detail } })
+    try {
+      const detail = await this.userService.editUser(user_id, body);
+      return BaseResponse.success({ res, option: { message: 'Success edit user', detail } })
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -72,11 +88,15 @@ export class UserController {
   listPermission(
     @Res() res: Response,
   ) {
-    const data = this.userService.getPermissions();
-    return BaseResponse.success({
-      res,
-      option: { message: 'Success get list user', detail: data },
-    });
+    try {
+      const data = this.userService.getPermissions();
+      return BaseResponse.success({
+        res,
+        option: { message: 'Success get list user', detail: data },
+      });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -87,6 +107,7 @@ export class UserController {
   ) {
     try {
       const invite = await this.userService.inviteUser(body)
+      if (!invite) return BaseResponse.forbidden({ option: { message: 'User Exist' } })
       const ticket = { pass1: invite.tmpUser._id, pass2: invite.tmpPassword }
       const base64 = encodeBase64(JSON.stringify(ticket))
       const linkChangePassword = `${process.env.URL_CHANGE_PASSWORD as string}/${base64}`;
@@ -101,7 +122,7 @@ export class UserController {
           ...mailOptions,
         })
         .then((res) => {
-          console.info("Email sent: " + res)
+          console.info("Email sent: " + JSON.stringify(res))
         })
         .catch((err) => {
           console.error(err)
@@ -109,7 +130,7 @@ export class UserController {
       return BaseResponse.success({ res, option: { message: "Success to invite user", detail: { url: linkChangePassword } } });
     }
     catch (err) {
-      return BaseResponse.unexpected({ res, err });
+      return BaseResponse.error({ res, err });
     }
   }
 
@@ -135,7 +156,7 @@ export class UserController {
           ...mailOptions,
         })
         .then((res) => {
-          console.info("Email sent: " + res)
+          console.info("Email sent: " + JSON.stringify(res))
         })
         .catch((err) => {
           console.error(err)
@@ -143,7 +164,7 @@ export class UserController {
       return BaseResponse.success({ res, option: { message: "Success to resend verification", detail: { url: linkChangePassword } } });
     }
     catch (err) {
-      return BaseResponse.unexpected({ res, err });
+      return BaseResponse.error({ res, err });
     }
   }
 
@@ -161,7 +182,7 @@ export class UserController {
         return BaseResponse.unauthorized({ res, option: { message: "Invalid or expired verification token" } });
       }
     } catch (err) {
-      return BaseResponse.unexpected({ res, err });
+      return BaseResponse.error({ res, err });
     }
   }
 

@@ -17,11 +17,15 @@ export class RoleController {
     @Query() { page, size, sortBy, sortDir, search }: PaginationDto,
     @Res() res: Response,
   ) {
-    const { data, meta } = await this.roleService.getListRole(page, size, sortBy, sortDir, search);
-    return BaseResponse.success({
-      res,
-      option: { message: 'Success get list role', list: data, meta },
-    });
+    try {
+      const { data, meta } = await this.roleService.getListRole(page, size, sortBy, sortDir, search);
+      return BaseResponse.success({
+        res,
+        option: { message: 'Success get list role', list: data, meta },
+      });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -35,7 +39,7 @@ export class RoleController {
       return BaseResponse.success({ res, option: { message: "Success create role", detail: newRole } });
     }
     catch (err) {
-      return BaseResponse.unexpected({ res, err });
+      return BaseResponse.error({ res, err });
     }
   }
 
@@ -44,11 +48,15 @@ export class RoleController {
     @Param('role_id') role_id: string,
     @Res() res: Response,
   ) {
-    const detail = await this.roleService.getDetailRole(role_id);
-    return BaseResponse.success({
-      res,
-      option: { message: 'Success get detail role', detail },
-    });
+    try {
+      const detail = await this.roleService.getDetailRole(role_id);
+      return BaseResponse.success({
+        res,
+        option: { message: 'Success get detail role', detail },
+      });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -58,7 +66,11 @@ export class RoleController {
     @Body() body: RoleDocument,
     @Res() res: Response,
   ) {
-    const detail = await this.roleService.editRole(role_id, body);
-    return BaseResponse.success({ res, option: { message: 'Success edit role', detail } })
+    try {
+      const detail = await this.roleService.editRole(role_id, body);
+      return BaseResponse.success({ res, option: { message: 'Success edit role', detail } })
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
   }
 }

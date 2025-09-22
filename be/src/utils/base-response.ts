@@ -20,11 +20,17 @@ export class BaseResponse {
     return cfg.res.status(200).json({ success: true, ...option }) as T;
   }
 
-  static unexpected<T>(cfg: IBaseResponse = {}): T {
-    const option: IResponse = { message: 'Internal Server Error', error_code: '500', ...cfg.option };
-    console.error(option, cfg.err);
-    if (!cfg.res) throw new AppError(option.message!, 500, option.error_code, cfg.err);
-    return cfg.res.status(500).json({ success: false, ...option }) as T;
+
+  static error<T>(cfg: IBaseResponse = {}): T {
+    const { statusCode } = cfg.err
+    switch (statusCode) {
+      case 400: return this.invalid(cfg);
+      case 401: return this.unauthorized(cfg);
+      case 403: return this.forbidden(cfg);
+      case 404: return this.notFound(cfg);
+      case 409: return this.conflict(cfg);
+      default: return this.unexpected(cfg);
+    }
   }
 
   static unauthorized<T>(cfg: IBaseResponse = {}): T {
@@ -61,4 +67,12 @@ export class BaseResponse {
     if (!cfg.res) throw new AppError(option.message!, 400, option.error_code, cfg.err);
     return cfg.res.status(400).json({ success: false, ...option }) as T;
   }
+
+  static unexpected<T>(cfg: IBaseResponse = {}): T {
+    const option: IResponse = { message: 'Internal Server Error', error_code: '500', ...cfg.option };
+    console.error(option, cfg.err);
+    if (!cfg.res) throw new AppError(option.message!, 500, option.error_code, cfg.err);
+    return cfg.res.status(500).json({ success: false, ...option }) as T;
+  }
+
 }

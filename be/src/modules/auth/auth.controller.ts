@@ -54,7 +54,7 @@ export class AuthController {
             }
             return BaseResponse.success({ res, option: { detail: resData } });
         } catch (err) {
-            return BaseResponse.unexpected({ res, err });
+            return BaseResponse.error({ res, err });
         }
     }
 
@@ -78,7 +78,7 @@ export class AuthController {
                 return BaseResponse.unauthorized({ res });
             }
         } catch (err) {
-            return BaseResponse.unexpected({ res, err });
+            return BaseResponse.error({ res, err });
         }
     }
 
@@ -100,7 +100,7 @@ export class AuthController {
             res.clearCookie('refresh_token', { path: '/' });
             return BaseResponse.success({ res, option: { message: 'Logout success!' } });
         } catch (err) {
-            return BaseResponse.unexpected({ res, err });
+            return BaseResponse.error({ res, err });
         }
     }
 }
