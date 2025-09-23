@@ -3,12 +3,13 @@ import { MainLayout } from './layout/main-layout/main-layout';
 import { Login } from './layout/auth-layout/login/login';
 import { Register } from './layout/auth-layout/register/register';
 import { PageNotFound } from './layout/error-layout/page-not-found/page-not-found';
-import { ADMIN, BRANDS, CASHIER, EXPENSES, FINANCE, INCOME, INVENTORY, Menus, PRODUCTS, SUPPLIERS, INVITEUSER, USERS } from './types/constants/menus';
+import { ADMIN, BRANDS, CASHIER, EXPENSES, FINANCE, INCOME, INVENTORY, Menus, PRODUCTS, SUPPLIERS, INVITEUSER, USERS, ROLES } from './types/constants/menus';
 import { AuthGuardService } from './services/guards/auth-guard/auth-guard-service';
 import { PageGuardService } from './services/guards/page-guard/page-guard-service';
 import { Users } from './pages/admin/users/users';
 import { UserForm } from './pages/admin/users/user-form/user-form';
 import { TablesSimple } from './pages/tables/tables-simple/tables-simple';
+import { Roles } from './pages/admin/roles/roles';
 
 export const routes: Routes = [
   {
@@ -105,6 +106,12 @@ export const routes: Routes = [
               },
             ]
           },
+          {
+            path: ROLES.url,
+            canActivate: [PageGuardService],
+            data: { ...ROLES },
+            component: Roles
+          }
         ]
       },
 

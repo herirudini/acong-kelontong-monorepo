@@ -39,41 +39,6 @@
         </div>
       </div>
     </form>
-    <div class="w-100 mt-2">
-      <div class="mb-4 p-4 border rounded">
-        <div class="table-responsive scrollShadow py-2">
-          <table aria-describedby="Generic Table" class="table table-row-bordered mb-0">
-            <thead>
-              <tr class="fw-bold fs-6 text-gray-800 text-uppercase">
-                <th>#</th>
-                @for (column of columns; track $index) {
-                <th class="whitespace-nowrap uppercase-text">
-                  <div class="d-flex gap-1 {{column.extraHeaderClass}}">{{column.label}}</div>
-                </th>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              @for (permission of listPermission; let i=$index; track $index) {
-              <tr>
-                <td>{{i+1}}</td>
-                @for (column of columns; track $index) {
-                @if (column.id === 'module') {
-                <td class="text-capitalize"> {{permission[column.id] ?? '-'}} </td>
-                }@else {
-                <td>
-                  <input class="form-check-input" type="checkbox" [value]="column.id" [checked]="permission[column.id]"
-                    (change)="onCheckChange($event, i)" />
-                </td>
-                }
-                }
-              </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
   </div>
   <!--end::Body-->
   <!--begin::Footer-->

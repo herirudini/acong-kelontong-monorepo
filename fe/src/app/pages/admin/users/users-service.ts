@@ -49,19 +49,6 @@ export class UsersService extends BaseService {
     ) as any;
   }
 
-  getPermissions(): Observable<TModules[]> {
-    return this.getRequest(Endpoint.PERMISSIONS, undefined, 'spinneroff').pipe(
-      map((res: IResponse<TModules[]>) => {
-        return res.detail;
-      }),
-      catchError((err) => {
-        console.error(err);
-        this.alert.error('Cannot get list permission');
-        return of(undefined); // emit undefined so the stream completes gracefully
-      })
-    ) as any;
-  }
-
   getRoles(): Observable<IRole[]> {
     return this.getRequest(Endpoint.ROLES, undefined, 'spinneroff').pipe(
       map((res: IResponse<IRole[]>) => {

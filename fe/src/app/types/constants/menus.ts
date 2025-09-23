@@ -67,6 +67,13 @@ export const ADMIN: IMenu = {
     icon: 'nav-icon bi bi-person-gear',
     labelKey: 'Admin',
 }
+export const ROLES: IMenu = {
+    code: 'roles',
+    url: 'roles',
+    icon: '',
+    labelKey: 'Roles',
+    permissions: ['roles.view', 'roles.create', 'roles.edit', 'roles.delete']
+}
 export const USERS: IMenu = {
     code: 'users',
     url: 'users',
@@ -108,7 +115,8 @@ export const Menus: { [key: string]: IMenu } = {
                 children: {
                     INVITEUSER
                 }
-            }
+            },
+            ROLES
         }
     },
 

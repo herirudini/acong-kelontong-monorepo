@@ -14,7 +14,7 @@ import {
 } from '@angular/core';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { TableColumn } from '../../directives/table-column/table-column';
-import { IDateRangeFilter, IPaginationOutput, ISelectFilter, ISelectValue } from '../../../types/interfaces/common.interface';
+import { IDateRangeFilter, IPaginationOutput, ISelectFilter, ISelectValue, ISort, TSortDir } from '../../../types/interfaces/common.interface';
 import { getNestedProperty } from '../../../utils/helper';
 import { DATE_FORMAT, SORT_DIR } from '../../../types/constants/common.constants';
 import { DynamicPipe } from '../../pipes/dynamic-pipe/dynamic-pipe';
@@ -46,12 +46,10 @@ export interface ColumnProps {
   dataType?: any;
 }
 
-export interface ITableQueryData {
+export interface ITableQueryData extends ISort {
   page: number,
   size: number,
-  sortBy: string, // column ID
-  sortDir: SORT_DIR,
-  search: string,
+  search?: string,
   filterByDateVal?: IDateRangeFilter,
   filterSelectVal?: ISelectValue,
 }

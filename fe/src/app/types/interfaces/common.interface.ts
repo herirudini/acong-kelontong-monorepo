@@ -13,7 +13,7 @@ export interface IDateRangeFilter { start_date?: Date, end_date?: Date }
 
 export type TSortDir = 'asc' | 'desc' | '';
 export interface ISort {
-  sortBy: string, sortDir: TSortDir
+  sortBy?: string, sortDir?: TSortDir
 }
 export interface IPaginationOutput {
   page: number,
