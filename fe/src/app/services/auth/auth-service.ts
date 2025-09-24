@@ -62,7 +62,12 @@ export class AuthService extends BaseService {
       })
     ).subscribe(() => {
       this.router.navigateByUrl("/").then(() => {
-        window.location.reload();  // TODO: this is temporary solution to handle src/assets/admin-lte/ source not loaded (late)
+        // NOTE: this is mandatory, we need to do re laod the DOM, because AdminLTE’s JS imported via src/assets runs only once on initial page load (when the DOM first exists, which is the login page).
+        // So after navigating to admin page, the JS will lose its reference to its own custom attribute: data-lte-toggle="treeview, data-lte-pushmenu, etc".
+        // One of the symptomp is when after user navigated to admin page, when they click one of any menu triggered by href=#, angular will navigate to # as route target.
+        // The actual expectation is the AdminLTE JS should catch that # to trigger toggle function. so if the JS is valid, it should trigger something instead of navigating to #.
+        // TODO: if AdminLTE version is 4 already launched on NPM, we better switch to it instead of manual import from src/assets to solve this problem
+        window.location.reload();
       });
       this.alert.success("Logged in succesfully!");
     });
