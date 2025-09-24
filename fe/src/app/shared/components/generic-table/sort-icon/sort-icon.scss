@@ -1,0 +1,11 @@
+.sort-icon {
+    .bi {
+        line-height: 0;
+        &::before {
+            height: 0;
+        }
+        &:not(.on) {
+            color: rgba($color: #000000, $alpha: 0.2)
+        }
+    }
+}

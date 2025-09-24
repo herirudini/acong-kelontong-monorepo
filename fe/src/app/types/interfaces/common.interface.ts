@@ -9,30 +9,31 @@ export type TLogoutOption = 'all' | 'other' | 'current';
 
 export interface ICheckboxOption { id: string; label: string; value: boolean }
 
-export interface IDateRangeFilter { start_date: Date | string | number, end_date: Date | string | number }
+export interface IDateRangeFilter { start_date?: Date, end_date?: Date }
 
+export type TSortDir = 'asc' | 'desc' | '';
+export interface ISort {
+  sortBy?: string, sortDir?: TSortDir
+}
 export interface IPaginationOutput {
-  activePage: number,
-  selectedSize: number
+  page: number,
+  size: number
 }
 
 export interface IPaginationInput extends IPaginationOutput {
-  totalData: number
+  total: number,
+  totalPages: number
 }
 
 export interface ISelectFilter {
-  id: string
-  labelKey: string;
-  placeholder: string;
-  selectedData: ISelectValue;
-  selectLabel: string;
-  selectValue: string;
-  selectOption: any[];
+  title: string;
+  value?: ISelectValue;
+  selectOptions: ISelectValue[];
 }
 
 export interface ISelectValue {
-  id: string;
-  selectedData: string;
+  label: string;
+  value: any;
 }
 
 export interface IResponse<T> {
@@ -40,4 +41,5 @@ export interface IResponse<T> {
   list?: T[];
   detail?: T;
   error_code?: string;
+  meta?: IPaginationInput;
 }

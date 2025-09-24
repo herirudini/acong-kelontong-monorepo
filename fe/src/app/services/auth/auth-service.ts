@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../rest-api/base-service';
-import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
 import { Endpoint } from '../../types/constants/endpoint';
 import { IUser } from '../../types/interfaces/user.interface';
@@ -47,17 +46,31 @@ export class AuthService extends BaseService {
     return this.storage.getItem('profile');
   }
 
-  login(userCreds: { email: string, password: string }): Observable<any> {
-    return this.postRequest(Endpoint.LOGIN, userCreds).pipe(
+  login(userCreds: { email: string, password: string }) {
+    this.postRequest(Endpoint.LOGIN, userCreds).pipe(
       tap((res: { detail: IAuth }) => {
-        const token = res.detail.access_token;
-        const profile: IUser = res.detail.profile;
-        if (token) {
-          this.setProfile(profile);
-          this.setAccessToken(token);
+        try {
+          const token = res.detail.access_token;
+          const profile: IUser = res.detail.profile;
+          if (token) {
+            this.setProfile(profile);
+            this.setAccessToken(token);
+          }
+        } catch (err) {
+          console.error({ err })
         }
       })
-    );
+    ).subscribe(() => {
+      this.router.navigateByUrl("/").then(() => {
+        // NOTE: this is mandatory, we need to do re laod the DOM, because AdminLTE’s JS imported via src/assets runs only once on initial page load (when the DOM first exists, which is the login page).
+        // So after navigating to admin page, the JS will lose its reference to its own custom attribute: data-lte-toggle="treeview, data-lte-pushmenu, etc".
+        // One of the symptomp is when after user navigated to admin page, when they click one of any menu triggered by href=#, angular will navigate to # as route target.
+        // The actual expectation is the AdminLTE JS should catch that # to trigger toggle function. so if the JS is valid, it should trigger something instead of navigating to #.
+        // TODO: if AdminLTE version is 4 already launched on NPM, we better switch to it instead of manual import from src/assets to solve this problem
+        window.location.reload();
+      });
+      this.alert.success("Logged in succesfully!");
+    });
   }
 
   refreshToken(): Observable<{ detail: IAuth }> {
@@ -71,18 +84,11 @@ export class AuthService extends BaseService {
     );
   }
 
-  logout(option?: TLogoutOption): Observable<any> {
-    return this.postRequest(Endpoint.LOGOUT, {}, { option }).pipe(
-      tap({
-        next: () => {
-          this.storage.clear();
-          this.router.parseUrl('/login');
-        },
-        error: (err) => {
-          console.log('the errorr', err)
-        }
-      })
-    );
+  logout(option?: TLogoutOption) {
+    this.storage.clear();
+    this.router.navigateByUrl('/login').then(() => {
+      this.postRequest(Endpoint.LOGOUT, {}, { option }).subscribe();
+    });
   }
 
   isImmediateChangePassword() {

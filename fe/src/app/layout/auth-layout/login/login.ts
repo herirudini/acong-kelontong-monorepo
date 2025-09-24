@@ -26,22 +26,7 @@ export class Login implements OnInit {
     this.loginForm.setValue({ email: 'master@admin.com', password: 'master@admin.123' })
   }
   onSubmit() {
-    this.authServices.login(this.loginForm.value).subscribe(
-      {
-        next: (res: IAuth) => {
-          this.router.navigate(["/"]).then(() => {
-            setTimeout(() => {
-              window.location.reload();
-            }, 1000);
-          });
-          this.alert.success("Logged in succesfully!")
-        },
-        error: (error: any) => {
-          console.log(error)
-          this.alert.error(`Login failed! ${error.error.message}`)
-        }
-      }
-    );
+    this.authServices.login(this.loginForm.value);
 
   }
 }

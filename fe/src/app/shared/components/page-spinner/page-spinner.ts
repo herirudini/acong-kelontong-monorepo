@@ -16,7 +16,6 @@ export class PageSpinner {
   ) {
     if (isPlatformBrowser(this.platformId)) {
       this.pageSpinnerService.getSpinnerStatus().subscribe((status: 'on' | 'off') => {
-        console.log('getSpinnerStatus', status);
         this.isSpinning = status === 'on';
       });
     }

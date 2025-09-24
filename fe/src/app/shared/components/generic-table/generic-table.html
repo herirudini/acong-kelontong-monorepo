@@ -1,40 +1,35 @@
 <div class="mb-4 p-4 border rounded">
-    @if(useSearch || useFilter || useDownloadButton || useFilterSelect || useFilterByDate || useCustomToolbar) {
-    <div class="d-flex flex-row align-items-center justify-content-between pb-24px flex-wrap gap-2 mb-4">
+    @if(useSearch || useDownloadButton || filterSelect || useFilterByDate || useCustomToolbar) {
+    <div class="d-flex flex-row justify-content-between flex-wrap gap-2 mb-4">
         <div [ngClass]="useSearch ? 'col-md-7' : 'col-md-12'">
-            <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-2">
-                @if (useFilterSelect) {
-                <div>
-                    <app-select-filter></app-select-filter>
+            <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-4">
+                @if (filterSelect) {
+                <div class="flex-1">
+                    <app-select-filter [filterSelect]="filterSelect" (OnChangeFilter)="filterSelectChange($event)"></app-select-filter>
                 </div>
                 }
 
-                <!-- @if (useFilter) {
-                <div>
-                    <app-dropdown-option-checkbox [label]="filterLabel" [options]="filterOptions"
-                        (checkboxesChange)="filtersChanged($event)"></app-dropdown-option-checkbox>
-                </div>
-                } -->
-
                 @if (useFilterByDate) {
-                <div>
-                    <app-date-range-filter [patchedValue]="filterByDateDefaultValue"
-                        (OnChanges)="filterByDateChanged($event)"></app-date-range-filter>
+                <div class="flex-1">
+                    <app-date-range-filter [defaultVal]="filterByDateDefaultValue"
+                        (OnDateChange)="filterByDateChanged($event)"></app-date-range-filter>
                 </div>
                 }
 
                 @if (useDownloadButton) {
-                <div>
+                <div class="flex-1">
                     <button type="button" (click)="downloadButtonClicked()"
-                        class="btn btn btn-outline btn-outline-solid text-primary d-flex flex-row align-items-center justify-content-center gap-2 px-24px py-10px">
-                        {{ "BUTTON.DOWNLOAD_DATA_TABLE" }}
+                        class="btn btn btn-outline btn-outline-solid text-primary d-flex flex-row align-items-center justify-content-center gap-2 px-2 py-1">
+                        Download
                         <i class="fa-solid fa-download text-primary"></i>
                     </button>
                 </div>
                 }
 
                 @if (useCustomToolbar) {
-                <ng-content select="[CustomToolbar]"></ng-content>
+                <div class="flex-1">
+                    <ng-content select="[CustomToolbar]"></ng-content>
+                </div>
                 }
             </div>
         </div>
@@ -44,7 +39,7 @@
             <div class="input-group col-4">
                 <input type="text" class="form-control" placeholder="{{ (searchPlaceholder || 'Search') }}"
                     [(ngModel)]="search" (input)="onSearch()" />
-                <span class="input-group-text py-14px px-25px" id="basic-addon2">
+                <span class="input-group-text py-1 px-2" id="basic-addon2">
                     <i class="fa-solid fa-magnifying-glass text-white fa-3xs"></i>
                 </span>
             </div>
@@ -58,6 +53,8 @@
             <thead>
                 <tr class="fw-bold fs-6 text-gray-800 text-uppercase">
                     <ng-container headTH>
+                        <th>#</th>
+
                         @if (useCheckbox) {
                         <th>
                             <div class="d-flex flex-row ailgn-items center">
@@ -69,14 +66,17 @@
                         </th>
                         }
 
-                        @for (column of columns; track column.id) {
-                        <th [class.pointer]="column.sort" [ngStyle]="generateInlineStyle(column)" (click)="
-                  column.sort && datalength > 0
-                    ? sortChanged(column.id)
-                    : $event.stopPropagation()
-                " [ngClass]="'whitespace-nowrap ' +  headerClass(column.id) + ' ' + column.extraHeaderClass">
-                            {{ column.label | dynamicPipe:
-                            column.customHeaderPipe?.pipeType:column.customHeaderPipe?.pipeArgs ?? [] }}
+                        @for (column of columns; track $index) {
+                        <th [class.pointer]="column.sort" [ngStyle]="generateInlineStyle(column)"
+                            (click)="column.sort && total > 0 ? sortChanged(column.id) : $event.stopPropagation()"
+                            [ngClass]="'whitespace-nowrap ' + ' ' + column.extraHeaderClass">
+                            <div class="d-flex gap-1">
+                                @if(column.sort) {
+                                <app-sort-icon [sortId]="column.id" [sortVal]="{sortBy, sortDir}"></app-sort-icon>
+                                }
+                                {{ column.label | dynamicPipe:
+                                column.customHeaderPipe?.pipeType:column.customHeaderPipe?.pipeArgs ?? [] }}
+                            </div>
                         </th>
                         }
                     </ng-container>
@@ -85,9 +85,9 @@
             <tbody>
                 @if (isLoading) {
                 <!-- Show loading state -->
-                @for (_ of [].constructor(selectedSize); track $index) {
+                @for (_ of [].constructor(size); track $index) {
                 <tr>
-                    @for (_ of [].constructor(columns.length); let i = $index; track $index) {
+                    @for (_ of [].constructor(columns.length+1); let i = $index; track $index) {
                     <td [ngStyle]="generateInlineStyle(columns[i])">
                         <div class="badge-loading"></div>
                     </td>
@@ -97,8 +97,10 @@
                 } @else {
                 <!-- Check if there is or no data -->
                 @if (!!data.length) {
-                @for (row of data; let index = $index; track row.id) {
+                @for (row of data; let index = $index; track $index) {
                 <tr>
+                    <td>{{index+1}}</td>
+
                     @if (useCheckbox) {
                     <td [ngStyle]="{'vertical-align': 'middle'}">
                         <div class="d-flex flex-row ailgn-items center">
@@ -108,7 +110,7 @@
                     </td>
                     }
 
-                    @for (column of columns; let i = $index; track column.id) {
+                    @for (column of columns; track $index) {
                     <td [ngStyle]="generateInlineStyle(column)" [ngClass]="{
                       'whitespace-nowrap': column.customElementId === 'action'
                     }">
@@ -121,10 +123,8 @@
                         </ng-container>
                         } @else {
                         <!-- | dynamicPipe: (isDateColumn(column) ? datePipe : null): [getDateFormat(column)] -->
-                        {{ (
-                        transformValueIfNeeded(getRowDataValue(row, column.id), column)
-                        | dynamicPipe: column.customPipe?.pipeType:column.customPipe?.pipeArgs ?? []
-                        ) || "-" }}
+                        {{ ( transformValueIfNeeded(getRowDataValue(row, column.id), column) | dynamicPipe:
+                        column.customPipe?.pipeType:column.customPipe?.pipeArgs ?? []) || "-" }}
                         }
                     </td>
                     }
@@ -145,8 +145,8 @@
 
     <!-- Add TableFooter component here -->
     @if (usePagination) {
-    <div class="card-footer pb-0 px-0">
-        <app-pagination [selectedSize]="selectedSize" [activePage]="activePage" [totalData]="datalength"
+    <div class="card-footer px-4 py-2">
+        <app-pagination [size]="size" [page]="page" [totalData]="total"
             (paginationChanged)="changePage($event)"></app-pagination>
     </div>
     }

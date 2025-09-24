@@ -1,9 +1,11 @@
+import { TModules } from './user.interface';
+
 export interface IMenu {
     code: string;
     url: string;
     icon?: string;
     labelKey?: string;
-    permissions?: string[];
-    children?: { [key: string]: IMenu };
-    mappedChildren?: IMenu[];
+    permissions?: TModules[];
+    children?: IMenu[];
+    active?: boolean;
 }

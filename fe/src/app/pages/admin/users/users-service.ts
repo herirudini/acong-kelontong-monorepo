@@ -2,38 +2,63 @@ import { Injectable } from '@angular/core';
 import { BaseService } from '../../../services/rest-api/base-service';
 import { AlertService } from '../../../shared/components/alert/alert-service';
 import { catchError, map, Observable, of, tap } from 'rxjs';
-import { IUser } from '../../../types/interfaces/user.interface';
+import { IRole, IUser, TModules } from '../../../types/interfaces/user.interface';
 import { Endpoint } from '../../../types/constants/endpoint';
-import { IResponse } from '../../../types/interfaces/common.interface';
+import {
+  IPaginationInput,
+  IPaginationOutput,
+  IResponse,
+  ISort,
+} from '../../../types/interfaces/common.interface';
+
+interface IParamsUser extends IPaginationOutput, ISort {
+  search?: string;
+  verified?: boolean;
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UsersService extends BaseService {
-
-  constructor(
-    private alert: AlertService,
-  ) {
+  constructor(private alert: AlertService) {
     super();
   }
 
-  getUsers(): Observable<IUser[] | undefined> {
-    return this.getRequest(Endpoint.USERS).pipe(
+  getUsers(
+    params: IParamsUser
+  ): Observable<{ list: IUser[]; meta: IPaginationInput }> {
+    return this.getRequest(Endpoint.USERS, params, 'spinneroff').pipe(
       map((res: IResponse<IUser>) => {
-        console.log('getUsers', { res, list: res.list })
-        return res.list?.map(item => {
-          return {
-            ...item,
-            status: item.verified ? 'Verified' : 'Unverified'
-          }
-        });
-      }),   // transform response
+        const val = {
+          meta: res?.meta as IPaginationInput,
+          list: res?.list?.map((item) => {
+            return {
+              ...item,
+              name: `${item.first_name} ${item.last_name}`,
+              status: item.verified ? 'Verified' : 'Unverified',
+            };
+          }) as IUser[],
+        };
+        return val;
+      }),
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get list user');
-        return of(undefined);  // emit undefined so the stream completes gracefully
+        return of(undefined); // emit undefined so the stream completes gracefully
       })
-    );
+    ) as any;
   }
 
+  getRoles(): Observable<IRole[]> {
+    return this.getRequest(Endpoint.ROLES, undefined, 'spinneroff').pipe(
+      map((res: IResponse<IRole[]>) => {
+        return res.list;
+      }),
+      catchError((err) => {
+        console.error(err);
+        this.alert.error('Cannot get list role');
+        return of(undefined); // emit undefined so the stream completes gracefully
+      })
+    ) as any;
+  }
 }

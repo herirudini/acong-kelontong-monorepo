@@ -1,45 +1,58 @@
-<form [formGroup]="datesForm">
-    <div class="multiselect">
-        <div class="selectBox pointer" (click)="expanded = !expanded">
-            <select class="form-select text-primary" [class.expanded]="expanded">
-                @if (value) {
-                <option>
-                    {{value.start_date | date : 'MM/dd/YYY'}} - {{value.end_date | date : 'MM/dd/YYY'}}
-                </option>
-                } @else {
-                <option>Filter By Date</option>
-                }
-            </select>
-            <div class="overSelect"></div>
-        </div>
-        @if (expanded) {
-        <div class="date-range-container rounded">
-            <div class="w-100 p-16px">
-                <h4 class="m-0">Filter By Date</h4>
-            </div>
-            <div class="w-100 border border-left-0 border-right-0">
-                <div class="p-16px">
-                    <div class="mb-24px">
-                        <label for="start_date" class="form-label">
-                            Start Date
-                        </label>
-                        <input id="start_date" type="date" formControlName="start_date"
-                            class="form-control form-icon-date" placeholder="YYYY-MM-DD">
-                    </div>
-                    <div>
-                        <label for="start_date" class="form-label">
-                            End Date
-                        </label>
-                        <input id="end_date" type="date" formControlName="end_date" class="form-control form-icon-date"
-                            placeholder="YYYY-MM-DD">
-                    </div>
-                </div>
-            </div>
-            <div class="w-100 p-16px d-flex flex-row justify-content-end">
-                <button>Reset</button>
-                <button>Apply</button>
-            </div>
-        </div>
-        }
-    </div>
+<form class="row row-cols-sm-auto align-items-center">
+	<div class="col-12">
+		<div class="dp-hidden position-absolute">
+			<div class="input-group">
+				<input
+					name="datepicker"
+					class="form-control"
+					ngbDatepicker
+					#datepicker="ngbDatepicker"
+					[autoClose]="'outside'"
+					(dateSelect)="onDateSelection($event)"
+					[displayMonths]="2"
+					[dayTemplate]="t"
+					outsideDays="hidden"
+					[startDate]="fromDate!"
+					tabindex="-1"
+				/>
+				<ng-template #t let-date let-focused="focused">
+					<span
+						class="custom-day"
+						[class.focused]="focused"
+						[class.range]="isRange(date)"
+						[class.faded]="isHovered(date) || isInside(date)"
+						(mouseenter)="hoveredDate = date"
+						(mouseleave)="hoveredDate = null"
+					>
+						{{ date.day }}
+					</span>
+				</ng-template>
+			</div>
+		</div>
+		<div class="input-group">
+			<input
+				#dpFromDate
+				class="form-control"
+				placeholder="yyyy-mm-dd"
+				name="dpFromDate"
+				[value]="formatter.format(fromDate)"
+				(input)="fromDate = validateInput(fromDate, dpFromDate.value)"
+			/>
+			<button class="btn btn-outline-secondary bi bi-calendar3" (click)="datepicker.toggle()" type="button"></button>
+		</div>
+	</div>
+    to
+	<div class="col-12">
+		<div class="input-group">
+			<input
+				#dpToDate
+				class="form-control"
+				placeholder="yyyy-mm-dd"
+				name="dpToDate"
+				[value]="formatter.format(toDate)"
+				(input)="toDate = validateInput(toDate, dpToDate.value)"
+			/>
+			<button class="btn btn-outline-secondary bi bi-calendar3" (click)="datepicker.toggle()" type="button"></button>
+		</div>
+	</div>
 </form>

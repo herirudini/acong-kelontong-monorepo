@@ -18,18 +18,22 @@ export class AuthGuard implements CanActivate {
     const accesToken = authHeader.split(' ')[1];
     const userAgent: string = req.headers['user-agent'] as string;
 
-    const auth = this.authService.verifyToken(accesToken) as ITokenPayload;
-    if (auth) {
-      const user: GlobalVar = {
-        id: auth.id,
-        id0: auth.id0,
-        modules: auth.modules,
-        userAgent,
-        accesToken
-      };
-      req.user = user;
-      return true;
+    try {
+      const auth = this.authService.verifyToken(accesToken) as ITokenPayload;
+      if (auth) {
+        const user: GlobalVar = {
+          id: auth.id,
+          id0: auth.id0,
+          role: auth.role,
+          userAgent,
+          accesToken
+        };
+        req.user = user;
+        return true;
+      }
+      return BaseResponse.unauthorized({ err: 'Auth Guard unverified', option: { message: 'Unauthorized', error_code: errCodes.authGuard } });
+    } catch {
+      return BaseResponse.unauthorized({ err: 'Auth Guard unverified', option: { message: 'Unauthorized', error_code: errCodes.authGuard } });
     }
-    return BaseResponse.unauthorized({ err: 'Auth Guard unverified', option: { message: 'Unauthorized', error_code: errCodes.authGuard } });
   }
 }

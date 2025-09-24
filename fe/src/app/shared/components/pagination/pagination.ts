@@ -15,22 +15,22 @@ export class Pagination implements OnChanges {
   get adjuster(): number { return this.zeroIndexed ? 1 : 0 }
   displayPage: number = 1;
   @Input()
-  get activePage(): number { return this.displayPage - this.adjuster }
-  set activePage(x: number) { this.displayPage = x + this.adjuster };
+  get page(): number { return this.displayPage - this.adjuster }
+  set page(x: number) { this.displayPage = x + this.adjuster };
 
-  get zeroIndexedActivePage(): number { return this.activePage - (this.zeroIndexed ? 0 : 1) }
+  get zeroIndexedActivePage(): number { return this.page - (this.zeroIndexed ? 0 : 1) }
 
-  get totalPages(): number { return Math.max(1, Math.ceil(this.totalData / this.selectedSize)) }
+  get totalPages(): number { return Math.max(1, Math.ceil(this.totalData / this.size)) }
   get entryFrom(): number {
-    if (this.totalData > 0) return this.zeroIndexedActivePage * this.selectedSize + 1;
+    if (this.totalData > 0) return this.zeroIndexedActivePage * this.size + 1;
     return 0;
   }
   get entryTo(): number {
-    return Math.min((this.zeroIndexedActivePage + 1) * this.selectedSize, this.totalData);
+    return Math.min((this.zeroIndexedActivePage + 1) * this.size, this.totalData);
   }
 
   @Output() paginationChanged: EventEmitter<IPaginationOutput> = new EventEmitter<IPaginationOutput>();
-  @Input() selectedSize: IPaginationOutput['selectedSize'] = 10; //DEFAULT
+  @Input() size: IPaginationOutput['size'] = 10; //DEFAULT
   @Input() totalData: number = 0;
   sizeOptions: number[] = [10, 25, 50, 100];
 
@@ -38,8 +38,8 @@ export class Pagination implements OnChanges {
   }
   changePage(pageNumber: number) {
     if (pageNumber < 1 || pageNumber > this.totalPages) return;
-    this.activePage = pageNumber - this.adjuster;
-    this.paginationChanged.emit({ activePage: this.activePage, selectedSize: this.selectedSize });
+    this.page = pageNumber - this.adjuster;
+    this.paginationChanged.emit({ page: this.page, size: this.size });
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -55,8 +55,8 @@ export class Pagination implements OnChanges {
   // }
 
   changeSize(evt: any) {
-    this.selectedSize = evt.target.value;
-    this.activePage = 0;
-    this.paginationChanged.emit({ activePage: 0, selectedSize: this.selectedSize });
+    this.size = evt.target.value;
+    this.page = 0;
+    this.paginationChanged.emit({ page: 0, size: this.size });
   }
 }

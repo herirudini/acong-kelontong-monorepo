@@ -1,6 +1,11 @@
 .active {
-    background-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
 }
 .menu-color:not(.active) {
-    color: #c2c7d0 !important
+  color: #c2c7d0 !important;
+}
+
+.nav-item.has-treeview:has(.nav-treeview .nav-item .nav-link.active) > .nav-link {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #fff !important;
 }

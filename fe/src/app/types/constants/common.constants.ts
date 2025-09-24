@@ -6,3 +6,9 @@ export const errCodes = {
 }
 
 export const DATE_FORMAT = 'dd/MM/yyyy';
+
+export enum SORT_DIR {
+  ASC = 'asc',
+  DESC = 'desc',
+  NONE = ''
+}

@@ -20,7 +20,7 @@ export class PageGuardService {
     }
 
     // ✅ On the browser: enforce real guard
-    const modules = this.authSvc.getProfile()?.modules || [];
+    const modules = this.authSvc.getProfile()?.role?.modules ?? [];
     const permissionAsk = route.data['permissions'];
     const hasPermission = modules.some(item=>permissionAsk.includes(item))
 

@@ -206,31 +206,38 @@
                 <!--begin::Sidebar Menu-->
                 <ul class="nav sidebar-menu flex-column" data-lte-toggle="treeview" role="navigation"
                     aria-label="Main navigation" data-accordion="false" id="navigation">
-                    @for(menu of menuItems; track menu.code) {
-                    <li class="nav-item">
-                        <a [routerLink]="[menu.url]" routerLinkActive="active" class="nav-link bg-transparent menu-color">
+                    @for(menu of menuItems; track $index) {
+                    @if (menu.children && menu.children.length > 0) {
+                    <li class="nav-item has-treeview">
+                        <a href="#" class="nav-link bg-transparent menu-color">
                             <i [ngClass]="menu.icon"></i>
                             <p>
                                 {{ menu.labelKey }}
-                                @if (menu.mappedChildren && menu.mappedChildren.length > 0) {
+                                @if (menu.children && menu.children.length > 0) {
                                 <i class="nav-arrow bi bi-chevron-right"></i>
                                 }
                             </p>
                         </a>
-                        @if (menu.mappedChildren && menu.mappedChildren.length > 0) {
                         <ul class="nav nav-treeview">
-                            @for(child of menu.mappedChildren; track child.code) {
+                            @for(child of menu.children; track $index) {
                             <li class="nav-item">
-                                <a [routerLink]="[`${menu.url}/${child.url}`]" routerLinkActive="active"
-                                    class="nav-link">
-                                    <i [ngClass]="child.icon||'nav-icon bi bi-circle'"></i>
+                                <a [routerLink]="[child.url]" routerLinkActive="active" class="nav-link">
+                                    <i class="nav-icon"></i>
                                     <p>{{ child.labelKey }}</p>
                                 </a>
                             </li>
                             }
                         </ul>
-                        }
                     </li>
+                    } @else {
+                    <li class="nav-item">
+                        <a [routerLink]="[menu.url]" routerLinkActive="active"
+                            class="nav-link bg-transparent menu-color">
+                            <i [ngClass]="menu.icon"></i>
+                            <p>{{ menu.labelKey }}</p>
+                        </a>
+                    </li>
+                    }
                     }
                 </ul>
                 <!--end::Sidebar Menu-->

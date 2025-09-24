@@ -3,6 +3,7 @@ import { AuthGuard } from '../auth/auth.guard';
 import { Brand } from './brand.schema';
 import { BrandService } from './brand.service';
 import type { Request, Response } from 'express';
+import { BaseResponse } from 'src/utils/base-response';
 
 @UseGuards(AuthGuard)
 @Controller('brand')
@@ -19,10 +20,9 @@ export class BrandController {
     ) {
         try {
             const brand = await this.service.createBrand(body);
-            return res.status(200).json({ success: true, message: 'Success create brand', detail: brand });
+            return BaseResponse.success({ res, option: { message: "Success create brand", detail: brand } });
         } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Create brand failed' });
+            return BaseResponse.error({ res, err });
         }
     }
 
@@ -33,10 +33,9 @@ export class BrandController {
     ) {
         try {
             const brands = await this.service.listBrand(search);
-            return res.status(200).json({ success: true, message: 'Success list brand', list: brands });
+            return BaseResponse.success({ res, option: { message: 'Success list brand', list: brands } });
         } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'List brand failed' });
+            return BaseResponse.error({ res, err });
         }
     }
 
@@ -48,10 +47,9 @@ export class BrandController {
     ) {
         try {
             const brand = await this.service.editBrand(brandId, body);
-            return res.status(200).json({ success: true, message: 'Success edit brand', detail: brand });
+            return BaseResponse.success({ res, option: { message: "Success edit brand", detail: brand } });
         } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Edit brand failed' });
+            return BaseResponse.error({ res, err });
         }
     }
 
@@ -62,10 +60,9 @@ export class BrandController {
     ) {
         try {
             const brand = await this.service.detailBrand(brandId);
-            return res.status(200).json({ success: true, message: 'Success get detail brand', detail: brand });
+            return BaseResponse.success({ res, option: { message: "Success get detail brand", detail: brand } });
         } catch (err) {
-            console.error(err);
-            return res.status(500).json({ message: 'Get detail brand failed' });
+            return BaseResponse.error({ res, err });
         }
     }
 }

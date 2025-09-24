@@ -1,13 +1,17 @@
 <div class="card mb-4 p-4">
     <div class="card-header mb-4">
-        <h3 class="card-title">User List</h3>
+        <div class="d-flex flex-row justify-content-between gap-4">
+            <h3 class="card-title">User List</h3>
+            <a class="btn btn-primary" routerLink="./form">Invite User</a>
+        </div>
     </div>
     <app-generic-table ngSkipHydration [columns]="columns" [data]="listUser" [usePagination]="true" [useSearch]="true"
-        [datalength]="pagination.totalData" (OnDataRefresh)="getList($event)">
+        [filterSelect]="filterSelect" [total]="pagination.total" (OnDataRefresh)="getList($event)"
+        [isLoading]="isLoading">
         <div appTableColumn customColumnId="action">
             <ng-template let-item>
-                <a class="text-primary pointer">
-                    <i class="fa-solid fa-pencil text-primary"></i> Edit
+                <a class="text-warning pointer">
+                    <i class="fa-solid fa-pencil"></i>
                 </a>
             </ng-template>
         </div>
