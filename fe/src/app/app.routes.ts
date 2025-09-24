@@ -1,20 +1,13 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layout/main-layout/main-layout';
-import { Login } from './layout/auth-layout/login/login';
-import { Register } from './layout/auth-layout/register/register';
-import { PageNotFound } from './layout/error-layout/page-not-found/page-not-found';
-import { ADMIN, BRANDS, CASHIER, EXPENSES, FINANCE, INCOME, INVENTORY, Menus, PRODUCTS, SUPPLIERS, INVITEUSER, USERS, ROLES } from './types/constants/menus';
+import { BRANDS, CASHIER, EXPENSES, INCOME, PRODUCTS, SUPPLIERS, INVITEUSER, USERS, ROLES, DASHBOARD } from './types/constants/menus';
 import { AuthGuardService } from './services/guards/auth-guard/auth-guard-service';
 import { PageGuardService } from './services/guards/page-guard/page-guard-service';
-import { Users } from './pages/admin/users/users';
-import { UserForm } from './pages/admin/users/user-form/user-form';
-import { TablesSimple } from './pages/tables/tables-simple/tables-simple';
-import { Roles } from './pages/admin/roles/roles';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: Menus['DASHBOARD'].url,
+    redirectTo: DASHBOARD.url,
     pathMatch: 'full'
   },
   {
@@ -22,162 +15,75 @@ export const routes: Routes = [
     component: MainLayout,
     canActivate: [AuthGuardService],
     children: [
+      // TODO: remove this dummy later
+      {
+        path: DASHBOARD.url,
+        data: { ...DASHBOARD },
+        loadComponent: () => import('./pages/dashboard-v1/dashboard-v1').then(c => c.DashboardV1)
+      },
       {
         path: CASHIER.url,
         data: { ...CASHIER },
         canActivate: [PageGuardService],
-        component: TablesSimple
+        loadComponent: () => import('./pages/dashboard-v2/dashboard-v2').then(c => c.DashboardV2)
       },
       {
-        path: INVENTORY.url,
-        data: { ...INVENTORY },
+        path: PRODUCTS.url,
+        canActivate: [PageGuardService],
+        data: { ...PRODUCTS },
+        loadComponent: () => import('./pages/dashboard-v3/dashboard-v3').then(c => c.DashboardV3)
+      },
+      {
+        path: BRANDS.url,
+        canActivate: [PageGuardService],
+        data: { ...BRANDS },
+        loadComponent: () => import('./pages/tables/tables-simple/tables-simple').then(c => c.TablesSimple)
+      },
+      {
+        path: SUPPLIERS.url,
+        canActivate: [PageGuardService],
+        data: { ...SUPPLIERS },
+        loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
+      },
+      {
+        path: INCOME.url,
+        canActivate: [PageGuardService],
+        data: { ...INCOME },
+        loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
+      },
+      {
+        path: EXPENSES.url,
+        canActivate: [PageGuardService],
+        data: { ...EXPENSES },
+        loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
+      },
+      {
+        path: USERS.url,
+        data: { ...USERS },
         children: [
           {
             path: '',
-            redirectTo: PRODUCTS.url,
-            pathMatch: 'full',
+            canActivate: [PageGuardService],
+            loadComponent: () => import('./pages/admin/users/users').then(c => c.Users),
           },
           {
-            path: PRODUCTS.url,
+            path: INVITEUSER.url,
             canActivate: [PageGuardService],
-            data: { ...PRODUCTS },
-            component: TablesSimple
-          },
-          {
-            path: BRANDS.url,
-            canActivate: [PageGuardService],
-            data: { ...BRANDS },
-            component: TablesSimple
-          },
-          {
-            path: SUPPLIERS.url,
-            canActivate: [PageGuardService],
-            data: { ...SUPPLIERS },
-            component: TablesSimple
+            data: { ...INVITEUSER },
+            loadComponent: () => import('./pages/admin/users/user-form/user-form').then(c => c.UserForm)
           },
         ]
       },
       {
-        path: FINANCE.url,
-        data: { ...FINANCE },
-        children: [
-          {
-            path: '',
-            redirectTo: INCOME.url,
-            pathMatch: 'full',
-          },
-          {
-            path: INCOME.url,
-            canActivate: [PageGuardService],
-            data: { ...INCOME },
-            component: TablesSimple
-          },
-          {
-            path: EXPENSES.url,
-            canActivate: [PageGuardService],
-            data: { ...EXPENSES },
-            component: TablesSimple
-          },
-        ]
-      },
-      {
-        path: ADMIN.url,
-        data: { ...ADMIN },
-        children: [
-          {
-            path: '',
-            redirectTo: USERS.url,
-            pathMatch: 'full',
-          },
-          {
-            path: USERS.url,
-            data: { ...USERS },
-            children: [
-              {
-                path: '',
-                canActivate: [PageGuardService],
-                component: Users,
-              },
-              {
-                path: INVITEUSER.url,
-                canActivate: [PageGuardService],
-                data: { ...INVITEUSER },
-                component: UserForm
-              },
-            ]
-          },
-          {
-            path: ROLES.url,
-            canActivate: [PageGuardService],
-            data: { ...ROLES },
-            component: Roles
-          }
-        ]
-      },
-
-      // TODO: remove this dummy later
-      {
-        path: Menus['DASHBOARD'].url,
-        data: { ...Menus['DASHBOARD'] },
-        children: [
-          {
-            path: '',
-            redirectTo: Menus['DASHBOARD'].children?.['DASHBOARD_V1'].url,
-            pathMatch: 'full',
-          },
-          {
-            path: Menus['DASHBOARD'].children?.['DASHBOARD_V1'].url,
-            data: { ...Menus['DASHBOARD'].children?.['DASHBOARD_V1'] },
-            loadComponent: () => import('./pages/dashboard-v1/dashboard-v1').then(c => c.DashboardV1)
-          },
-          {
-            path: Menus['DASHBOARD'].children?.['DASHBOARD_V2'].url,
-            data: { ...Menus['DASHBOARD'].children?.['DASHBOARD_V2'] },
-            loadComponent: () => import('./pages/dashboard-v2/dashboard-v2').then(c => c.DashboardV2)
-          },
-          {
-            path: Menus['DASHBOARD'].children?.['DASHBOARD_V3'].url,
-            data: { ...Menus['DASHBOARD'].children?.['DASHBOARD_V3'] },
-            loadComponent: () => import('./pages/dashboard-v3/dashboard-v3').then(c => c.DashboardV3)
-          },
-        ]
-      },
-      {
-        path: Menus['FORMS'].url,
-        data: { ...Menus['FORMS'] },
-        children: [
-          {
-            path: '',
-            redirectTo: Menus['FORMS'].children?.['GENERAL'].url,
-            pathMatch: 'full',
-          },
-          {
-            path: Menus['FORMS'].children?.['GENERAL'].url,
-            data: { ...Menus['FORMS'].children?.['GENERAL'] },
-            loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
-          },
-        ]
-      },
-      {
-        path: Menus['TABLES'].url,
-        data: { ...Menus['TABLES'] },
-        children: [
-          {
-            path: '',
-            redirectTo: Menus['TABLES'].children?.['SIMPLE'].url,
-            pathMatch: 'full',
-          },
-          {
-            path: Menus['TABLES'].children?.['SIMPLE'].url,
-            data: { ...Menus['TABLES'].children?.['SIMPLE'] },
-            component: TablesSimple
-          },
-        ]
+        path: ROLES.url,
+        canActivate: [PageGuardService],
+        data: { ...ROLES },
+        loadComponent: () => import('./pages/admin/roles/roles').then(c => c.Roles)
       }
     ]
   },
-  { path: 'login', component: Login },
-  { path: 'register', component: Register },
-  { path: 'error/404', component: PageNotFound },
+  { path: 'login', loadComponent: () => import('./layout/auth-layout/login/login').then(c => c.Login) },
+  { path: 'register', loadComponent: () => import('./layout/auth-layout/register/register').then(c => c.Register) },
+  { path: 'error/404', loadComponent: () => import('./layout/error-layout/page-not-found/page-not-found').then(c => c.PageNotFound) },
   { path: '**', redirectTo: 'error/404' },
 ];

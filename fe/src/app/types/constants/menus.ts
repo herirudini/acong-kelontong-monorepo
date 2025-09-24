@@ -89,90 +89,44 @@ export const INVITEUSER: IMenu = {
     permissions: ['users.view', 'users.create', 'users.edit', 'users.delete'],
 }
 
+export const DASHBOARD: IMenu = {
+    code: 'dashboard',
+    url: 'home',
+    icon: 'nav-icon bi bi-speedometer',
+    labelKey: 'Dashboard',
+    permissions: ['dashboard.view']
+}
+
 // This is to manage menu UI, please make sure routers are matched
-export const Menus: { [key: string]: IMenu } = {
+export const Menus: IMenu[] = [
+    // TODO: remove this dummy later
+    DASHBOARD,
     CASHIER,
-    INVENTORY: {
+    {
         ...INVENTORY,
-        children: {
+        children: [
             PRODUCTS,
             BRANDS,
             SUPPLIERS,
-        }
+        ]
     },
-    FINANCE: {
+    {
         ...FINANCE,
-        children: {
+        children: [
             INCOME,
             EXPENSES,
-        }
+        ]
     },
-    ADMIN: {
+    {
         ...ADMIN,
-        children: {
-            USERS: {
+        children: [
+            {
                 ...USERS,
-                children: {
+                children: [
                     INVITEUSER
-                }
+                ]
             },
             ROLES
-        }
-    },
-
-    // TODO: remove this dummy later
-    DASHBOARD: {
-        code: 'dashboard',
-        url: 'home',
-        icon: 'nav-icon bi bi-speedometer',
-        labelKey: 'Dashboard',
-        children: {
-            DASHBOARD_V1: {
-                code: 'dashboard-v1',
-                url: 'dashboard1',
-                icon: '',
-                labelKey: 'Dashboard v1',
-            },
-            DASHBOARD_V2: {
-                code: 'dashboard-v2',
-                url: 'dashboard2',
-                icon: '',
-                labelKey: 'Dashboard v2',
-                permissions: ['dashboard-v1.view', 'dashboard-v1.create'],
-            },
-            DASHBOARD_V3: {
-                code: 'dashboard-v3',
-                url: 'dashboard3',
-                icon: '',
-                labelKey: 'Dashboard v3',
-                permissions: ['dashboard-v1.view'],
-            },
-        },
-    },
-    FORMS: {
-        code: 'forms',
-        url: 'forms',
-        icon: 'nav-icon bi bi-pencil-square',
-        labelKey: 'Forms',
-        children: {
-            GENERAL: {
-                code: 'forms-general',
-                url: 'forms-general',
-                labelKey: 'General Elements',
-            },
-        }
-    },
-    TABLES: {
-        code: 'tables',
-        url: 'tables',
-        icon: 'nav-icon bi bi-table',
-        labelKey: 'Tables',
-        children: {
-            SIMPLE: {
-                code: 'tables-simple',
-                url: 'tables-simple',
-                labelKey: 'Simple Tables',
-            },
-        }
+        ]
     }
-};
+];

@@ -6,7 +6,6 @@ export interface IMenu {
     icon?: string;
     labelKey?: string;
     permissions?: TModules[];
-    children?: { [key: string]: IMenu };
-    mappedChildren?: IMenu[];
+    children?: IMenu[];
     active?: boolean;
 }

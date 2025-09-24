@@ -2,26 +2,11 @@ import { Injectable } from '@angular/core';
 import { BaseService } from '../rest-api/base-service';
 import { Observable, tap } from 'rxjs';
 import { Endpoint } from '../../types/constants/endpoint';
-import { IUser, TModules } from '../../types/interfaces/user.interface';
+import { IUser } from '../../types/interfaces/user.interface';
 import { Router } from '@angular/router';
 import { AlertService } from '../../shared/components/alert/alert-service';
 import { IAuth, TLogoutOption } from '../../types/interfaces/common.interface';
 import { StorageService } from '../tools/storage-service';
-
-const dummyModules: TModules[] = [ // TODO: remove this dummy later
-  'dashboard.view',
-  'dashboard.edit',
-  'dashboard.create',
-  'dashboard-v1.view',
-  'dashboard-v1.edit',
-  'dashboard-v1.create',
-  'dashboard-v2.view',
-  'dashboard-v3.view',
-  'tables.view',
-  'tables-simple.view',
-  'forms.view',
-  'forms-general.view',
-]
 
 @Injectable({
   providedIn: 'root'
@@ -61,18 +46,26 @@ export class AuthService extends BaseService {
     return this.storage.getItem('profile');
   }
 
-  login(userCreds: { email: string, password: string }): Observable<any> {
-    return this.postRequest(Endpoint.LOGIN, userCreds).pipe(
+  login(userCreds: { email: string, password: string }) {
+    this.postRequest(Endpoint.LOGIN, userCreds).pipe(
       tap((res: { detail: IAuth }) => {
-        const token = res.detail.access_token;
-        const profile: IUser = res.detail.profile;
-        profile.role.modules = profile.role.modules.concat(dummyModules)
-        if (token) {
-          this.setProfile(profile);
-          this.setAccessToken(token);
+        try {
+          const token = res.detail.access_token;
+          const profile: IUser = res.detail.profile;
+          if (token) {
+            this.setProfile(profile);
+            this.setAccessToken(token);
+          }
+        } catch (err) {
+          console.error({ err })
         }
       })
-    );
+    ).subscribe(() => {
+      this.router.navigateByUrl("/").then(() => {
+        window.location.reload();  // TODO: this is temporary solution to handle src/assets/admin-lte/ source not loaded (late)
+      });
+      this.alert.success("Logged in succesfully!");
+    });
   }
 
   refreshToken(): Observable<{ detail: IAuth }> {
@@ -86,18 +79,11 @@ export class AuthService extends BaseService {
     );
   }
 
-  logout(option?: TLogoutOption): Observable<any> {
-    return this.postRequest(Endpoint.LOGOUT, {}, { option }).pipe(
-      tap({
-        next: () => {
-          this.storage.clear();
-          this.router.parseUrl('/login');
-        },
-        error: (err) => {
-          console.error('the errorr', err)
-        }
-      })
-    );
+  logout(option?: TLogoutOption) {
+    this.storage.clear();
+    this.router.navigateByUrl('/login').then(() => {
+      this.postRequest(Endpoint.LOGOUT, {}, { option }).subscribe();
+    });
   }
 
   isImmediateChangePassword() {
