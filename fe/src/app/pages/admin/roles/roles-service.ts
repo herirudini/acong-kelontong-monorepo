@@ -32,7 +32,7 @@ export class RolesService extends BaseService {
   }
 
   getRole( id: string): Observable<IRole> {
-    return this.getRequest({ url: Endpoint.ROLES_ID(id), spinner: false }).pipe(
+    return this.getRequest({ url: Endpoint.ROLES_ID(id) }).pipe(
       map((res: IResDetail<IRole>) => {
         return res.detail;
       }),
@@ -47,7 +47,7 @@ export class RolesService extends BaseService {
   createRole(
     body: IRole
   ): Observable<IRole> {
-    return this.postRequest({ url: Endpoint.ROLES, body, spinner: false }).pipe(
+    return this.postRequest({ url: Endpoint.ROLES, body }).pipe(
       map((res: IResDetail<IRole>) => {
         return res.detail;
       }),
@@ -63,7 +63,7 @@ export class RolesService extends BaseService {
     id: string,
     body: IRole
   ): Observable<IRole> {
-    return this.postRequest({ url: Endpoint.ROLES_ID(id), body, spinner: false }).pipe(
+    return this.putRequest({ url: Endpoint.ROLES_ID(id), body }).pipe(
       map((res: IResDetail<IRole>) => {
         return res.detail;
       }),
@@ -76,7 +76,7 @@ export class RolesService extends BaseService {
   }
 
   getModules(): Observable<TModules[]> {
-    return this.getRequest({ url: Endpoint.PERMISSIONS, spinner: false }).pipe(
+    return this.getRequest({ url: Endpoint.PERMISSIONS }).pipe(
       map((res: IResDetail<TModules[]>) => {
         return res.detail;
       }),

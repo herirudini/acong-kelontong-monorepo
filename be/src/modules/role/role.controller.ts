@@ -29,7 +29,7 @@ export class RoleController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('create')
+  @Post('')
   async createRole(
     @Body() body: RoleDocument,
     @Res() res: Response,
@@ -43,7 +43,7 @@ export class RoleController {
     }
   }
 
-  @Get('detail/:role_id')
+  @Get(':role_id')
   async detail(
     @Param('role_id') role_id: string,
     @Res() res: Response,
@@ -60,7 +60,7 @@ export class RoleController {
   }
 
   @UseGuards(AuthGuard)
-  @Put('detail/:role_id/edit-role')
+  @Put(':role_id')
   async edit(
     @Param('role_id') role_id: string,
     @Body() body: RoleDocument,

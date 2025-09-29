@@ -31,8 +31,8 @@ export class UserForm implements OnInit {
 
   getRoles() {
     this.isLoading = true;
-    this.userService.getRoles().subscribe((res) => {
-      this.roles = res
+    this.userService.getRoles({page:0, size:1000}).subscribe((res) => {
+      this.roles = res.list ?? [];
     })
   }
 }

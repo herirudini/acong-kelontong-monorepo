@@ -74,19 +74,34 @@ export const ROLES: IMenu = {
     labelKey: 'Roles',
     permissions: ['roles.view', 'roles.create', 'roles.edit', 'roles.delete']
 }
+export const ROLE_DETAIL: IMenu = {
+    code: 'form',
+    url: 'form/:role_id',
+    icon: '',
+    labelKey: 'Role Detail',
+    permissions: ['roles.view'],
+}
+export const ROLE_CREATE: IMenu = {
+    code: 'form',
+    url: 'form',
+    icon: '',
+    labelKey: 'Role Create',
+    permissions: ['roles.view', 'roles.create'],
+}
+export const ROLE_EDIT: IMenu = {
+    code: 'form',
+    url: 'form/:role_id',
+    icon: '',
+    labelKey: 'Role Edit',
+    permissions: ['roles.view', 'roles.edit'],
+}
+
 export const USERS: IMenu = {
     code: 'users',
     url: 'users',
     icon: '',
     labelKey: 'Users',
     permissions: ['users.view', 'users.create', 'users.edit', 'users.delete']
-}
-export const INVITEUSER: IMenu = {
-    code: 'form',
-    url: 'form',
-    icon: '',
-    labelKey: 'Invite User',
-    permissions: ['users.view', 'users.create', 'users.edit', 'users.delete'],
 }
 
 export const DASHBOARD: IMenu = {
@@ -121,12 +136,14 @@ export const Menus: IMenu[] = [
         ...ADMIN,
         children: [
             {
-                ...USERS,
+                ...ROLES,
                 children: [
-                    INVITEUSER
+                    ROLE_DETAIL,
+                    ROLE_CREATE,
+                    ROLE_EDIT
                 ]
             },
-            ROLES
+            USERS
         ]
     }
 ];

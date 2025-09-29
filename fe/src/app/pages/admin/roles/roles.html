@@ -2,7 +2,7 @@
   <div class="card-header mb-4">
     <div class="d-flex flex-row justify-content-between gap-4">
       <h3 class="card-title">Role List</h3>
-      <a class="btn btn-primary pointer" (click)="showForm('new')">Add Role</a>
+      <a class="btn btn-primary pointer" routerLink="./form">Add Role</a>
     </div>
   </div>
   <app-generic-table ngSkipHydration [columns]="columns" [data]="listRoles" [usePagination]="true" [useSearch]="true"
@@ -10,10 +10,10 @@
     <div appTableColumn customColumnId="action">
       <ng-template let-item>
         <div class="d-flex flex-row gap-1">
-          <a (click)="showForm('view', item._id)" class="text-white pointer btn btn-secondary">
+          <a [routerLink]="['./form', item._id]" [queryParams]="{type: 'view'}" class="text-white pointer btn btn-secondary">
             <i class="fa-solid fa-eye"></i>&nbsp;View
           </a>
-          <a (click)="showForm('edit', item._id)" class="text-white pointer btn btn-warning">
+          <a [routerLink]="['./form', item._id]" [queryParams]="{type: 'edit'}" class="text-white pointer btn btn-warning">
             <i class="fa-solid fa-pencil"></i>&nbsp;Edit
           </a>
         </div>

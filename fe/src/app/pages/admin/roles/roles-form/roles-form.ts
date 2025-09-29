@@ -1,6 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RolesService } from '../roles-service';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { IRole } from '../../../../types/interfaces/user.interface';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ROLES } from '../../../../types/constants/menus';
+
+type formType = 'new' | 'edit' | 'view';
 
 @Component({
   selector: 'app-roles-form',
@@ -10,7 +15,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 })
 export class RolesForm implements OnInit {
   isLoading: boolean = false;
-  @Input() type: 'new' | 'edit' | 'view' = 'new';
+  @Input() type: formType = 'new';
   @Input() id?: string;
 
   columns = [
@@ -41,81 +46,93 @@ export class RolesForm implements OnInit {
     },
   ]
 
-  listPermission: any[] = []
 
   form: FormGroup = new FormGroup({
     role_name: new FormControl(null, [Validators.required]),
-    modules: new FormControl(null, [Validators.required]),
+    modules: new FormArray([]),
   });
 
-  constructor(private roleService: RolesService) { }
+  get modules(): FormArray<FormGroup> {
+    return this.form.get('modules') as FormArray<FormGroup>;
+  }
+
+  constructor(private roleService: RolesService, private route: ActivatedRoute, private router: Router) {
+    this.id = this.route.snapshot.paramMap.get('role_id') || undefined;
+    const type = this.route.snapshot.queryParamMap.get('type') || undefined;
+    if (type && ['new', 'edit', 'view'].includes(type)) {
+      this.type = type as formType;
+    }
+  }
+
+  private buildModuleGroup(module: string): FormGroup {
+    return new FormGroup({
+      module: new FormControl(module),
+      create: new FormControl(false),
+      view: new FormControl(false),
+      edit: new FormControl(false),
+      delete: new FormControl(false),
+    });
+  }
 
   getModules() {
     this.isLoading = true;
-    this.roleService.getModules().subscribe((res) => {
-      const modules = res
-      this.form.controls.modules.patchValue(res);
-      const result = Object.values(
-        modules.reduce((acc: any, item: string) => {
-          const [module, action] = item.split('.');
+    this.roleService.getModules().subscribe((res: string[]) => {
+      const formArray = this.form.get('modules') as FormArray;
+      formArray.clear();
 
-          if (!acc[module]) {
-            acc[module] = { module };
-          }
+      res.forEach((item) => {
+        const [module, action] = item.split('.');
+        let moduleGroup = formArray.controls.find(
+          (ctrl) => ctrl.get('module')?.value === module
+        ) as FormGroup;
 
-          acc[module][action] = true;
-          return acc;
-        }, {})
-      );
-      this.listPermission = result;
+        if (!moduleGroup) {
+          moduleGroup = this.buildModuleGroup(module);
+          formArray.push(moduleGroup);
+        }
+      });
 
-      console.log('result', result)
       this.isLoading = false;
+      if (this.id) {
+        this.getDetail(this.id);
+      }
     });
   }
+
+
 
   getDetail(id: string) {
     this.isLoading = true;
     this.roleService.getRole(id).subscribe((res) => {
-      const modules = res.modules
-      this.form.controls.modules.patchValue(modules);
-      const result = Object.values(
-        modules.reduce((acc: any, item: string) => {
-          const [module, action] = item.split('.');
-
-          if (!acc[module]) {
-            acc[module] = { module };
-          }
-
-          acc[module][action] = true;
-          return acc;
-        }, {})
-      );
-      this.listPermission = result;
-
-      console.log('result', result)
+      this.form.controls.role_name.patchValue(res.role_name);
+      const formArray = this.form.get('modules') as FormArray;
+      res.modules.forEach((item) => {
+        const [module, action] = item.split('.');
+        let moduleGroup = formArray.controls.find(
+          (ctrl) => ctrl.get('module')?.value === module
+        ) as FormGroup;
+        if (action) {
+          moduleGroup.get(action)?.setValue(true);
+        }
+      });
       this.isLoading = false;
     });
   }
 
   ngOnInit(): void {
-    if (this.type === 'new') {
-      this.getModules();
-    } else if (this.id) {
-      console.log('init id', this.id)
-      this.getDetail(this.id)
-    }
+    this.getModules();
   }
 
   onCheckChange(evt: any, index: number) {
     const val = evt.target.checked;
     const permision = evt.target.value
-    console.log('evt', { permision, val }, index, this.listPermission[index]);
-    this.listPermission[index][permision] = val;
-    console.log('this.modules', this.listPermission)
+    console.log('evt', { permision, val });
+    this.modules.at(index).controls[permision] = val;
+  }
 
+  submit() {
     const results: any[] = []
-    this.listPermission.forEach(item => {
+    this.modules.value.forEach(item => {
       const { module, ...rest } = item;
       const values = Object.keys(rest).map(tem => {
         if (item[tem]) return `${module}.${tem}`;
@@ -124,13 +141,17 @@ export class RolesForm implements OnInit {
       results.push(...values.filter(Boolean))
     })
 
-    this.form.controls.modules.patchValue(results)
-
-    console.log({ results })
-  }
-
-  submit() {
-    const body = this.form.value;
+    const body: IRole = {
+      role_name: this.form.value.role_name as string,
+      modules: results
+    };
     console.log({ body })
+    let serviceArg = this.roleService.createRole(body);
+    if (this.id) serviceArg = this.roleService.editRole(this.id, body)
+    serviceArg.subscribe({
+      next: () => {
+        this.router.navigateByUrl(ROLES.url)
+      }
+    })
   }
 }

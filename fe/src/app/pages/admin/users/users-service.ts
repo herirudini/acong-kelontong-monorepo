@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../../../services/rest-api/base-service';
 import { AlertService } from '../../../shared/components/alert/alert-service';
-import { catchError, map, Observable, of, tap } from 'rxjs';
-import { IRole, IUser, TModules } from '../../../types/interfaces/user.interface';
+import { catchError, map, Observable, of } from 'rxjs';
+import { IRole, IUser } from '../../../types/interfaces/user.interface';
 import { Endpoint } from '../../../types/constants/endpoint';
 import { IPaginationInput } from '../../../types/interfaces/common.interface';
 import { IResList } from '../../../types/interfaces/http.interface';
 import { ITableQueryData } from '../../../shared/components/generic-table/generic-table';
+import { RolesService } from '../roles/roles-service';
 
 interface IParamsUser extends ITableQueryData {
   verified?: boolean;
@@ -16,7 +17,7 @@ interface IParamsUser extends ITableQueryData {
   providedIn: 'root',
 })
 export class UsersService extends BaseService {
-  constructor(private alert: AlertService) {
+  constructor(private alert: AlertService, private roleService: RolesService) {
     super();
   }
 
@@ -45,16 +46,7 @@ export class UsersService extends BaseService {
     ) as any;
   }
 
-  getRoles(): Observable<IRole[]> {
-    return this.getRequest({ url: Endpoint.ROLES, spinner: false }).pipe(
-      map((res: IResList<IRole[]>) => {
-        return res.list;
-      }),
-      catchError((err) => {
-        console.error(err);
-        this.alert.error('Cannot get list role');
-        return of(undefined); // emit undefined so the stream completes gracefully
-      })
-    ) as any;
+  getRoles(qParams: ITableQueryData): Observable<IResList<IRole>> {
+    return this.roleService.getRoles(qParams);
   }
 }

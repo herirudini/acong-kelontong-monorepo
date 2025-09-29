@@ -23,7 +23,7 @@ export type TModules =
     'forms-general.view';
 
 export interface IRole {
-    _id: string,
+    _id?: string,
     role_name: string,
     modules: TModules[]
 }

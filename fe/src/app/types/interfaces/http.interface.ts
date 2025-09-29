@@ -1,9 +1,9 @@
 import { IPaginationInput } from './common.interface';
 
-export interface IRequest {
-  url: string,
-  qParams?: any,
-  spinner?: boolean
+export class IRequest {
+  url: string = '';
+  qParams?: any;
+  spinner?: boolean = true;
 }
 
 export interface IReqMutation extends IRequest {
@@ -11,7 +11,7 @@ export interface IReqMutation extends IRequest {
 }
 
 export interface IReqFORMDATA extends IRequest {
-  data: FormData
+  data?: FormData
 }
 
 export interface IResponse<T> {
