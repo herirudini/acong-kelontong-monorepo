@@ -67,6 +67,8 @@ export class AuthService extends BaseService {
         // One of the symptomp is when after user navigated to admin page, when they click one of any menu triggered by href=#, angular will navigate to # as route target.
         // The actual expectation is the AdminLTE JS should catch that # to trigger toggle function. so if the JS is valid, it should trigger something instead of navigating to #.
         // TODO: if AdminLTE version is 4 already launched on NPM, we better switch to it instead of manual import from src/assets to solve this problem
+
+        // UPDATES: i have import AdminLTE via node_modules and still the same, this bug rely on AdminLTE itself not how the way we use it. (https://github.com/ColorlibHQ/AdminLTE/issues/1570)
         window.location.reload();
       });
       this.alert.success("Logged in succesfully!");
