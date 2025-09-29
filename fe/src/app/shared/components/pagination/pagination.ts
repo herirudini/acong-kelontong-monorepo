@@ -10,6 +10,9 @@ import { NgbPaginationModule } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './pagination.scss'
 })
 export class Pagination implements OnChanges {
+  @Output() paginationChanged: EventEmitter<IPaginationOutput> = new EventEmitter<IPaginationOutput>();
+  @Input() size: IPaginationOutput['size'] = 10; //DEFAULT
+  @Input() totalData: number = 0;
   @Input() pageRange: number = 2;
   @Input() zeroIndexed: boolean = true;
   get adjuster(): number { return this.zeroIndexed ? 1 : 0 }
@@ -29,9 +32,6 @@ export class Pagination implements OnChanges {
     return Math.min((this.zeroIndexedActivePage + 1) * this.size, this.totalData);
   }
 
-  @Output() paginationChanged: EventEmitter<IPaginationOutput> = new EventEmitter<IPaginationOutput>();
-  @Input() size: IPaginationOutput['size'] = 10; //DEFAULT
-  @Input() totalData: number = 0;
   sizeOptions: number[] = [10, 25, 50, 100];
 
   constructor(private cd: ChangeDetectorRef) {

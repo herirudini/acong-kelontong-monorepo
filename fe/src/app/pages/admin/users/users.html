@@ -2,7 +2,7 @@
     <div class="card-header mb-4">
         <div class="d-flex flex-row justify-content-between gap-4">
             <h3 class="card-title">User List</h3>
-            <a class="btn btn-primary" routerLink="./form">Invite User</a>
+            <a class="btn btn-primary" (click)="showForm()">Invite User</a>
         </div>
     </div>
     <app-generic-table ngSkipHydration [columns]="columns" [data]="listUser" [usePagination]="true" [useSearch]="true"

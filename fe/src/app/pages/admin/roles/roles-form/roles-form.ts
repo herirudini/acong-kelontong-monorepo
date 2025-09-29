@@ -1,15 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RolesService } from '../roles-service';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-roles-form',
-  imports: [],
+  imports: [ReactiveFormsModule],
   templateUrl: './roles-form.html',
   styleUrl: './roles-form.scss'
 })
 export class RolesForm implements OnInit {
   isLoading: boolean = false;
-  @Input() type: 'new'|'edit' = 'new';
+  @Input() type: 'new' | 'edit' | 'view' = 'new';
+  @Input() id?: string;
 
   columns = [
     {
@@ -41,15 +43,44 @@ export class RolesForm implements OnInit {
 
   listPermission: any[] = []
 
-  constructor(private roleService: RolesService) {}
+  form: FormGroup = new FormGroup({
+    role_name: new FormControl(null, [Validators.required]),
+    modules: new FormControl(null, [Validators.required]),
+  });
 
-  getPermissions() {
+  constructor(private roleService: RolesService) { }
+
+  getModules() {
     this.isLoading = true;
-    this.roleService.getPermissions().subscribe((res) => {
-      const permissions = res
-
+    this.roleService.getModules().subscribe((res) => {
+      const modules = res
+      this.form.controls.modules.patchValue(res);
       const result = Object.values(
-        permissions.reduce((acc: any, item: string) => {
+        modules.reduce((acc: any, item: string) => {
+          const [module, action] = item.split('.');
+
+          if (!acc[module]) {
+            acc[module] = { module };
+          }
+
+          acc[module][action] = true;
+          return acc;
+        }, {})
+      );
+      this.listPermission = result;
+
+      console.log('result', result)
+      this.isLoading = false;
+    });
+  }
+
+  getDetail(id: string) {
+    this.isLoading = true;
+    this.roleService.getRole(id).subscribe((res) => {
+      const modules = res.modules
+      this.form.controls.modules.patchValue(modules);
+      const result = Object.values(
+        modules.reduce((acc: any, item: string) => {
           const [module, action] = item.split('.');
 
           if (!acc[module]) {
@@ -68,7 +99,12 @@ export class RolesForm implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getPermissions();
+    if (this.type === 'new') {
+      this.getModules();
+    } else if (this.id) {
+      console.log('init id', this.id)
+      this.getDetail(this.id)
+    }
   }
 
   onCheckChange(evt: any, index: number) {
@@ -76,7 +112,7 @@ export class RolesForm implements OnInit {
     const permision = evt.target.value
     console.log('evt', { permision, val }, index, this.listPermission[index]);
     this.listPermission[index][permision] = val;
-    console.log('this.permissions', this.listPermission)
+    console.log('this.modules', this.listPermission)
 
     const results: any[] = []
     this.listPermission.forEach(item => {
@@ -88,6 +124,13 @@ export class RolesForm implements OnInit {
       results.push(...values.filter(Boolean))
     })
 
+    this.form.controls.modules.patchValue(results)
+
     console.log({ results })
+  }
+
+  submit() {
+    const body = this.form.value;
+    console.log({ body })
   }
 }

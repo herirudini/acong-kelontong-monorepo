@@ -46,9 +46,7 @@ export interface ColumnProps {
   dataType?: any;
 }
 
-export interface ITableQueryData extends ISort {
-  page: number,
-  size: number,
+export interface ITableQueryData extends ISort, IPaginationOutput {
   search?: string,
   filterByDateVal?: IDateRangeFilter,
   filterSelectVal?: ISelectValue,

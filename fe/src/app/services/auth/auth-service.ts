@@ -46,8 +46,8 @@ export class AuthService extends BaseService {
     return this.storage.getItem('profile');
   }
 
-  login(userCreds: { email: string, password: string }) {
-    this.postRequest(Endpoint.LOGIN, userCreds).pipe(
+  login(body: { email: string, password: string }) {
+    this.postRequest({ url: Endpoint.LOGIN, body }).pipe(
       tap((res: { detail: IAuth }) => {
         try {
           const token = res.detail.access_token;
@@ -74,7 +74,7 @@ export class AuthService extends BaseService {
   }
 
   refreshToken(): Observable<{ detail: IAuth }> {
-    return this.postRequest(Endpoint.REFRESH).pipe(
+    return this.postRequest({ url: Endpoint.REFRESH }).pipe(
       tap((res: { detail: IAuth }) => {
         const token = res.detail.access_token;
         if (token) {
@@ -87,7 +87,7 @@ export class AuthService extends BaseService {
   logout(option?: TLogoutOption) {
     this.storage.clear();
     this.router.navigateByUrl('/login').then(() => {
-      this.postRequest(Endpoint.LOGOUT, {}, { option }).subscribe();
+      this.postRequest({ url: Endpoint.LOGOUT, qParams: { option } }).subscribe();
     });
   }
 

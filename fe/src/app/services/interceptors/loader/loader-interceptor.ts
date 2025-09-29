@@ -6,12 +6,12 @@ import { PageSpinnerService } from '../../../shared/components/page-spinner/page
 export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
   const pageSpinnerService = inject(PageSpinnerService);
 
-  const spinneroff = req.params.get('spinneroff');
+  const spinner = req.params.get('spinner');
   req = req.clone({
-    params: req.params.delete('spinneroff')
+    params: req.params.delete('spinner')
   });
 
-  if (spinneroff === '1') {
+  if (spinner) {
     return next(req);
   } else {
     pageSpinnerService.spinnerOn();

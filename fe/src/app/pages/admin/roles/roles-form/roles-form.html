@@ -1,17 +1,13 @@
 <div class="card mb-4">
-  <!--begin::Header-->
   <div class="card-header">
     <div class="card-title text-capitalize">{{type}} Role</div>
   </div>
-  <!--end::Header-->
-  <!--begin::Form-->
-  <!--begin::Body-->
   <div class="card-body">
-    <form class="needs-validation" novalidate>
+    <form [formGroup]="form" class="needs-validation" novalidate>
       <div class="d-flex flex-row flex-wrap justify-content-between gap-2">
         <div class="w-100">
-          <label for="validationCustom01" class="form-label">Role Name</label>
-          <input type="text" class="form-control" id="validationCustom01" value="Mark" required />
+          <label for="role_name" class="form-label">Role Name</label>
+          <input type="text" class="form-control" id="role_name" formControlName="role_name" required />
           <div class="valid-feedback">Looks good!</div>
         </div>
       </div>
@@ -52,38 +48,7 @@
       </div>
     </div>
   </div>
-  <!--end::Body-->
-  <!--begin::Footer-->
   <div class="card-footer">
-    <button class="btn btn-primary" type="submit">Submit form</button>
+    <button class="btn btn-primary" type="button" (click)="submit()">Submit form</button>
   </div>
-  <!--end::Footer-->
-  <!--end::Form-->
-  <!--begin::JavaScript-->
-  <script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (() => {
-      'use strict';
-
-      // Fetch all the forms we want to apply custom Bootstrap validation styles to
-      const forms = document.querySelectorAll('.needs-validation');
-
-      // Loop over them and prevent submission
-      Array.from(forms).forEach((form) => {
-        form.addEventListener(
-          'submit',
-          (event) => {
-            if (!form.checkValidity()) {
-              event.preventDefault();
-              event.stopPropagation();
-            }
-
-            form.classList.add('was-validated');
-          },
-          false,
-        );
-      });
-    })();
-  </script>
-  <!--end::JavaScript-->
 </div>

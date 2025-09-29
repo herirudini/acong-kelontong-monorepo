@@ -33,6 +33,7 @@ export class Roles implements OnInit {
       id: 'action',
       extraHeaderClass: 'uppercase-text',
       customElementId: 'action',
+      maxWidth: '3ch'
     }
   ]
 
@@ -44,9 +45,10 @@ export class Roles implements OnInit {
     size: 'xl'
   }
 
-  showForm() {
+  showForm(type: 'edit' | 'new' | 'view', id?: string) {
     const modalRef = this.modalService.open(RolesForm, this.modalOptions);
-    modalRef.componentInstance.type = 'edit';
+    modalRef.componentInstance.type = type;
+    modalRef.componentInstance.id = id;
   }
 
   getList(evt: ITableQueryData) {
@@ -61,10 +63,10 @@ export class Roles implements OnInit {
       next: (res) => {
         this.listRoles = res.list ?? [];
         this.pagination = {
-          page: res.meta.page,
-          total: res.meta.total,
-          size: res.meta.size,
-          totalPages: res.meta.totalPages
+          page: res.meta?.page ?? 0,
+          total: res.meta?.total ?? 0,
+          size: res.meta?.size ?? 0,
+          totalPages: res.meta?.totalPages ?? 0
         }
         this.isLoading = false;
       }, error: () => {

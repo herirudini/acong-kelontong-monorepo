@@ -10,6 +10,9 @@ export const Endpoint = {
 
   USERS: `${api}users`,
   ROLES: `${api}roles`,
+  ROLES_ID: (id: string)=> {
+    return `${api}roles/${id}`
+  },
 
   /* Admin endpoints */
   INVITE_USER: `${api}users/invite-user`,

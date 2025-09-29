@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { IUser } from '../../../types/interfaces/user.interface';
 import { UsersService } from './users-service';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { IPaginationInput, ISelectFilter } from '../../../types/interfaces/common.interface';
 import { SORT_DIR } from '../../../types/constants/common.constants';
-import { RouterLink } from '@angular/router';
+import { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { UserForm } from './user-form/user-form';
 
 @Component({
   selector: 'app-users',
-  imports: [GenericTable, TableColumn, RouterLink],
+  imports: [GenericTable, TableColumn],
   templateUrl: './users.html',
   styleUrl: './users.scss'
 })
@@ -66,7 +67,18 @@ export class Users implements OnInit {
     }
   ]
 
-  constructor(private service: UsersService) { }
+  activeModal = Inject(NgbActiveModal);
+
+  constructor(private service: UsersService, private modalService: NgbModal) { }
+
+  modalOptions: NgbModalOptions = {
+    size: 'xl'
+  }
+
+  showForm() {
+    const modalRef = this.modalService.open(UserForm, this.modalOptions);
+    modalRef.componentInstance.type = 'edit';
+  }
 
   getList(evt: ITableQueryData) {
     this.isLoading = true;
@@ -81,10 +93,10 @@ export class Users implements OnInit {
       next: (res) => {
         this.listUser = res.list ?? [];
         this.pagination = {
-          page: res.meta.page,
-          total: res.meta.total,
-          size: res.meta.size,
-          totalPages: res.meta.totalPages
+          page: res.meta?.page ?? 0,
+          total: res.meta?.total ?? 0,
+          size: res.meta?.size ?? 0,
+          totalPages: res.meta?.totalPages ?? 0
         }
         this.isLoading = false;
       }, error: () => {

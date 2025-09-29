@@ -4,15 +4,11 @@ import { AlertService } from '../../../shared/components/alert/alert-service';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { IRole, IUser, TModules } from '../../../types/interfaces/user.interface';
 import { Endpoint } from '../../../types/constants/endpoint';
-import {
-  IPaginationInput,
-  IPaginationOutput,
-  IResponse,
-  ISort,
-} from '../../../types/interfaces/common.interface';
+import { IPaginationInput } from '../../../types/interfaces/common.interface';
+import { IResList } from '../../../types/interfaces/http.interface';
+import { ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 
-interface IParamsUser extends IPaginationOutput, ISort {
-  search?: string;
+interface IParamsUser extends ITableQueryData {
   verified?: boolean;
 }
 
@@ -25,10 +21,10 @@ export class UsersService extends BaseService {
   }
 
   getUsers(
-    params: IParamsUser
-  ): Observable<{ list: IUser[]; meta: IPaginationInput }> {
-    return this.getRequest(Endpoint.USERS, params, 'spinneroff').pipe(
-      map((res: IResponse<IUser>) => {
+    qParams: IParamsUser
+  ): Observable<IResList<IUser>> {
+    return this.getRequest({ url: Endpoint.USERS, qParams, spinner: false }).pipe(
+      map((res: IResList<IUser>) => {
         const val = {
           meta: res?.meta as IPaginationInput,
           list: res?.list?.map((item) => {
@@ -50,8 +46,8 @@ export class UsersService extends BaseService {
   }
 
   getRoles(): Observable<IRole[]> {
-    return this.getRequest(Endpoint.ROLES, undefined, 'spinneroff').pipe(
-      map((res: IResponse<IRole[]>) => {
+    return this.getRequest({ url: Endpoint.ROLES, spinner: false }).pipe(
+      map((res: IResList<IRole[]>) => {
         return res.list;
       }),
       catchError((err) => {
