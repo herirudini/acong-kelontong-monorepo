@@ -61,16 +61,14 @@ export class AuthService extends BaseService {
         }
       })
     ).subscribe(() => {
-      this.router.navigateByUrl("/").then(() => {
-        // NOTE: this is mandatory, we need to do re laod the DOM, because AdminLTE’s JS imported via src/assets runs only once on initial page load (when the DOM first exists, which is the login page).
-        // So after navigating to admin page, the JS will lose its reference to its own custom attribute: data-lte-toggle="treeview, data-lte-pushmenu, etc".
-        // One of the symptomp is when after user navigated to admin page, when they click one of any menu triggered by href=#, angular will navigate to # as route target.
-        // The actual expectation is the AdminLTE JS should catch that # to trigger toggle function. so if the JS is valid, it should trigger something instead of navigating to #.
-        // TODO: if AdminLTE version is 4 already launched on NPM, we better switch to it instead of manual import from src/assets to solve this problem
+      // NOTE: this is mandatory, we need to do re laod the DOM, because AdminLTE’s JS imported via src/assets runs only once on initial page load (when the DOM first exists, which is the login page).
+      // So after navigating to admin page, the JS will lose its reference to its own custom attribute: data-lte-toggle="treeview, data-lte-pushmenu, etc".
+      // One of the symptomp is when after user navigated to admin page, when they click one of any menu triggered by href=#, angular will navigate to # as route target.
+      // The actual expectation is the AdminLTE JS should catch that # to trigger toggle function. so if the JS is valid, it should trigger something instead of navigating to #.
+      // TODO: if AdminLTE version is 4 already launched on NPM, we better switch to it instead of manual import from src/assets to solve this problem
 
-        // UPDATES: i have import AdminLTE via node_modules and still the same, this bug rely on AdminLTE itself not how the way we use it. (https://github.com/ColorlibHQ/AdminLTE/issues/1570)
-        window.location.reload();
-      });
+      // UPDATES: i have import AdminLTE via node_modules and still the same, this bug rely on AdminLTE itself not how the way we use it. (https://github.com/ColorlibHQ/AdminLTE/issues/1570)
+      window.location.href = "/"
       this.alert.success("Logged in succesfully!");
     });
   }
