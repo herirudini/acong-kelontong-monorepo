@@ -133,8 +133,8 @@
                 <ng-content></ng-content>
                 } @else {
                 <tr>
-                    <td [attr.colspan]="columns.length">
-                        <div class="nodata">{{ 'COMMON.NO_DATA' }}</div>
+                    <td [attr.colspan]="columns.length+1">
+                        <div class="w-100 py-5 my-5 text-center">No Data</div>
                     </td>
                 </tr>
                 }

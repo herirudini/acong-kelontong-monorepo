@@ -12,8 +12,7 @@ export class AuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
-      BaseResponse.unauthorized({ err: 'Auth Guard Missing token', option: { message: 'Unauthorized' } });
-      return false;
+      return BaseResponse.unauthorized({ err: 'Auth Guard Missing token', option: { message: 'Unauthorized' } });
     }
 
     const accesToken = authHeader.split(' ')[1];
