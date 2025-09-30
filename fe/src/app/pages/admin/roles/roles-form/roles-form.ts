@@ -1,15 +1,16 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RolesService } from '../roles-service';
-import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IRole } from '../../../../types/interfaces/user.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROLES } from '../../../../types/constants/menus';
+import { FormValidation } from '../../../../shared/directives/form-validation/form-validation';
 
 type formType = 'new' | 'edit' | 'view';
 
 @Component({
   selector: 'app-roles-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FormValidation],
   templateUrl: './roles-form.html',
   styleUrl: './roles-form.scss'
 })
@@ -49,7 +50,7 @@ export class RolesForm implements OnInit {
 
   form: FormGroup = new FormGroup({
     role_name: new FormControl(null, [Validators.required]),
-    modules: new FormArray([]),
+    modules: new FormArray<FormGroup>([]),
     active: new FormControl(false)
   });
 
@@ -133,6 +134,7 @@ export class RolesForm implements OnInit {
   }
 
   submit() {
+    if (this.form.invalid) return;
     const results: any[] = []
     this.modules.value.forEach(item => {
       const { module, ...rest } = item;
