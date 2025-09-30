@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UsersService } from '../users-service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IRole } from '../../../../types/interfaces/user.interface';
@@ -11,6 +11,7 @@ import { IRole } from '../../../../types/interfaces/user.interface';
 })
 export class UserForm implements OnInit {
   @Input() type: 'new' | 'edit' = 'new';
+  @Output() close: EventEmitter<unknown> = new EventEmitter<unknown>()
 
   isLoading: boolean = false;
 
@@ -34,5 +35,9 @@ export class UserForm implements OnInit {
     this.userService.getRoles({page:0, size:1000}).subscribe((res) => {
       this.roles = res.list ?? [];
     })
+  }
+
+  submit() {
+    this.close.emit();
   }
 }

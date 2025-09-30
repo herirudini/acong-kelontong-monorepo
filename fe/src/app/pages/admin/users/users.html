@@ -2,7 +2,7 @@
     <div class="card-header mb-4">
         <div class="d-flex flex-row justify-content-between gap-4">
             <h3 class="card-title">User List</h3>
-            <a class="btn btn-primary" (click)="showForm()">Invite User</a>
+            <a class="btn btn-primary" (click)="showForm('new')">Invite User</a>
         </div>
     </div>
     <app-generic-table ngSkipHydration [columns]="columns" [data]="listUser" [usePagination]="true" [useSearch]="true"
@@ -10,9 +10,18 @@
         [isLoading]="isLoading">
         <div appTableColumn customColumnId="action">
             <ng-template let-item>
-                <a class="text-warning pointer">
-                    <i class="fa-solid fa-pencil"></i>
-                </a>
+                <div class="d-flex flex-row gap-1">
+                    <a (click)="showForm('view', item._id)" class="text-white pointer btn btn-secondary">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    <a (click)="showForm('edit', item._id)" class="text-white pointer btn btn-warning">
+                        <i class="fa-solid fa-pencil"></i>
+                    </a>
+                    <button (click)="deleteUser(item._id)" class="text-white pointer btn btn-danger"
+                        [disabled]="item.active">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
             </ng-template>
         </div>
     </app-generic-table>

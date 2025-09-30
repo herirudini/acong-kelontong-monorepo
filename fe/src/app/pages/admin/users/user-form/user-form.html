@@ -7,29 +7,29 @@
   <!--begin::Form-->
   <!--begin::Body-->
   <div class="card-body">
-    <form class="needs-validation" novalidate>
+    <form class="needs-validation" novalidate [formGroup]="form">
       <div class="d-flex flex-row flex-wrap justify-content-between gap-2">
         <div class="w-100">
           <label for="validationCustom01" class="form-label">First name</label>
-          <input type="text" class="form-control" id="validationCustom01" value="Mark" required />
+          <input type="text" class="form-control" id="validationCustom01" value="Mark" required formControlName="first_name" />
           <div class="valid-feedback">Looks good!</div>
         </div>
 
         <div class="w-100">
           <label for="validationCustom02" class="form-label">Last name</label>
-          <input type="text" class="form-control" id="validationCustom02" value="Otto" required />
+          <input type="text" class="form-control" id="validationCustom02" value="Otto" required formControlName="last_name"/>
           <div class="valid-feedback">Looks good!</div>
         </div>
 
         <div class="w-100">
           <label for="validationCustomUsername" class="form-label">Email</label>
-          <input type="text" class="form-control" id="validationCustom02" value="Otto" required />
+          <input type="text" class="form-control" id="validationCustom02" value="Otto" required formControlName="email"/>
           <div class="valid-feedback">Looks good!</div>
         </div>
 
         <div class="w-100">
           <label for="validationCustom04" class="form-label">Role</label>
-          <select class="form-select" id="validationCustom04" required>
+          <select class="form-select" id="validationCustom04" required formControlName="role">
             <option selected disabled value="">Choose...</option>
             @for (role of roles; track $index) {
             <option [value]="role._id">{{role.role_name}}</option>

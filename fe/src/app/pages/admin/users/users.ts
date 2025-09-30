@@ -8,6 +8,7 @@ import { SORT_DIR } from '../../../types/constants/common.constants';
 import { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { UserForm } from './user-form/user-form';
 
+type formType = 'new' | 'edit' | 'view';
 @Component({
   selector: 'app-users',
   imports: [GenericTable, TableColumn],
@@ -67,6 +68,14 @@ export class Users implements OnInit {
     }
   ]
 
+  defaultTableParam = {
+    page: this.pagination.page,
+    size: this.pagination.size,
+    sortBy: '',
+    sortDir: SORT_DIR.ASC,
+    search: '',
+  }
+
   activeModal = Inject(NgbActiveModal);
 
   constructor(private service: UsersService, private modalService: NgbModal) { }
@@ -75,9 +84,13 @@ export class Users implements OnInit {
     size: 'xl'
   }
 
-  showForm() {
+  showForm(type: formType, id?:string) {
     const modalRef = this.modalService.open(UserForm, this.modalOptions);
-    modalRef.componentInstance.type = 'edit';
+    modalRef.componentInstance.type = type;
+    modalRef.componentInstance.close.subscribe(() => {
+      this.getList(this.defaultTableParam);
+      modalRef.dismiss();
+    })
   }
 
   getList(evt: ITableQueryData) {
@@ -106,12 +119,21 @@ export class Users implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getList({
-      page: this.pagination.page,
-      size: this.pagination.size,
-      sortBy: 'status', // column ID
-      sortDir: SORT_DIR.ASC,
-      search: '',
-    })
+    this.getList(this.defaultTableParam);
+  }
+
+
+  deleteUser(role_id: string) {
+    // this.confrimDelete?.show().subscribe((res: any) => {
+    //   if (res) {
+    //     this.execDeleteion(role_id);
+    //   }
+    // })
+  }
+
+  execDeleteion(role_id: string) {
+    // this.service.deleteRole(role_id).subscribe(()=>{
+    //   this.getList(this.defaultQuery);
+    // });
   }
 }
