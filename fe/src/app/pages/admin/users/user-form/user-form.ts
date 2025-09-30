@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { UsersService } from '../users-service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IRole } from '../../../../types/interfaces/user.interface';
@@ -10,6 +10,8 @@ import { IRole } from '../../../../types/interfaces/user.interface';
   styleUrl: './user-form.scss',
 })
 export class UserForm implements OnInit {
+  @Input() type: 'new' | 'edit' = 'new';
+
   isLoading: boolean = false;
 
   roles: IRole[] = [];
@@ -29,8 +31,8 @@ export class UserForm implements OnInit {
 
   getRoles() {
     this.isLoading = true;
-    this.userService.getRoles().subscribe((res) => {
-      this.roles = res
+    this.userService.getRoles({page:0, size:1000}).subscribe((res) => {
+      this.roles = res.list ?? [];
     })
   }
 }

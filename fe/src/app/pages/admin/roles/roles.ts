@@ -1,19 +1,21 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { IRole } from '../../../types/interfaces/user.interface';
 import { IPaginationInput } from '../../../types/interfaces/common.interface';
 import { RolesService } from './roles-service';
-import { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { RolesForm } from './roles-form/roles-form';
+import { NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
+import { RouterLink } from '@angular/router';
+import { ConfirmModal } from '../../../shared/components/modals/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-roles',
-  imports: [GenericTable, TableColumn],
+  imports: [GenericTable, TableColumn, RouterLink, ConfirmModal],
   templateUrl: './roles.html',
   styleUrl: './roles.scss'
 })
 export class Roles implements OnInit {
+  @ViewChild('DeleteModal') confrimDelete?: ConfirmModal;
   isLoading: boolean = false;
   listRoles: IRole[] = [];
   pagination: IPaginationInput = {
@@ -33,20 +35,21 @@ export class Roles implements OnInit {
       id: 'action',
       extraHeaderClass: 'uppercase-text',
       customElementId: 'action',
+      minWidth: '4ch',
+      maxWidth: '4ch'
+
     }
   ]
+  defaultQuery = {
+    page: this.pagination.page,
+    size: this.pagination.size,
+    search: '',
+  }
 
-  activeModal = Inject(NgbActiveModal);
-
-  constructor(private service: RolesService, private modalService: NgbModal) { }
+  constructor(private service: RolesService) { }
 
   modalOptions: NgbModalOptions = {
     size: 'xl'
-  }
-
-  showForm() {
-    const modalRef = this.modalService.open(RolesForm, this.modalOptions);
-    modalRef.componentInstance.type = 'edit';
   }
 
   getList(evt: ITableQueryData) {
@@ -61,10 +64,10 @@ export class Roles implements OnInit {
       next: (res) => {
         this.listRoles = res.list ?? [];
         this.pagination = {
-          page: res.meta.page,
-          total: res.meta.total,
-          size: res.meta.size,
-          totalPages: res.meta.totalPages
+          page: res.meta?.page ?? 0,
+          total: res.meta?.total ?? 0,
+          size: res.meta?.size ?? 0,
+          totalPages: res.meta?.totalPages ?? 0
         }
         this.isLoading = false;
       }, error: () => {
@@ -74,10 +77,20 @@ export class Roles implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getList({
-      page: this.pagination.page,
-      size: this.pagination.size,
-      search: '',
+    this.getList(this.defaultQuery)
+  }
+
+  deleteRole(role_id: string) {
+    this.confrimDelete?.show().subscribe((res: any) => {
+      if (res) {
+        this.execDeleteion(role_id);
+      }
     })
+  }
+
+  execDeleteion(role_id: string) {
+    this.service.deleteRole(role_id).subscribe(()=>{
+      this.getList(this.defaultQuery);
+    });
   }
 }

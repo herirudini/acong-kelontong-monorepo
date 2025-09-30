@@ -26,7 +26,7 @@ export class AuthGuardService {
       return true;
     }
     
-    // SSR-safe redirect
-    return this.router.parseUrl('/login');
+    window.location.href = '/login';
+    return false;
   }
 }

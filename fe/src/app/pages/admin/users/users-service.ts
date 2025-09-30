@@ -1,18 +1,15 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../../../services/rest-api/base-service';
 import { AlertService } from '../../../shared/components/alert/alert-service';
-import { catchError, map, Observable, of, tap } from 'rxjs';
-import { IRole, IUser, TModules } from '../../../types/interfaces/user.interface';
+import { catchError, map, Observable, of } from 'rxjs';
+import { IRole, IUser } from '../../../types/interfaces/user.interface';
 import { Endpoint } from '../../../types/constants/endpoint';
-import {
-  IPaginationInput,
-  IPaginationOutput,
-  IResponse,
-  ISort,
-} from '../../../types/interfaces/common.interface';
+import { IPaginationInput } from '../../../types/interfaces/common.interface';
+import { IResList } from '../../../types/interfaces/http.interface';
+import { ITableQueryData } from '../../../shared/components/generic-table/generic-table';
+import { RolesService } from '../roles/roles-service';
 
-interface IParamsUser extends IPaginationOutput, ISort {
-  search?: string;
+interface IParamsUser extends ITableQueryData {
   verified?: boolean;
 }
 
@@ -20,15 +17,15 @@ interface IParamsUser extends IPaginationOutput, ISort {
   providedIn: 'root',
 })
 export class UsersService extends BaseService {
-  constructor(private alert: AlertService) {
+  constructor(private alert: AlertService, private roleService: RolesService) {
     super();
   }
 
   getUsers(
-    params: IParamsUser
-  ): Observable<{ list: IUser[]; meta: IPaginationInput }> {
-    return this.getRequest(Endpoint.USERS, params, 'spinneroff').pipe(
-      map((res: IResponse<IUser>) => {
+    qParams: IParamsUser
+  ): Observable<IResList<IUser>> {
+    return this.getRequest({ url: Endpoint.USERS, qParams, spinner: false }).pipe(
+      map((res: IResList<IUser>) => {
         const val = {
           meta: res?.meta as IPaginationInput,
           list: res?.list?.map((item) => {
@@ -49,16 +46,7 @@ export class UsersService extends BaseService {
     ) as any;
   }
 
-  getRoles(): Observable<IRole[]> {
-    return this.getRequest(Endpoint.ROLES, undefined, 'spinneroff').pipe(
-      map((res: IResponse<IRole[]>) => {
-        return res.list;
-      }),
-      catchError((err) => {
-        console.error(err);
-        this.alert.error('Cannot get list role');
-        return of(undefined); // emit undefined so the stream completes gracefully
-      })
-    ) as any;
+  getRoles(qParams: ITableQueryData): Observable<IResList<IRole>> {
+    return this.roleService.getRoles(qParams);
   }
 }

@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { IRequest, IReqMutation, IReqFORMDATA } from '../../types/interfaces/http.interface';
 
 @Injectable({
   providedIn: 'root'
@@ -8,94 +9,94 @@ import { Observable, map } from 'rxjs';
 export class BaseService {
   protected http = inject(HttpClient);
 
-  getRequest(url: string, params?: any, spinneroff?: 'spinneroff'): Observable<any> {
+  getRequest(req: IRequest): Observable<any> {
     const headers = {
       'Content-Type': 'application/json',
     };
     const requestOptions = {
       headers: new HttpHeaders(headers),
     };
-    if (params) {
-      params['spinneroff'] = spinneroff ? '1' : '0'
+    if (req.qParams) {
+      req.qParams['spinner'] = req.spinner
     } else {
-      params = {
-        spinneroff: spinneroff ? '1' : '0'
+      req.qParams = {
+        spinner: req.spinner
       }
     }
-    return this.http.get(url, { params, ...requestOptions });
+    return this.http.get(req.url, { params: req.qParams, ...requestOptions });
   }
 
-  postRequest(url: string, body?: any, params?: any, spinneroff?: 'spinneroff'): Observable<any> {
+  postRequest(req: IReqMutation): Observable<any> {
     const headers = {
       'Content-Type': 'application/json',
     };
     const requestOptions = {
       headers: new HttpHeaders(headers),
     };
-    if (params) {
-      params['spinneroff'] = spinneroff ? '1' : '0'
+    if (req.qParams) {
+      req.qParams['spinner'] = req.spinner
     } else {
-      params = {
-        spinneroff: spinneroff ? '1' : '0'
+      req.qParams = {
+        spinner: req.spinner
       }
     }
-    return this.http.post(url, body, {
-      params,
+    return this.http.post(req.url, req.body, {
+      params: req.qParams,
       ...requestOptions,
       responseType: 'json',
-      withCredentials: true 
+      withCredentials: true
     });
   }
 
-  putRequest(url: string, body?: any, params?: any, spinneroff?: 'spinneroff'): Observable<any> {
-    if (params) {
-      params['spinneroff'] = spinneroff ? '1' : '0'
+  putRequest(req: IReqMutation): Observable<any> {
+    if (req.qParams) {
+      req.qParams['spinner'] = req.spinner
     } else {
-      params = {
-        spinneroff: spinneroff ? '1' : '0'
+      req.qParams = {
+        spinner: req.spinner
       }
     }
-    return this.http.put(url, body, { params, withCredentials: true });
+    return this.http.put(req.url, req.body, { params: req.qParams, withCredentials: true });
   }
 
-  deleteRequest(url: string, params?: any, spinneroff?: 'spinneroff'): Observable<any> {
+  deleteRequest(req: IRequest): Observable<any> {
     const headers = {
       'Content-Type': 'application/json',
     };
     const requestOptions = {
       headers: new HttpHeaders(headers),
     };
-    params ??= {
-      ...params,
-      spinneroff: spinneroff ? '1' : '0'
+    req.qParams ??= {
+      ...req.qParams,
+      spinner: req.spinner
     }
-    return this.http.delete(url, { params, ...requestOptions, withCredentials: true });
+    return this.http.delete(req.url, { params: req.qParams, ...requestOptions, withCredentials: true });
   }
 
-  postRequestFile(url: string, file: FormData, params?: any, spinneroff?: 'spinneroff'): Observable<any> {
-    params ??= {
-      ...params,
-      spinneroff: spinneroff ? '1' : '0'
+  postRequestFORMDATA(req: IReqFORMDATA): Observable<any> {
+    req.qParams ??= {
+      ...req.qParams,
+      spinner: req.spinner
     }
-    return this.http.post(url, file, { params, withCredentials: true });
+    return this.http.post(req.url, req.data, { params: req.qParams, withCredentials: true });
   }
 
-  getRequestFile(url: string, params?: any, spinneroff?: 'spinneroff'): Observable<File> {
+  getRequestFile(req: IRequest): Observable<File> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/octet-stream',
     });
-    if (params) {
-      params['spinneroff'] = spinneroff ? '1' : '0'
+    if (req.qParams) {
+      req.qParams['spinner'] = req.spinner
     } else {
-      params = {
-        spinneroff: spinneroff ? '1' : '0'
+      req.qParams = {
+        spinner: req.spinner
       }
     }
     return this.http
-      .get(url, {
+      .get(req.url, {
         observe: 'response',
         headers: headers,
-        params,
+        params: req.qParams,
         responseType: 'blob',
       }).pipe(
         map((res: any) => {
@@ -112,22 +113,22 @@ export class BaseService {
       );
   }
 
-  getRequestDownloadFile(url: string, params?: any, spinneroff?: 'spinneroff'): Observable<any> {
+  getRequestDownloadFile(req: IRequest): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/octet-stream',
     });
-    if (params) {
-      params['spinneroff'] = spinneroff ? '1' : '0'
+    if (req.qParams) {
+      req.qParams['spinner'] = req.spinner
     } else {
-      params = {
-        spinneroff: spinneroff ? '1' : '0'
+      req.qParams = {
+        spinner: req.spinner
       }
     }
     return this.http
-      .get(url, {
+      .get(req.url, {
         observe: 'response',
         headers: headers,
-        params,
+        params: req.qParams,
         responseType: 'blob' as 'json',
       })
       .pipe(

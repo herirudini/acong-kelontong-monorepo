@@ -35,11 +35,3 @@ export interface ISelectValue {
   label: string;
   value: any;
 }
-
-export interface IResponse<T> {
-  message?: string;
-  list?: T[];
-  detail?: T;
-  error_code?: string;
-  meta?: IPaginationInput;
-}

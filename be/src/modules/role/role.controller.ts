@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { PaginationDto } from 'src/global/global.dto';
 import { BaseResponse } from 'src/utils/base-response';
 import type { Response } from 'express';
 import type { RoleDocument } from './role.schema';
 import { AuthGuard } from '../auth/auth.guard';
+import { GetRolesDTO } from './role.dto';
 
 @Controller('roles')
 export class RoleController {
@@ -14,11 +15,11 @@ export class RoleController {
 
   @Get('')
   async list(
-    @Query() { page, size, sortBy, sortDir, search }: PaginationDto,
+    @Query() { page, size, sortBy, sortDir, search, active }: GetRolesDTO,
     @Res() res: Response,
   ) {
     try {
-      const { data, meta } = await this.roleService.getListRole(page, size, sortBy, sortDir, search);
+      const { data, meta } = await this.roleService.getListRole(page, size, sortBy, sortDir, search, active);
       return BaseResponse.success({
         res,
         option: { message: 'Success get list role', list: data, meta },
@@ -29,7 +30,7 @@ export class RoleController {
   }
 
   @UseGuards(AuthGuard)
-  @Post('create')
+  @Post('')
   async createRole(
     @Body() body: RoleDocument,
     @Res() res: Response,
@@ -43,7 +44,7 @@ export class RoleController {
     }
   }
 
-  @Get('detail/:role_id')
+  @Get(':role_id')
   async detail(
     @Param('role_id') role_id: string,
     @Res() res: Response,
@@ -60,7 +61,7 @@ export class RoleController {
   }
 
   @UseGuards(AuthGuard)
-  @Put('detail/:role_id/edit-role')
+  @Put(':role_id')
   async edit(
     @Param('role_id') role_id: string,
     @Body() body: RoleDocument,
@@ -69,6 +70,20 @@ export class RoleController {
     try {
       const detail = await this.roleService.editRole(role_id, body);
       return BaseResponse.success({ res, option: { message: 'Success edit role', detail } })
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Delete(':role_id')
+  async delete(
+    @Param('role_id') role_id: string,
+    @Res() res: Response,
+  ) {
+    try {
+      await this.roleService.deleteRole(role_id);
+      return BaseResponse.success({ res, option: { message: 'Success delete role' } })
     } catch (err) {
       return BaseResponse.error({ res, err });
     }

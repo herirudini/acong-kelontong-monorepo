@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layout/main-layout/main-layout';
-import { BRANDS, CASHIER, EXPENSES, INCOME, PRODUCTS, SUPPLIERS, INVITEUSER, USERS, ROLES, DASHBOARD } from './types/constants/menus';
+import { BRANDS, CASHIER, EXPENSES, INCOME, PRODUCTS, SUPPLIERS, USERS, ROLES, DASHBOARD, ROLE_DETAIL, ROLE_CREATE, ROLE_EDIT } from './types/constants/menus';
 import { AuthGuardService } from './services/guards/auth-guard/auth-guard-service';
 import { PageGuardService } from './services/guards/page-guard/page-guard-service';
 
@@ -58,27 +58,39 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
       },
       {
-        path: USERS.url,
-        data: { ...USERS },
+        path: ROLES.url,
+        data: { ...ROLES },
         children: [
           {
             path: '',
             canActivate: [PageGuardService],
-            loadComponent: () => import('./pages/admin/users/users').then(c => c.Users),
+            loadComponent: () => import('./pages/admin/roles/roles').then(c => c.Roles)
           },
           {
-            path: INVITEUSER.url,
+            path: ROLE_CREATE.url,
             canActivate: [PageGuardService],
-            data: { ...INVITEUSER },
-            loadComponent: () => import('./pages/admin/users/user-form/user-form').then(c => c.UserForm)
+            data: { ...ROLE_CREATE },
+            loadComponent: () => import('./pages/admin/roles/roles-form/roles-form').then(c => c.RolesForm)
+          },
+          {
+            path: ROLE_DETAIL.url,
+            canActivate: [PageGuardService],
+            data: { ...ROLE_DETAIL },
+            loadComponent: () => import('./pages/admin/roles/roles-form/roles-form').then(c => c.RolesForm)
+          },
+          {
+            path: ROLE_EDIT.url,
+            canActivate: [PageGuardService],
+            data: { ...ROLE_EDIT },
+            loadComponent: () => import('./pages/admin/roles/roles-form/roles-form').then(c => c.RolesForm)
           },
         ]
       },
       {
-        path: ROLES.url,
+        path: USERS.url,
         canActivate: [PageGuardService],
-        data: { ...ROLES },
-        loadComponent: () => import('./pages/admin/roles/roles').then(c => c.Roles)
+        data: { ...USERS },
+        loadComponent: () => import('./pages/admin/users/users').then(c => c.Users),
       }
     ]
   },

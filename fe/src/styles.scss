@@ -3,7 +3,7 @@
 /* Importing Bootstrap SCSS file. */
 // @import 'bootstrap/scss/bootstrap';
 .pointer:hover {
-    cursor: pointer !important;
+  cursor: pointer !important;
 }
 .badge-loading {
   display: inline-block;
@@ -38,4 +38,11 @@
       transform: translateX(100%);
     }
   }
+}
+
+fieldset {
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-inline-size: auto !important; /* removes min width applied by some browsers */
 }

@@ -1,0 +1,19 @@
+<ng-template #modalTemplateRef>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Confirm deletion</h4>
+    <button type="button" class="btn-close" aria-describedby="modal-title"
+      (click)="modalRef.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Are you sure you want to delete <span class="text-primary">"{{item}}"</span> ?</strong>
+    </p>
+    <p>
+      <span class="text-danger">This operation can not be undone.</span>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-secondary" (click)="modalRef.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-danger" (click)="ok()">Ok</button>
+  </div>
+</ng-template>
