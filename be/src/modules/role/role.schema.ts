@@ -15,6 +15,10 @@ export class Role {
     default: [],
   })
   modules: TModules[];
+
+  @Prop({ default: true })
+  active?: boolean;
+
 }
 
 export type RoleDocument = Role & Document;

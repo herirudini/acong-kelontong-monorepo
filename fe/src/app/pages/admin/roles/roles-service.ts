@@ -31,7 +31,7 @@ export class RolesService extends BaseService {
     ) as any;
   }
 
-  getRole( id: string): Observable<IRole> {
+  getRole(id: string): Observable<IRole> {
     return this.getRequest({ url: Endpoint.ROLES_ID(id) }).pipe(
       map((res: IResDetail<IRole>) => {
         return res.detail;
@@ -66,6 +66,21 @@ export class RolesService extends BaseService {
     return this.putRequest({ url: Endpoint.ROLES_ID(id), body }).pipe(
       map((res: IResDetail<IRole>) => {
         return res.detail;
+      }),
+      catchError((err) => {
+        console.error(err);
+        this.alert.error('Cannot create role');
+        return of(undefined); // emit undefined so the stream completes gracefully
+      })
+    ) as any;
+  }
+
+  deleteRole(
+    role_id: string
+  ): Observable<IRole> {
+    return this.deleteRequest({ url: Endpoint.ROLES_ID(role_id) }).pipe(
+      map((res: IResDetail<unknown>) => {
+        this.alert.success('Success delete role');
       }),
       catchError((err) => {
         console.error(err);

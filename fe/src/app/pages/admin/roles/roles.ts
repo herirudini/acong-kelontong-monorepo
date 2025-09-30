@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { IRole } from '../../../types/interfaces/user.interface';
@@ -6,14 +6,16 @@ import { IPaginationInput } from '../../../types/interfaces/common.interface';
 import { RolesService } from './roles-service';
 import { NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { RouterLink } from '@angular/router';
+import { ConfirmModal } from '../../../shared/components/modals/confirm-modal/confirm-modal';
 
 @Component({
   selector: 'app-roles',
-  imports: [GenericTable, TableColumn, RouterLink],
+  imports: [GenericTable, TableColumn, RouterLink, ConfirmModal],
   templateUrl: './roles.html',
   styleUrl: './roles.scss'
 })
 export class Roles implements OnInit {
+  @ViewChild('DeleteModal') confrimDelete?: ConfirmModal;
   isLoading: boolean = false;
   listRoles: IRole[] = [];
   pagination: IPaginationInput = {
@@ -76,5 +78,19 @@ export class Roles implements OnInit {
 
   ngOnInit(): void {
     this.getList(this.defaultQuery)
+  }
+
+  deleteRole(role_id: string) {
+    this.confrimDelete?.show().subscribe((res: any) => {
+      if (res) {
+        this.execDeleteion(role_id);
+      }
+    })
+  }
+
+  execDeleteion(role_id: string) {
+    this.service.deleteRole(role_id).subscribe(()=>{
+      this.getList(this.defaultQuery);
+    });
   }
 }

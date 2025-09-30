@@ -11,13 +11,18 @@
       <ng-template let-item>
         <div class="d-flex flex-row gap-1">
           <a [routerLink]="['./form', item._id]" [queryParams]="{type: 'view'}" class="text-white pointer btn btn-secondary">
-            <i class="fa-solid fa-eye"></i>&nbsp;View
+            <i class="fa-solid fa-eye"></i>
           </a>
           <a [routerLink]="['./form', item._id]" [queryParams]="{type: 'edit'}" class="text-white pointer btn btn-warning">
-            <i class="fa-solid fa-pencil"></i>&nbsp;Edit
+            <i class="fa-solid fa-pencil"></i>
           </a>
+          <button (click)="deleteRole(item._id)" class="text-white pointer btn btn-danger" [disabled]="item.active">
+            <i class="fa-solid fa-trash"></i>
+          </button>
         </div>
       </ng-template>
     </div>
   </app-generic-table>
 </div>
+
+<app-confirm-modal #DeleteModal></app-confirm-modal>

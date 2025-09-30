@@ -50,6 +50,7 @@ export class RolesForm implements OnInit {
   form: FormGroup = new FormGroup({
     role_name: new FormControl(null, [Validators.required]),
     modules: new FormArray([]),
+    active: new FormControl(false)
   });
 
   get modules(): FormArray<FormGroup> {
@@ -105,6 +106,7 @@ export class RolesForm implements OnInit {
     this.isLoading = true;
     this.roleService.getRole(id).subscribe((res) => {
       this.form.controls.role_name.patchValue(res.role_name);
+      this.form.controls.active.patchValue(res.active);
       const formArray = this.form.get('modules') as FormArray;
       res.modules.forEach((item) => {
         const [module, action] = item.split('.');
@@ -143,7 +145,8 @@ export class RolesForm implements OnInit {
 
     const body: IRole = {
       role_name: this.form.value.role_name as string,
-      modules: results
+      modules: results,
+      active: this.form.value.active
     };
     console.log({ body })
     let serviceArg = this.roleService.createRole(body);

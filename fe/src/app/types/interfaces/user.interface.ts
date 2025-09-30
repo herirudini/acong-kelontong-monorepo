@@ -25,6 +25,7 @@ export type TModules =
 export interface IRole {
     _id?: string,
     role_name: string,
+    active: boolean,
     modules: TModules[]
 }
 
