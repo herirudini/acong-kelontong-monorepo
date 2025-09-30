@@ -12,13 +12,13 @@ export const loaderInterceptor: HttpInterceptorFn = (req, next) => {
   });
 
   if (spinner) {
-    return next(req);
-  } else {
     pageSpinnerService.spinnerOn();
     return next(req).pipe(
       finalize(() => {
         pageSpinnerService.spinnerOff();
       })
     );
+  } else {
+    return next(req);
   }
 };
