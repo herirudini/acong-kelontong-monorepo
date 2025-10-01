@@ -102,10 +102,13 @@ export class UserService {
     )
   }
 
-  async resendVerification(email: string): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
-    const tmpUser = await this.userModel.findOne({ email }).populate('role').exec();;
+  async resendVerification(user_id: string): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
+    const tmpUser = await this.userModel.findById(user_id).populate('role').exec();;
     if (!tmpUser) {
       return BaseResponse.notFound({ err: 'resendVerification tmpUser not found' });
+    }
+    if (tmpUser.verified) {
+      return BaseResponse.forbidden({ err: 'resendVerification tmpUser already verified' });
     }
     // generate raw random password
     const tmpPassword = generateRandomToken()
@@ -145,8 +148,8 @@ export class UserService {
     return { tmpUser, tmpPassword } as unknown as { tmpUser: TmpUser, tmpPassword: string };
   }
 
-  async verifyUser(tmpPassword: string, newPassword: string): Promise<boolean> {
-    const base64 = decodeBase64(tmpPassword);
+  async verifyUser(encryptedTicket: string, newPassword: string): Promise<boolean> {
+    const base64 = decodeBase64(encryptedTicket);
     const ticket = JSON.parse(base64);
     const tokenDoc = await this.userModel.findById(ticket.pass1);
     if (!tokenDoc) return false;
@@ -157,6 +160,11 @@ export class UserService {
     tokenDoc.verified = true;
     await tokenDoc.save();
     return true;
+  }
+
+  async deleteUser(user_id: string): Promise<UserDocument | undefined> {
+    const execute = await this.userModel.findByIdAndDelete(user_id).populate('role');
+    return execute || undefined;
   }
 
   getPermissions() {

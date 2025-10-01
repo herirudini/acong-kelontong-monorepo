@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { BaseResponse } from 'src/utils/base-response';
@@ -31,76 +31,8 @@ export class UserController {
     }
   }
 
-  @Get('detail/:user_id')
-  async detail(
-    @Param('user_id') user_id: string,
-    @Res() res: Response,
-  ) {
-    try {
-      const detail = await this.userService.getDetailUser(user_id);
-      return BaseResponse.success({
-        res,
-        option: { message: 'Success get detail user', detail },
-      });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-
-  @Put('detail/:user_id/edit-profile')
-  async editProfile(
-    @Param('user_id') user_id: string,
-    @Body()
-    body: {
-      first_name: string;
-      last_name: string;
-      email: string;
-      password: string;
-    },
-    @Res() res: Response,
-  ) {
-    try {
-      const detail = await this.userService.editUser(user_id, body);
-      return BaseResponse.success({ res, option: { message: 'Success edit user', detail } })
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-
-  @Put('detail/:user_id/edit-permission')
-  async editPermission(
-    @Param('user_id') user_id: string,
-    @Body() body: {
-      role: string;
-    },
-    @Res() res: Response,
-  ) {
-    try {
-      const detail = await this.userService.editUser(user_id, body);
-      return BaseResponse.success({ res, option: { message: 'Success edit user', detail } })
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-
   @UseGuards(AuthGuard)
-  @Get('permission-list')
-  listPermission(
-    @Res() res: Response,
-  ) {
-    try {
-      const data = this.userService.getPermissions();
-      return BaseResponse.success({
-        res,
-        option: { message: 'Success get list user', detail: data },
-      });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-
-  @UseGuards(AuthGuard)
-  @Post('invite-user')
+  @Post('')
   async inviteUser(
     @Body() body: InviteUserDto,
     @Res() res: Response,
@@ -134,14 +66,63 @@ export class UserController {
     }
   }
 
-  @UseGuards(AuthGuard)
-  @Post('resend-verification')
-  async resendVerification(
-    @Body() body: { email: string },
+  @Get(':user_id')
+  async detail(
+    @Param('user_id') user_id: string,
     @Res() res: Response,
   ) {
     try {
-      const invite = await this.userService.resendVerification(body.email)
+      const detail = await this.userService.getDetailUser(user_id);
+      return BaseResponse.success({
+        res,
+        option: { message: 'Success get detail user', detail },
+      });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @Put(':user_id')
+  async editProfile(
+    @Param('user_id') user_id: string,
+    @Body()
+    body: {
+      first_name: string;
+      last_name: string;
+      email: string;
+      password: string;
+    },
+    @Res() res: Response,
+  ) {
+    try {
+      const detail = await this.userService.editUser(user_id, body);
+      return BaseResponse.success({ res, option: { message: 'Success edit user', detail } })
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @Delete(':user_id')
+  async deleteUser(
+    @Param('user_id') user_id: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const detail = await this.userService.deleteUser(user_id);
+      return BaseResponse.success({ res, option: { message: 'Success edit user', detail } })
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Post(':user_id/re-invite')
+  async resendVerification(
+    @Param('user_id') user_id: string,
+    @Res() res: Response,
+  ) {
+    try {
+      const invite = await this.userService.resendVerification(user_id)
       const ticket = { pass1: invite.tmpUser._id, pass2: invite.tmpPassword }
       const base64 = encodeBase64(JSON.stringify(ticket))
       const linkChangePassword = `${process.env.URL_CHANGE_PASSWORD as string}/${base64}`;
@@ -168,19 +149,51 @@ export class UserController {
     }
   }
 
-  @Put('verify-user')
-  async verifyUser(
-    @Body() body: { tmpPassword: string, newPassword: string },
+  @Put(':user_id/role')
+  async editRole(
+    @Param('user_id') user_id: string,
+    @Body() body: {
+      role: string;
+    },
     @Res() res: Response,
   ) {
-    const { tmpPassword, newPassword } = body;
     try {
-      const isVerified = await this.userService.verifyUser(tmpPassword, newPassword);
+      const detail = await this.userService.editUser(user_id, body);
+      return BaseResponse.success({ res, option: { message: 'Success edit user', detail } })
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @Put('verify')
+  async verifyUser(
+    @Body() body: { ticket: string, newPassword: string },
+    @Res() res: Response,
+  ) {
+    const { ticket, newPassword } = body;
+    try {
+      const isVerified = await this.userService.verifyUser(ticket, newPassword);
       if (isVerified) {
         return BaseResponse.success({ res, option: { message: "User verified successfully" } });
       } else {
         return BaseResponse.unauthorized({ res, option: { message: "Invalid or expired verification token" } });
       }
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('permissions')
+  listPermission(
+    @Res() res: Response,
+  ) {
+    try {
+      const data = this.userService.getPermissions();
+      return BaseResponse.success({
+        res,
+        option: { message: 'Success get list user', detail: data },
+      });
     } catch (err) {
       return BaseResponse.error({ res, err });
     }
