@@ -9,8 +9,17 @@ export const Endpoint = {
   REFRESH: `${api}auth/refresh`,
 
   USERS: `${api}users`,
+  USERS_ID: (id: string) => {
+    return `${api}users/${id}`
+  },
+  USERS_ID_REINVITE: (id: string) => {
+    return `${api}users/${id}/re-invite`
+  },
+  USERS_ID_ROLE: (id: string) => {
+    return `${api}users/${id}/role`
+  },
   ROLES: `${api}roles`,
-  ROLES_ID: (id: string)=> {
+  ROLES_ID: (id: string) => {
     return `${api}roles/${id}`
   },
 

@@ -1,17 +1,22 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UsersService } from '../users-service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IRole } from '../../../../types/interfaces/user.interface';
+import { FormValidation } from '../../../../shared/directives/form-validation/form-validation';
+import { AlertService } from '../../../../shared/components/alert/alert-service';
+
+type formType = 'new' | 'edit' | 'view';
 
 @Component({
   selector: 'app-user-form',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, FormValidation],
   templateUrl: './user-form.html',
   styleUrl: './user-form.scss',
 })
-export class UserForm implements OnInit {
-  @Input() type: 'new' | 'edit' = 'new';
-  @Output() close: EventEmitter<unknown> = new EventEmitter<unknown>()
+export class UserForm implements OnInit, AfterViewInit {
+  @Input() type: formType = 'new';
+  @Input() id?: string;
+  @Output() close: EventEmitter<boolean> = new EventEmitter<boolean>()
 
   isLoading: boolean = false;
 
@@ -24,20 +29,35 @@ export class UserForm implements OnInit {
     role: new FormControl(null, [Validators.required]),
   });
 
-  constructor(private userService: UsersService) { }
+  constructor(private userService: UsersService, private alert: AlertService) { }
 
   ngOnInit(): void {
     this.getRoles();
   }
 
+  ngAfterViewInit(): void {
+    if (this.id) {
+      this.userService.getUserDetail(this.id).subscribe((res) => {
+        this.form.patchValue(res)
+      })
+    }
+  }
+
   getRoles() {
     this.isLoading = true;
-    this.userService.getRoles({page:0, size:1000}).subscribe((res) => {
+    this.userService.getRoles({ page: 0, size: 1000 }).subscribe((res) => {
       this.roles = res.list ?? [];
     })
   }
 
   submit() {
-    this.close.emit();
+    if (this.form.invalid) return this.alert.error('Please check your inputs');
+    const body = this.form.value;
+    let serviceArgs = this.userService.inviteUser(body);
+    if (this.type === 'edit' && this.id) serviceArgs = this.userService.editUserRole(this.id, body);
+    serviceArgs.subscribe((res) => {
+      this.alert.success(`Success ${this.type == 'edit' ? 'edit' : 'invite'} user!`);
+      this.close.emit(true);
+    })
   }
 }

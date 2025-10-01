@@ -1,10 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { RolesService } from '../roles-service';
-import { AbstractControl, FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IRole } from '../../../../types/interfaces/user.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROLES } from '../../../../types/constants/menus';
 import { FormValidation } from '../../../../shared/directives/form-validation/form-validation';
+import { AlertService } from '../../../../shared/components/alert/alert-service';
 
 type formType = 'new' | 'edit' | 'view';
 
@@ -58,7 +59,7 @@ export class RolesForm implements OnInit {
     return this.form.get('modules') as FormArray<FormGroup>;
   }
 
-  constructor(private roleService: RolesService, private route: ActivatedRoute, private router: Router) {
+  constructor(private roleService: RolesService, private route: ActivatedRoute, private router: Router, private alert: AlertService) {
     this.id = this.route.snapshot.paramMap.get('role_id') || undefined;
     const type = this.route.snapshot.queryParamMap.get('type') || undefined;
     if (type && ['new', 'edit', 'view'].includes(type)) {
@@ -134,7 +135,7 @@ export class RolesForm implements OnInit {
   }
 
   submit() {
-    if (this.form.invalid) return;
+    if (this.form.invalid) return this.alert.error('Please check your inputs');
     const results: any[] = []
     this.modules.value.forEach(item => {
       const { module, ...rest } = item;
@@ -155,6 +156,7 @@ export class RolesForm implements OnInit {
     if (this.id) serviceArg = this.roleService.editRole(this.id, body)
     serviceArg.subscribe({
       next: () => {
+      this.alert.success(`Success ${this.type == 'edit' ? 'edit':'create'} role!`)
         this.router.navigateByUrl(ROLES.url)
       }
     })

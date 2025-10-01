@@ -1,6 +1,5 @@
-import { Component, Inject, PLATFORM_ID } from '@angular/core';
+import { Component } from '@angular/core';
 import { PageSpinnerService } from './page-spinner-service';
-import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-page-spinner',
@@ -8,16 +7,13 @@ import { isPlatformBrowser } from '@angular/common';
   styleUrls: ['./page-spinner.scss']
 })
 export class PageSpinner {
-  isSpinning: boolean = false;
+  isSpinning?: boolean;
 
   constructor(
     private pageSpinnerService: PageSpinnerService,
-    @Inject(PLATFORM_ID) private platformId: Object,
   ) {
-    if (isPlatformBrowser(this.platformId)) {
-      this.pageSpinnerService.getSpinnerStatus().subscribe((status: 'on' | 'off') => {
-        this.isSpinning = status === 'on';
-      });
-    }
+    this.pageSpinnerService.getSpinnerStatus().subscribe((status: 'on' | 'off') => {
+      this.isSpinning = status === 'on';
+    });
   }
 }
