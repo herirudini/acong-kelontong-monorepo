@@ -42,7 +42,7 @@ export class UserController {
       if (!invite) return BaseResponse.forbidden({ option: { message: 'User Exist' } })
       const ticket = { pass1: invite.tmpUser._id, pass2: invite.tmpPassword }
       const base64 = encodeBase64(JSON.stringify(ticket))
-      const linkChangePassword = `${process.env.URL_CHANGE_PASSWORD as string}/${base64}`;
+      const linkChangePassword = `${process.env.FE_DOMAIN}/${process.env.URL_CHANGE_PASSWORD as string}/${base64}`;
       const mailOptions = {
         from: `"Acong Kelontong" <${process.env.SMTP_USER as string}>`,
         to: invite.tmpUser.email,
@@ -66,7 +66,7 @@ export class UserController {
     }
   }
 
-  @Get(':user_id')
+  @Get('detail/:user_id')
   async detail(
     @Param('user_id') user_id: string,
     @Res() res: Response,
@@ -82,7 +82,7 @@ export class UserController {
     }
   }
 
-  @Put(':user_id')
+  @Put('detail/:user_id')
   async editProfile(
     @Param('user_id') user_id: string,
     @Body()
@@ -102,7 +102,7 @@ export class UserController {
     }
   }
 
-  @Delete(':user_id')
+  @Delete('detail/:user_id')
   async deleteUser(
     @Param('user_id') user_id: string,
     @Res() res: Response,
@@ -116,7 +116,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Post(':user_id/re-invite')
+  @Post('detail/:user_id/re-invite')
   async resendVerification(
     @Param('user_id') user_id: string,
     @Res() res: Response,
@@ -125,7 +125,7 @@ export class UserController {
       const invite = await this.userService.resendVerification(user_id)
       const ticket = { pass1: invite.tmpUser._id, pass2: invite.tmpPassword }
       const base64 = encodeBase64(JSON.stringify(ticket))
-      const linkChangePassword = `${process.env.URL_CHANGE_PASSWORD as string}/${base64}`;
+      const linkChangePassword = `${process.env.FE_DOMAIN}/${process.env.URL_CHANGE_PASSWORD as string}/${base64}`;
       const mailOptions = {
         from: `"Acong Kelontong <No Reply>" <${process.env.SMTP_USER as string}>`,
         to: invite.tmpUser.email,
@@ -149,7 +149,7 @@ export class UserController {
     }
   }
 
-  @Put(':user_id/role')
+  @Put('detail/:user_id/role')
   async editRole(
     @Param('user_id') user_id: string,
     @Body() body: {
@@ -167,12 +167,13 @@ export class UserController {
 
   @Put('verify')
   async verifyUser(
-    @Body() body: { ticket: string, newPassword: string },
+    @Body() body: { ticket: string, new_password: string },
     @Res() res: Response,
   ) {
-    const { ticket, newPassword } = body;
+    const { ticket, new_password } = body;
     try {
-      const isVerified = await this.userService.verifyUser(ticket, newPassword);
+            console.log('masuk verify')
+      const isVerified = await this.userService.verifyUser(ticket, new_password);
       if (isVerified) {
         return BaseResponse.success({ res, option: { message: "User verified successfully" } });
       } else {

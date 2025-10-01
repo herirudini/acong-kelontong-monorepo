@@ -152,6 +152,7 @@ export class UserService {
     const base64 = decodeBase64(encryptedTicket);
     const ticket = JSON.parse(base64);
     const tokenDoc = await this.userModel.findById(ticket.pass1);
+    console.log('tokenDoc', tokenDoc)
     if (!tokenDoc) return false;
     const isValid = await bcrypt.compare(ticket.pass2, tokenDoc.password);
     if (!isValid) return false;

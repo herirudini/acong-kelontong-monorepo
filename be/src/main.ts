@@ -14,7 +14,7 @@ async function bootstrap(): Promise<void> {
     exclude: [{ path: '', method: RequestMethod.OPTIONS }],
   });
   app.enableCors({
-    origin: process.env.FE_URL as string, // FE domain
+    origin: process.env.FE_DOMAIN as string, // FE domain
     credentials: true,                    // allow cookies
     methods: ['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
