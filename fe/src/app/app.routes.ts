@@ -95,7 +95,7 @@ export const routes: Routes = [
     ]
   },
   { path: 'login', loadComponent: () => import('./layout/auth-layout/login/login').then(c => c.Login) },
-  { path: 'register', loadComponent: () => import('./layout/auth-layout/register/register').then(c => c.Register) },
+  { path: 'user-verification/:ticket', loadComponent: () => import('./pages/admin/users/user-verification/user-verification').then(c => c.UserVerification) },
   { path: 'error/404', loadComponent: () => import('./layout/error-layout/page-not-found/page-not-found').then(c => c.PageNotFound) },
   { path: '**', redirectTo: 'error/404' },
 ];

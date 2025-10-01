@@ -1,77 +1,46 @@
-<div class="card mb-4">
-  <!--begin::Header-->
-  <div class="card-header">
-    <div class="card-title">User Form</div>
-  </div>
-  <!--end::Header-->
-  <!--begin::Form-->
-  <!--begin::Body-->
-  <div class="card-body">
-    <form class="needs-validation" novalidate>
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-title">
+    <div class="card-title text-capitalize">{{type}} User</div>
+  </h4>
+  <button type="button" class="btn-close" aria-describedby="modal-title" (click)="close.emit()"></button>
+</div>
+<fieldset [disabled]="type==='view'">
+  <form [formGroup]="form" appFormValidation (ngSubmit)="submit()">
+    <div class="modal-body">
       <div class="d-flex flex-row flex-wrap justify-content-between gap-2">
         <div class="w-100">
-          <label for="validationCustom01" class="form-label">First name</label>
-          <input type="text" class="form-control" id="validationCustom01" value="Mark" required />
-          <div class="valid-feedback">Looks good!</div>
+          <label for="first_name" class="form-label required">First name</label>
+          <input type="text" class="form-control" id="first_name" formControlName="first_name"
+            [readOnly]="type==='edit'" />
         </div>
 
         <div class="w-100">
-          <label for="validationCustom02" class="form-label">Last name</label>
-          <input type="text" class="form-control" id="validationCustom02" value="Otto" required />
-          <div class="valid-feedback">Looks good!</div>
+          <label for="last_name" class="form-label required">Last name</label>
+          <input type="text" class="form-control" id="last_name" formControlName="last_name"
+            [readOnly]="type==='edit'" />
         </div>
 
         <div class="w-100">
-          <label for="validationCustomUsername" class="form-label">Email</label>
-          <input type="text" class="form-control" id="validationCustom02" value="Otto" required />
-          <div class="valid-feedback">Looks good!</div>
+          <label for="email" class="form-label required">Email</label>
+          <input type="text" class="form-control" id="email" formControlName="email" [readOnly]="type==='edit'" />
         </div>
 
         <div class="w-100">
-          <label for="validationCustom04" class="form-label">Role</label>
-          <select class="form-select" id="validationCustom04" required>
+          <label for="role" class="form-label required">Role</label>
+          <select class="form-select" id="role" formControlName="role">
             <option selected disabled value="">Choose...</option>
             @for (role of roles; track $index) {
-            <option [value]="role._id">{{role.role_name}}</option>
+            <option [value]="role._id" [disabled]="!role.active">{{role.role_name}}</option>
             }
           </select>
-          <div class="invalid-feedback">Please select a valid role.</div>
         </div>
       </div>
-    </form>
-  </div>
-  <!--end::Body-->
-  <!--begin::Footer-->
-  <div class="card-footer">
-    <button class="btn btn-primary" type="submit">Submit form</button>
-  </div>
-  <!--end::Footer-->
-  <!--end::Form-->
-  <!--begin::JavaScript-->
-  <script>
-    // Example starter JavaScript for disabling form submissions if there are invalid fields
-    (() => {
-      'use strict';
-
-      // Fetch all the forms we want to apply custom Bootstrap validation styles to
-      const forms = document.querySelectorAll('.needs-validation');
-
-      // Loop over them and prevent submission
-      Array.from(forms).forEach((form) => {
-        form.addEventListener(
-          'submit',
-          (event) => {
-            if (!form.checkValidity()) {
-              event.preventDefault();
-              event.stopPropagation();
-            }
-
-            form.classList.add('was-validated');
-          },
-          false,
-        );
-      });
-    })();
-  </script>
-  <!--end::JavaScript-->
-</div>
+    </div>
+    @if (type!=='view') {
+    <div class="modal-footer">
+      <button class="btn btn-secondary" type="button" (click)="close.emit()">Cancel</button>
+      <button class="btn btn-primary" type="submit">Submit</button>
+    </div>
+    }
+  </form>
+</fieldset>

@@ -46,3 +46,14 @@ fieldset {
   margin: 0 !important;
   min-inline-size: auto !important; /* removes min width applied by some browsers */
 }
+
+.required {
+  position: relative; /* ensures ::before positions relative to label */
+}
+
+.required::before {
+  content: "*";
+  color: red;
+  position: absolute;
+  left: -0.5em; /* adjust spacing so it sits nicely before text */
+}

@@ -5,7 +5,7 @@ import { catchError, map, Observable, of } from 'rxjs';
 import { IRole, IUser } from '../../../types/interfaces/user.interface';
 import { Endpoint } from '../../../types/constants/endpoint';
 import { IPaginationInput } from '../../../types/interfaces/common.interface';
-import { IResList } from '../../../types/interfaces/http.interface';
+import { IResDetail, IResList } from '../../../types/interfaces/http.interface';
 import { ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { RolesService } from '../roles/roles-service';
 
@@ -13,6 +13,16 @@ interface IParamsUser extends ITableQueryData {
   verified?: boolean;
 }
 
+interface IBodyInviteUser {
+  first_name: string;
+  last_name: string;
+  email: string;
+  role: string; // role._id
+}
+
+interface IGetRoles extends ITableQueryData {
+  active?: boolean
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -32,7 +42,6 @@ export class UsersService extends BaseService {
             return {
               ...item,
               name: `${item.first_name} ${item.last_name}`,
-              status: item.verified ? 'Verified' : 'Unverified',
             };
           }) as IUser[],
         };
@@ -46,7 +55,81 @@ export class UsersService extends BaseService {
     ) as any;
   }
 
-  getRoles(qParams: ITableQueryData): Observable<IResList<IRole>> {
+  inviteUser(
+    body: IBodyInviteUser
+  ): Observable<IUser> {
+    return this.postRequest({ url: Endpoint.USERS, body }).pipe(
+      map((res: IResDetail<IUser>) => {
+        return res.detail;
+      }),
+      catchError((err) => {
+        console.error(err);
+        this.alert.error('Cannot invite user');
+        return of(undefined); // emit undefined so the stream completes gracefully
+      })
+    ) as any;
+  }
+
+  resendInvitationEmail(user_id: string): Observable<IUser> {
+    return this.postRequest({ url: Endpoint.USERS_ID_REINVITE(user_id) }).pipe(
+      map((res: IResDetail<IUser>) => {
+        return res.detail;
+      }),
+      catchError((err) => {
+        console.error(err);
+        this.alert.error('Cannot invite user');
+        return of(undefined); // emit undefined so the stream completes gracefully
+      })
+    ) as any;
+  }
+
+  editUserRole(
+    user_id: string,
+    body: { role: string }
+  ): Observable<IUser> {
+    return this.putRequest({ url: Endpoint.USERS_ID_ROLE(user_id), body }).pipe(
+      map((res: IResDetail<IUser>) => {
+        return res.detail;
+      }),
+      catchError((err) => {
+        console.error(err);
+        this.alert.error('Cannot edit user');
+        return of(undefined); // emit undefined so the stream completes gracefully
+      })
+    ) as any;
+  }
+
+  getUserDetail(user_id: string): Observable<IUser> {
+    return this.getRequest({ url: Endpoint.USERS_ID(user_id) }).pipe(
+      map((res: IResDetail<IUser>) => {
+        return res.detail;
+      }),
+      catchError((err) => {
+        console.error(err);
+        this.alert.error('Cannot get user detail');
+        return of(undefined); // emit undefined so the stream completes gracefully
+      })
+    ) as any;
+  }
+
+  deleteUser(user_id: string): Observable<IUser> {
+    return this.deleteRequest({ url: Endpoint.USERS_ID(user_id) }).pipe(
+      map((res: IResDetail<IUser>) => {
+        return res.detail;
+      }),
+      catchError((err) => {
+        console.error(err);
+        this.alert.error('Cannot delete user');
+        return of(undefined); // emit undefined so the stream completes gracefully
+      })
+    ) as any;
+  }
+
+  verifyUser(body: { ticket: string, new_password }): Observable<IUser> {
+    return this.putRequest({ url: Endpoint.USERS_VERIFY, body });
+  }
+
+  getRoles(qParams: IGetRoles): Observable<IResList<IRole>> {
     return this.roleService.getRoles(qParams);
   }
 }

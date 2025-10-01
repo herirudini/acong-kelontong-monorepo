@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { IUser } from '../../../types/interfaces/user.interface';
 import { UsersService } from './users-service';
@@ -7,14 +7,20 @@ import { IPaginationInput, ISelectFilter } from '../../../types/interfaces/commo
 import { SORT_DIR } from '../../../types/constants/common.constants';
 import { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { UserForm } from './user-form/user-form';
+import { ConfirmModal } from '../../../shared/components/modals/confirm-modal/confirm-modal';
+import { AlertService } from '../../../shared/components/alert/alert-service';
 
+type formType = 'new' | 'edit' | 'view';
 @Component({
   selector: 'app-users',
-  imports: [GenericTable, TableColumn],
+  imports: [GenericTable, TableColumn, ConfirmModal],
   templateUrl: './users.html',
   styleUrl: './users.scss'
 })
 export class Users implements OnInit {
+  @ViewChild('DeleteModal') confrimDelete?: ConfirmModal;
+  @ViewChild('ResendVerifModal') confrimResendVerif?: ConfirmModal;
+
   isLoading: boolean = false;
   listUser: IUser[] = [];
   filterSelect: ISelectFilter = {
@@ -42,42 +48,67 @@ export class Users implements OnInit {
       id: 'name',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'first_name',
-      sort: true
+      sort: true,
+      minWidth: '4ch',
+      maxWidth: '4ch'
     },
     {
       label: 'Role',
       id: 'role.role_name',
       extraHeaderClass: 'uppercase-text',
+      minWidth: '5ch',
+      maxWidth: '5ch'
     },
     {
       label: 'Email',
       id: 'email',
       extraHeaderClass: 'uppercase-text',
+      minWidth: '5ch',
+      maxWidth: '5ch'
     },
     {
       label: 'Status',
-      id: 'status',
+      id: 'verified',
       extraHeaderClass: 'uppercase-text',
+      customElementId: 'status',
+      minWidth: '3ch',
+      maxWidth: '3ch'
     },
     {
       label: 'Action',
       id: 'action',
       extraHeaderClass: 'uppercase-text',
       customElementId: 'action',
+      minWidth: '3ch',
+      maxWidth: '3ch'
     }
   ]
 
+  defaultTableParam = {
+    page: this.pagination.page,
+    size: this.pagination.size,
+    sortBy: '',
+    sortDir: SORT_DIR.ASC,
+    search: '',
+  }
+
   activeModal = Inject(NgbActiveModal);
 
-  constructor(private service: UsersService, private modalService: NgbModal) { }
+  constructor(private service: UsersService, private modalService: NgbModal, private alert: AlertService) { }
 
   modalOptions: NgbModalOptions = {
     size: 'xl'
   }
 
-  showForm() {
+  showForm(type: formType, id?: string) {
     const modalRef = this.modalService.open(UserForm, this.modalOptions);
-    modalRef.componentInstance.type = 'edit';
+    modalRef.componentInstance.type = type;
+    modalRef.componentInstance.id = id;
+    modalRef.componentInstance.close.subscribe((res) => {
+      console.log({ res })
+      modalRef.dismiss();
+      if (res) this.getList(this.defaultTableParam);
+    })
   }
 
   getList(evt: ITableQueryData) {
@@ -106,12 +137,36 @@ export class Users implements OnInit {
   }
 
   ngOnInit(): void {
-    this.getList({
-      page: this.pagination.page,
-      size: this.pagination.size,
-      sortBy: 'status', // column ID
-      sortDir: SORT_DIR.ASC,
-      search: '',
+    this.getList(this.defaultTableParam);
+  }
+
+  deleteUser(user_id: string) {
+    this.confrimDelete?.show().subscribe((res: any) => {
+      if (res) {
+        this.execDeleteion(user_id);
+      }
     })
+  }
+
+  execDeleteion(role_id: string) {
+    this.service.deleteUser(role_id).subscribe(() => {
+      this.alert.success('User deleted')
+      this.getList(this.defaultTableParam);
+    });
+  }
+
+  resendVerification(role_id: string) {
+    this.confrimResendVerif?.show().subscribe((res: any) => {
+      if (res) {
+        this.execResendVerification(role_id);
+      }
+    })
+  }
+
+  execResendVerification(role_id) {
+    console.log('Resend Verification', role_id)
+    this.service.resendInvitationEmail(role_id).subscribe((res) => {
+      this.alert.success('Confirmation email sent')
+    });
   }
 }

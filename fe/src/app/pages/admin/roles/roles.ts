@@ -29,15 +29,15 @@ export class Roles implements OnInit {
       label: 'Role Name',
       id: 'role_name',
       extraHeaderClass: 'uppercase-text',
+      minWidth: '2ch',
     },
     {
       label: 'Action',
       id: 'action',
       extraHeaderClass: 'uppercase-text',
       customElementId: 'action',
-      minWidth: '4ch',
-      maxWidth: '4ch'
-
+      minWidth: '3ch',
+      maxWidth: '3ch'
     }
   ]
   defaultQuery = {
