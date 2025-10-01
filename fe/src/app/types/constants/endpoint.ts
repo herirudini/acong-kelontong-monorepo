@@ -10,24 +10,23 @@ export const Endpoint = {
 
   USERS: `${api}users`,
   USERS_ID: (id: string) => {
-    return `${api}users/${id}`
+    return `${api}users/detail/${id}`
   },
   USERS_ID_REINVITE: (id: string) => {
-    return `${api}users/${id}/re-invite`
+    return `${api}users/detail/${id}/re-invite`
   },
   USERS_ID_ROLE: (id: string) => {
-    return `${api}users/${id}/role`
+    return `${api}users/detail/${id}/role`
   },
+  USERS_VERIFY: `${api}users/verify`,
+
   ROLES: `${api}roles`,
   ROLES_ID: (id: string) => {
     return `${api}roles/${id}`
   },
 
   /* Admin endpoints */
-  INVITE_USER: `${api}users/invite-user`,
-  RESEND_VERIFICATION: `${api}users/resend-verification`,
-  VERIFY_USER: `${api}users/verify-user`,
-  PERMISSIONS: `${api}users/permission-list`,
+  PERMISSIONS: `${api}users/permissions`,
 
 
   // /* Account endpoints */

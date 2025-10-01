@@ -8,6 +8,7 @@ import { SORT_DIR } from '../../../types/constants/common.constants';
 import { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { UserForm } from './user-form/user-form';
 import { ConfirmModal } from '../../../shared/components/modals/confirm-modal/confirm-modal';
+import { AlertService } from '../../../shared/components/alert/alert-service';
 
 type formType = 'new' | 'edit' | 'view';
 @Component({
@@ -18,6 +19,7 @@ type formType = 'new' | 'edit' | 'view';
 })
 export class Users implements OnInit {
   @ViewChild('DeleteModal') confrimDelete?: ConfirmModal;
+  @ViewChild('ResendVerifModal') confrimResendVerif?: ConfirmModal;
 
   isLoading: boolean = false;
   listUser: IUser[] = [];
@@ -66,8 +68,9 @@ export class Users implements OnInit {
     },
     {
       label: 'Status',
-      id: 'status',
+      id: 'verified',
       extraHeaderClass: 'uppercase-text',
+      customElementId: 'status',
       minWidth: '3ch',
       maxWidth: '3ch'
     },
@@ -91,7 +94,7 @@ export class Users implements OnInit {
 
   activeModal = Inject(NgbActiveModal);
 
-  constructor(private service: UsersService, private modalService: NgbModal) { }
+  constructor(private service: UsersService, private modalService: NgbModal, private alert: AlertService) { }
 
   modalOptions: NgbModalOptions = {
     size: 'xl'
@@ -102,7 +105,7 @@ export class Users implements OnInit {
     modalRef.componentInstance.type = type;
     modalRef.componentInstance.id = id;
     modalRef.componentInstance.close.subscribe((res) => {
-      console.log({res})
+      console.log({ res })
       modalRef.dismiss();
       if (res) this.getList(this.defaultTableParam);
     })
@@ -147,7 +150,23 @@ export class Users implements OnInit {
 
   execDeleteion(role_id: string) {
     this.service.deleteUser(role_id).subscribe(() => {
+      this.alert.success('User deleted')
       this.getList(this.defaultTableParam);
+    });
+  }
+
+  resendVerification(role_id: string) {
+    this.confrimResendVerif?.show().subscribe((res: any) => {
+      if (res) {
+        this.execResendVerification(role_id);
+      }
+    })
+  }
+
+  execResendVerification(role_id) {
+    console.log('Resend Verification', role_id)
+    this.service.resendInvitationEmail(role_id).subscribe((res) => {
+      this.alert.success('Confirmation email sent')
     });
   }
 }

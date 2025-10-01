@@ -1,4 +1,4 @@
-import { Component, TemplateRef, ViewChild, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { Component, TemplateRef, ViewChild, AfterViewInit, Output, EventEmitter, Input } from '@angular/core';
 import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
@@ -8,9 +8,11 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
   styleUrl: './confirm-modal.scss'
 })
 export class ConfirmModal {
+  @Input() type: 'delete' | 'action' = 'delete';
   @Output() submit: EventEmitter<boolean> = new EventEmitter<boolean>(false);
 
-  item: string = "This Item"
+  @Input() itemName: string = "this item";
+  @Input() customText?: string;
   @ViewChild('modalTemplateRef') modalTemplateRef!: TemplateRef<any>;
   modalRef!: NgbModalRef;
 

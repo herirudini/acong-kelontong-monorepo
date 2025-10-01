@@ -13,7 +13,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((err) => {
 
       const errCode = err?.error?.error_code;
-      const errorMessage = err?.error?.error ?? `Error: ${err?.status ?? 'Unknown'}`;
+      const errorMessage = err?.error?.message ?? `Error: ${err?.status ?? 'Unknown'}`;
       console.error('HTTP error intercepted:', { errCode, errorMessage, err });
       if (errCode === errCodes.authGuard) {
         // Try to refresh token

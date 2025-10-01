@@ -39,7 +39,6 @@ export class UsersService extends BaseService {
             return {
               ...item,
               name: `${item.first_name} ${item.last_name}`,
-              status: item.verified ? 'Verified' : 'Unverified',
             };
           }) as IUser[],
         };
@@ -121,6 +120,10 @@ export class UsersService extends BaseService {
         return of(undefined); // emit undefined so the stream completes gracefully
       })
     ) as any;
+  }
+
+  verifyUser(body: { ticket: string, new_password }): Observable<IUser> {
+    return this.putRequest({ url: Endpoint.USERS_VERIFY, body });
   }
 
   getRoles(qParams: ITableQueryData): Observable<IResList<IRole>> {

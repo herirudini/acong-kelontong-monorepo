@@ -1,19 +1,27 @@
 <ng-template #modalTemplateRef>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-title">Confirm deletion</h4>
-    <button type="button" class="btn-close" aria-describedby="modal-title"
-      (click)="modalRef.dismiss()"></button>
+    <h4 class="modal-title" id="modal-title">Confirm {{type==='delete'?'deletion':'Action'}}</h4>
+    <button type="button" class="btn-close" aria-describedby="modal-title" (click)="modalRef.dismiss()"></button>
   </div>
   <div class="modal-body">
+    @if (type==='delete') {
     <p>
-      <strong>Are you sure you want to delete <span class="text-primary">"{{item}}"</span> ?</strong>
+      <strong>Are you sure you want to delete <span class="text-primary">"{{itemName}}"</span> ?</strong>
     </p>
     <p>
       <span class="text-danger">This operation can not be undone.</span>
     </p>
+    } @else {
+    @if(customText) {
+    <strong [innerHTML]="customText"></strong>
+    } @else {
+    <strong>Are you sure you want to do this operation ?</strong>
+    }
+    }
   </div>
   <div class="modal-footer">
     <button type="button" class="btn btn-outline-secondary" (click)="modalRef.dismiss()">Cancel</button>
-    <button type="button" class="btn btn-danger" (click)="ok()">Ok</button>
+    <button type="button" class="btn" [class.btn-danger]="type==='delete'" [class.btn-primary]="type!=='delete'"
+      (click)="ok()">Ok</button>
   </div>
 </ng-template>
