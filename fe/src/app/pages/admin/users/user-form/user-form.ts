@@ -38,7 +38,15 @@ export class UserForm implements OnInit, AfterViewInit {
   ngAfterViewInit(): void {
     if (this.id) {
       this.userService.getUserDetail(this.id).subscribe((res) => {
-        this.form.patchValue(res)
+        const { email, first_name, last_name } = res
+        const role_id = res.role._id
+        this.form.patchValue({
+          email,
+          first_name,
+          last_name,
+          role: role_id
+        });
+        console.log('this.form.value', this.form.value)
       })
     }
   }
