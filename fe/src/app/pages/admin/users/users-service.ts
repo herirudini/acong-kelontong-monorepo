@@ -20,6 +20,9 @@ interface IBodyInviteUser {
   role: string; // role._id
 }
 
+interface IGetRoles extends ITableQueryData {
+  active?: boolean
+}
 @Injectable({
   providedIn: 'root',
 })
@@ -126,7 +129,7 @@ export class UsersService extends BaseService {
     return this.putRequest({ url: Endpoint.USERS_VERIFY, body });
   }
 
-  getRoles(qParams: ITableQueryData): Observable<IResList<IRole>> {
+  getRoles(qParams: IGetRoles): Observable<IResList<IRole>> {
     return this.roleService.getRoles(qParams);
   }
 }

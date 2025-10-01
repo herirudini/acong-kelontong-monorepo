@@ -30,7 +30,7 @@
           <select class="form-select" id="role" formControlName="role">
             <option selected disabled value="">Choose...</option>
             @for (role of roles; track $index) {
-            <option [value]="role._id">{{role.role_name}}</option>
+            <option [value]="role._id" [disabled]="!role.active">{{role.role_name}}</option>
             }
           </select>
         </div>
