@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
+import { modules } from 'src/types/constants';
 
 @Injectable()
 export class RoleService {
@@ -12,6 +13,10 @@ export class RoleService {
     @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
     private global: GlobalService
   ) { }
+
+  getPermissions() {
+    return modules;
+  }
 
   async getListRole(
     page: number,

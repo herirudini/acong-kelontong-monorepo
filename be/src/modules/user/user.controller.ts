@@ -6,8 +6,8 @@ import type { Response } from 'express';
 import { GetUserListDto, InviteUserDto } from './user.dto';
 import { encodeBase64 } from 'src/utils/helper';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Permission } from 'src/global/permission.decoratior';
 
-UseGuards(AuthGuard)
 @Controller('users')
 export class UserController {
   constructor(
@@ -15,6 +15,8 @@ export class UserController {
     private readonly mailerService: MailerService
   ) { }
 
+  @UseGuards(AuthGuard)
+  @Permission(['users.view'])
   @Get('')
   async list(
     @Query() { page, size, sortBy, sortDir, search, verified }: GetUserListDto,
@@ -32,6 +34,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
+  @Permission(['users.create'])
   @Post('')
   async inviteUser(
     @Body() body: InviteUserDto,
@@ -66,6 +69,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Get('detail/:user_id')
   async detail(
     @Param('user_id') user_id: string,
@@ -82,6 +86,7 @@ export class UserController {
     }
   }
 
+  @UseGuards(AuthGuard)
   @Put('detail/:user_id')
   async editProfile(
     @Param('user_id') user_id: string,
@@ -102,6 +107,8 @@ export class UserController {
     }
   }
 
+  @UseGuards(AuthGuard)
+  @Permission(['users.delete'])
   @Delete('detail/:user_id')
   async deleteUser(
     @Param('user_id') user_id: string,
@@ -116,6 +123,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
+  @Permission(['users.create', 'users.edit'])
   @Post('detail/:user_id/re-invite')
   async resendVerification(
     @Param('user_id') user_id: string,
@@ -149,6 +157,8 @@ export class UserController {
     }
   }
 
+  @UseGuards(AuthGuard)
+  @Permission(['users.create', 'users.edit'])
   @Put('detail/:user_id/role')
   async editRole(
     @Param('user_id') user_id: string,
@@ -172,29 +182,13 @@ export class UserController {
   ) {
     const { ticket, new_password } = body;
     try {
-            console.log('masuk verify')
+      console.log('masuk verify')
       const isVerified = await this.userService.verifyUser(ticket, new_password);
       if (isVerified) {
         return BaseResponse.success({ res, option: { message: "User verified successfully" } });
       } else {
         return BaseResponse.unauthorized({ res, option: { message: "Invalid or expired verification token" } });
       }
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-
-  @UseGuards(AuthGuard)
-  @Get('permissions')
-  listPermission(
-    @Res() res: Response,
-  ) {
-    try {
-      const data = this.userService.getPermissions();
-      return BaseResponse.success({
-        res,
-        option: { message: 'Success get list user', detail: data },
-      });
     } catch (err) {
       return BaseResponse.error({ res, err });
     }

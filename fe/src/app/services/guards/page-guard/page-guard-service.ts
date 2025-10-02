@@ -22,10 +22,11 @@ export class PageGuardService {
     // ✅ On the browser: enforce real guard
     const modules = this.authSvc.getProfile()?.role?.modules ?? [];
     const permissionAsk = route.data['permissions'];
-    const hasPermission = modules.some(item=>permissionAsk.includes(item))
+    const hasPermission = modules.some(item => permissionAsk.includes(item))
 
     if (!hasPermission) {
       console.log('no permission');
+      window.location.href = '/';
       return false;
     }
 
