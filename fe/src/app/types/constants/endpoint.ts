@@ -26,7 +26,7 @@ export const Endpoint = {
   },
 
   /* Admin endpoints */
-  PERMISSIONS: `${api}users/permissions`,
+  PERMISSIONS: `${api}roles/permissions`,
 
 
   // /* Account endpoints */

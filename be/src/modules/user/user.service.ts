@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User, UserDocument } from './user.schema';
 import * as bcrypt from 'bcrypt';
-import { modules, salts, sessionDays } from 'src/types/constants';
+import { salts, sessionDays } from 'src/types/constants';
 import { IEditUser, IPaginationRes, TmpUser } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { GlobalService } from 'src/global/global.service';
@@ -166,10 +166,6 @@ export class UserService {
   async deleteUser(user_id: string): Promise<UserDocument | undefined> {
     const execute = await this.userModel.findByIdAndDelete(user_id).populate('role');
     return execute || undefined;
-  }
-
-  getPermissions() {
-    return modules;
   }
 
 }
