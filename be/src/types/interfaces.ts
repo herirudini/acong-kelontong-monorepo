@@ -59,4 +59,5 @@ export interface IBaseResponse {
   option?: IResponse;
 }
 
+export type TOneOrMany<T> = T | T[];
 
