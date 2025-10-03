@@ -3,26 +3,37 @@ import { Brand, BrandDocument } from './brand.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { BaseResponse } from 'src/utils/base-response';
+import { GlobalService } from 'src/global/global.service';
+import { IPaginationRes } from 'src/types/interfaces';
+import { PaginationDto } from 'src/global/global.dto';
 
 @Injectable()
 export class BrandService {
     constructor(
         @InjectModel(Brand.name) private readonly brandModel: Model<BrandDocument>,
+        private global: GlobalService
     ) { }
 
-    async listBrand(query: string): Promise<BrandDocument[]> {
-        try {
-            const listBrand = await this.brandModel.find({
-                $or: [
-                    { brand_name: { $regex: query, $options: 'i' } },  // case-insensitive
-                    { brand_code: { $regex: query, $options: 'i' } },
-                    { barcode: { $regex: query, $options: 'i' } },
-                ],
-            }).exec();
-            return listBrand
-        } catch (err) {
-            return BaseResponse.unexpected({ err: { text: 'listBrand catch', err } })
-        }
+    async listBrand({
+        page,
+        size,
+        sortBy,
+        sortDir,
+        search,
+    }: PaginationDto): Promise<{ data: BrandDocument[]; meta: IPaginationRes }> {
+        const searchFields: string[] = ['brand_name'];
+
+        return this.global.getList<Brand, BrandDocument>(
+            this.brandModel,
+            {
+                page,
+                size,
+                sortBy,
+                sortDir,
+                search,
+                searchFields,
+            }
+        )
     }
 
     async createBrand(data: Brand): Promise<BrandDocument> {
@@ -53,6 +64,15 @@ export class BrandService {
     async detailBrand(id: string): Promise<BrandDocument | undefined> {
         try {
             const detailBrand = await this.brandModel.findById(id).exec();
+            return detailBrand || undefined;
+        } catch (err) {
+            return BaseResponse.unexpected({ err: { text: 'detailBrand catch', err } })
+        }
+    }
+
+    async deleteBrand(id: string): Promise<BrandDocument | undefined> {
+        try {
+            const detailBrand = await this.brandModel.findByIdAndDelete(id).exec();
             return detailBrand || undefined;
         } catch (err) {
             return BaseResponse.unexpected({ err: { text: 'detailBrand catch', err } })

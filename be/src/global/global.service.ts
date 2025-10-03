@@ -1,22 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { Model, FilterQuery } from 'mongoose';
-import { IPaginationRes } from 'src/types/interfaces';
-
+import { IPaginationRes, PopulateParam, TOneOrMany } from 'src/types/interfaces';
 export class IGetListParam {
     page: number;
     size: number;
-    sortBy?: string;
-    sortDir: 'asc' | 'desc' = 'asc';
-    search?: string;
+    sortBy?: string = '';
+    sortDir?: 'asc' | 'desc' = 'asc';
+    search?: string = '';
     searchFields: string[] = [];
-    filter?: { column: string; value: any };
+    filter?: TOneOrMany<{ column: string; value: any }>;
     // allow single or multiple populate options
-    populate?: { column: string; value?: any } | { column: string; value?: any }[];
+    populate?: TOneOrMany<PopulateParam>;
 }
 
 @Injectable()
 export class GlobalService {
-    async getList<M,D>(model: Model<D>, params: IGetListParam): Promise<{ data: D[]; meta: IPaginationRes }> {
+    async getList<M, D>(model: Model<D>, params: IGetListParam): Promise<{ data: D[]; meta: IPaginationRes }> {
         const pageNum = Math.max(1, Number(params.page) || 1);
         const pageSize = Math.max(1, Number(params.size) || 10);
         const skip = (pageNum - 1) * pageSize;
@@ -33,9 +32,28 @@ export class GlobalService {
         }
 
         // 🎯 Custom filter
-        if (params.filter && params.filter?.column && params.filter?.value !== undefined) {
-            (conditions as any)[params.filter.column] = params.filter.value;
+        const addFilter = (filter) => {
+            if (filter?.column && filter.value !== undefined) {
+                if (Array.isArray((conditions as any)[filter.column])) {
+                    (conditions as any)[filter.column].push(filter.value);
+                } else if ((conditions as any)[filter.column] !== undefined) {
+                    (conditions as any)[filter.column] = { $in: [(conditions as any)[filter.column], filter.value] }; // This way we can filter a column with multiple value as keys
+                } else {
+                    (conditions as any)[filter.column] = filter.value;
+                }
+            }
+        };
+
+        if (params.filter) {
+            if (Array.isArray(params.filter)) {
+                params.filter.forEach((filter) => {
+                    addFilter(filter);
+                })
+            } else {
+                addFilter(params.filter);
+            }
         }
+
 
         // 🔀 Sorting
         const sort: Record<string, 1 | -1> = {};
@@ -49,10 +67,10 @@ export class GlobalService {
         if (params.populate) {
             if (Array.isArray(params.populate)) {
                 params.populate.forEach((pop) => {
-                    query.populate(pop.column, pop.value);
+                    query.populate({ path: pop.column, select: pop.select, match: pop.match, options: pop.options });
                 });
             } else {
-                query.populate(params.populate.column, params.populate.value);
+                query.populate({ path: params.populate.column, select: params.populate.select, match: params.populate.match, options: params.populate.options });
             }
         }
 

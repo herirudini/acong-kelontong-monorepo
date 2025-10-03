@@ -9,8 +9,6 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 })
 export class ConfirmModal {
   @Input() type: 'delete' | 'action' = 'delete';
-  @Output() submit: EventEmitter<boolean> = new EventEmitter<boolean>(false);
-
   @Input() itemName: string = "this item";
   @Input() customText?: string;
   @ViewChild('modalTemplateRef') modalTemplateRef!: TemplateRef<any>;
@@ -18,17 +16,25 @@ export class ConfirmModal {
 
   constructor(private modalService: NgbModal) { }
 
-  show(): EventEmitter<boolean> {
+  show(option?: { itemName?: string, customText?: string, type?: 'delete' | 'action'}): Promise<any> {
+    if (option?.itemName) {
+      this.itemName = option.itemName;
+    }
+    if (option?.customText) {
+      this.customText = option.customText;
+    }
+    if (option?.type) {
+      this.type = option.type;
+    }
     if (this.modalTemplateRef) {
       this.modalRef = this.modalService.open(this.modalTemplateRef, { ariaLabelledBy: 'modal-basic-title' });
     } else console.error('Template reference "modalTemplateRef" is not available.');
-    return this.submit
+    return this.modalRef.result;
   }
 
   ok() {
     if (this.modalRef) {
-      this.submit.emit(true);
-      this.modalRef.dismiss(true);
+      this.modalRef.close(true);
     }
   }
 }

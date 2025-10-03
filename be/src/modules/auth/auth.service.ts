@@ -37,7 +37,7 @@ export class AuthService {
             const result = await this.authModel.findById(decoded.id).populate('role');
             return result;
         } catch (err) {
-            return BaseResponse.unauthorized({ err });
+            return BaseResponse.invalid({ err });
         }
     }
 
@@ -58,7 +58,7 @@ export class AuthService {
         const auth: AuthDocument | null = await this.getAuthItem(accessToken);
         if (!auth) {
             await this.logout(accessToken);
-            return BaseResponse.unauthorized({ err: 'compareDBToken !auth' });
+            return BaseResponse.invalid({ err: 'compareDBToken !auth' });
         }
         const decrypted = decrypt(auth.token) as string;
         if (accessToken === decrypted) return auth;
@@ -82,7 +82,7 @@ export class AuthService {
             }
             return await this.authModel.findByIdAndDelete(decoded.id).exec();
         } catch (err) {
-            return BaseResponse.unauthorized({ err: { text: 'logout catch', err } });
+            return BaseResponse.forbidden({ err: { text: 'logout catch', err } });
         }
     }
 }

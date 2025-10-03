@@ -59,4 +59,7 @@ export interface IBaseResponse {
   option?: IResponse;
 }
 
+export type TOneOrMany<T> = T | T[];
+
+export type PopulateParam = { column: string; select?: any; match?: any; options?: any };
 

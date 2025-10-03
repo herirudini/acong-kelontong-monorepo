@@ -187,7 +187,7 @@ export class UserController {
       if (isVerified) {
         return BaseResponse.success({ res, option: { message: "User verified successfully" } });
       } else {
-        return BaseResponse.unauthorized({ res, option: { message: "Invalid or expired verification token" } });
+        return BaseResponse.invalid({ res, option: { message: "Invalid or expired verification token" } });
       }
     } catch (err) {
       return BaseResponse.error({ res, err });
