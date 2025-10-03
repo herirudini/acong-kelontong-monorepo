@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Model, FilterQuery } from 'mongoose';
-import { IPaginationRes, TOneOrMany } from 'src/types/interfaces';
+import { IPaginationRes, PopulateParam, TOneOrMany } from 'src/types/interfaces';
 export class IGetListParam {
     page: number;
     size: number;
@@ -10,7 +10,7 @@ export class IGetListParam {
     searchFields: string[] = [];
     filter?: TOneOrMany<{ column: string; value: any }>;
     // allow single or multiple populate options
-    populate?: TOneOrMany<{ column: string; value: any }>;
+    populate?: TOneOrMany<PopulateParam>;
 }
 
 @Injectable()
@@ -67,10 +67,10 @@ export class GlobalService {
         if (params.populate) {
             if (Array.isArray(params.populate)) {
                 params.populate.forEach((pop) => {
-                    query.populate(pop.column, pop.value);
+                    query.populate({ path: pop.column, select: pop.select, match: pop.match, options: pop.options });
                 });
             } else {
-                query.populate(params.populate.column, params.populate.value);
+                query.populate({ path: params.populate.column, select: params.populate.select, match: params.populate.match, options: params.populate.options });
             }
         }
 
