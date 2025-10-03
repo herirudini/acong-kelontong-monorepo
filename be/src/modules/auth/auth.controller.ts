@@ -74,8 +74,7 @@ export class AuthController {
                 await this.authService.updateToken(authId, newAccessToken);
                 return BaseResponse.success({ res, option: { detail: { access_token: newAccessToken } } });
             } else {
-                await this.authService.logout(refreshToken);
-                return BaseResponse.unauthorized({ res });
+                return BaseResponse.forbidden({ res });
             }
         } catch (err) {
             return BaseResponse.error({ res, err });
