@@ -25,14 +25,14 @@ export class AuthController {
         try {
             const user = await this.userModel.findOne({ email: body.email }).select('+password').populate('role');
             if (!user) {
-                return BaseResponse.unauthorized({ res, option: { message: 'Invalid email or password' } });
+                return BaseResponse.invalid({ res, option: { message: 'Invalid email or password' } });
             }
             if (!user.verified) {
-                return BaseResponse.unauthorized({ res, option: { message: 'Invalid email or password' } });
+                return BaseResponse.invalid({ res, option: { message: 'Invalid email or password' } });
             }
             const passwordIsValid = await bcrypt.compare(body.password, user.password);
             if (!passwordIsValid) {
-                return BaseResponse.unauthorized({ res, option: { message: 'Invalid email or password' } });
+                return BaseResponse.invalid({ res, option: { message: 'Invalid email or password' } });
             }
 
             const userAgent: string = req.headers['user-agent'] as string;
@@ -74,7 +74,7 @@ export class AuthController {
                 await this.authService.updateToken(authId, newAccessToken);
                 return BaseResponse.success({ res, option: { detail: { access_token: newAccessToken } } });
             } else {
-                return BaseResponse.forbidden({ res });
+                return BaseResponse.invalid({ res });
             }
         } catch (err) {
             return BaseResponse.error({ res, err });
@@ -90,11 +90,11 @@ export class AuthController {
         try {
             const authHeader: string = req.headers['authorization'] as string;
             if (!authHeader) {
-                return BaseResponse.unauthorized({ res, err: 'Post(logout) Missing token' });
+                return BaseResponse.invalid({ res, err: 'Post(logout) Missing token' });
             }
             const accessToken = authHeader.split(' ')[1]; // remove "Bearer"
             const compared = await this.authService.compareDBToken(accessToken);
-            if (!compared) return BaseResponse.unauthorized({ res, err: 'Post(logout) !compared' });
+            if (!compared) return BaseResponse.invalid({ res, err: 'Post(logout) !compared' });
             await this.authService.logout(accessToken, query.option);
             res.clearCookie('refresh_token', { path: '/' });
             return BaseResponse.success({ res, option: { message: 'Logout success!' } });
