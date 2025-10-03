@@ -28,7 +28,7 @@
                     <a (click)="showForm('edit', item._id)" class="text-white pointer btn btn-warning">
                         <i class="fa-solid fa-pencil"></i>
                     </a>
-                    <button (click)="deleteUser(item._id)" class="text-white pointer btn btn-danger"
+                    <button (click)="deleteUser(item)" class="text-white pointer btn btn-danger"
                         [disabled]="item.active">
                         <i class="fa-solid fa-trash"></i>
                     </button>
@@ -38,5 +38,4 @@
     </app-generic-table>
 </div>
 
-<app-confirm-modal #DeleteModal></app-confirm-modal>
-<app-confirm-modal #ResendVerifModal type="action"></app-confirm-modal>
+<app-confirm-modal #ConfirmModal></app-confirm-modal>

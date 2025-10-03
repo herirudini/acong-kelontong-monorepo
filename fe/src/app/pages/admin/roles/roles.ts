@@ -81,7 +81,7 @@ export class Roles implements OnInit {
   }
 
   deleteRole(role_id: string) {
-    this.confrimDelete?.show().subscribe((res: any) => {
+    this.confrimDelete?.show().then((res: any) => {
       if (res) {
         this.execDeleteion(role_id);
       }

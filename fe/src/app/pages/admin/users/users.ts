@@ -18,8 +18,7 @@ type formType = 'new' | 'edit' | 'view';
   styleUrl: './users.scss'
 })
 export class Users implements OnInit {
-  @ViewChild('DeleteModal') confrimDelete?: ConfirmModal;
-  @ViewChild('ResendVerifModal') confrimResendVerif?: ConfirmModal;
+  @ViewChild('ConfirmModal') confrimModal?: ConfirmModal;
 
   isLoading: boolean = false;
   listUser: IUser[] = [];
@@ -140,9 +139,11 @@ export class Users implements OnInit {
     this.getList(this.defaultTableParam);
   }
 
-  deleteUser(user_id: string) {
-    this.confrimDelete?.show().subscribe((res: any) => {
-      if (res) {
+  deleteUser(user: IUser) {
+    const user_id = user._id;
+    const itemName = `${user.first_name} ${user.last_name}`;
+    this.confrimModal?.show({ itemName }).then((res: any) => {
+      if (res && user_id) {
         this.execDeleteion(user_id);
       }
     })
@@ -156,7 +157,9 @@ export class Users implements OnInit {
   }
 
   resendVerification(role_id: string) {
-    this.confrimResendVerif?.show().subscribe((res: any) => {
+    const customText = 'Do you want to re-send invitation email?'
+    this.confrimModal?.show({ type: 'action', customText }).then((res: any) => {
+      console.log({ res })
       if (res) {
         this.execResendVerification(role_id);
       }
