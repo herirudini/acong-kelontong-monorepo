@@ -1,9 +1,13 @@
-import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
-import { catchError, finalize, switchMap, tap, throwError } from 'rxjs';
+import { HttpInterceptorFn } from '@angular/common/http';
+import { catchError, switchMap, throwError, finalize, filter, take } from 'rxjs';
 import { inject } from '@angular/core';
 import { AlertService } from '../../../shared/components/alert/alert-service';
 import { errCodes } from '../../../types/constants/common.constants';
 import { AuthService } from '../../auth/auth-service';
+import { BehaviorSubject } from 'rxjs';
+
+let isRefreshing = false;
+const refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const alert = inject(AlertService);
@@ -11,28 +15,48 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((err) => {
-
       const errCode = err?.error?.error_code;
       const errorMessage = err?.error?.message ?? `Error: ${err?.status ?? 'Unknown'}`;
-      console.error('HTTP error intercepted:', { errCode, errorMessage, err });
+
       if (errCode === errCodes.authGuard) {
-        // Try to refresh token
-        return auth.refreshToken().pipe(
-          switchMap((res) => {
-            const clone = req.clone({
-              setHeaders: {
-                Authorization: `Bearer ${res.detail.access_token}`,
-              },
-            });
-            return next(clone); // retry request
-          }),
-          catchError((refreshErr) => {
-            alert.error('Session expired. Please login again.');
-            console.error('Session expired. Please login again.');
-            auth.logout();
-            return throwError(() => refreshErr);
-          })
-        );
+        if (!isRefreshing) {
+          isRefreshing = true;
+          refreshTokenSubject.next(null);
+
+          return auth.refreshToken().pipe(
+            switchMap((res) => {
+              isRefreshing = false;
+              refreshTokenSubject.next(res.detail.access_token);
+
+              // retry original request with new token
+              const clone = req.clone({
+                setHeaders: { Authorization: `Bearer ${res.detail.access_token}` },
+              });
+              return next(clone);
+            }),
+            catchError((refreshErr) => {
+              isRefreshing = false;
+              alert.error('Session expired. Please login again.');
+              auth.logout();
+              return throwError(() => refreshErr);
+            }),
+            finalize(() => {
+              isRefreshing = false;
+            })
+          );
+        } else {
+          // Already refreshing → queue up other request until refreshTokenSubject emits
+          return refreshTokenSubject.pipe(
+            filter((token) => token !== null),
+            take(1),
+            switchMap((token) => {
+              const clone = req.clone({
+                setHeaders: { Authorization: `Bearer ${token}` },
+              });
+              return next(clone);
+            })
+          );
+        }
       }
 
       // Other errors → just show alert
