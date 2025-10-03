@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { Brand } from './brand.schema';
 import { BrandService } from './brand.service';
 import type { Request, Response } from 'express';
 import { BaseResponse } from 'src/utils/base-response';
+import { PaginationDto } from 'src/global/global.dto';
 
 @UseGuards(AuthGuard)
 @Controller('brand')
@@ -14,7 +15,6 @@ export class BrandController {
 
     @Post('')
     async createBrand(
-        @Req() req: Request,
         @Body() body: Brand,
         @Res() res: Response,
     ) {
@@ -28,12 +28,12 @@ export class BrandController {
 
     @Get('')
     async listBrand(
-        @Query('search') search: string,
+        @Query() query: PaginationDto,
         @Res() res: Response,
     ) {
         try {
-            const brands = await this.service.listBrand(search);
-            return BaseResponse.success({ res, option: { message: 'Success list brand', list: brands } });
+            const { data, meta } = await this.service.listBrand(query);
+            return BaseResponse.success({ res, option: { message: 'Success get list brand', list: data, meta } });
         } catch (err) {
             return BaseResponse.error({ res, err });
         }
@@ -60,6 +60,20 @@ export class BrandController {
     ) {
         try {
             const brand = await this.service.detailBrand(brandId);
+            return BaseResponse.success({ res, option: { message: "Success get detail brand", detail: brand } });
+        } catch (err) {
+            return BaseResponse.error({ res, err });
+        }
+    }
+
+
+    @Delete(':brand_id')
+    async deleteBrand(
+        @Param('brand_id') brandId: string,
+        @Res() res: Response,
+    ) {
+        try {
+            const brand = await this.service.deleteBrand(brandId);
             return BaseResponse.success({ res, option: { message: "Success get detail brand", detail: brand } });
         } catch (err) {
             return BaseResponse.error({ res, err });
