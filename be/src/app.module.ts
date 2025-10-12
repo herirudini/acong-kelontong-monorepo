@@ -24,6 +24,8 @@ import { RoleService } from './modules/role/role.service';
 import { RoleController } from './modules/role/role.controller';
 import { Role, RoleSchema } from './modules/role/role.schema';
 import { ModuleGuard } from './global/module.guard';
+import { SupplierService } from './modules/supplier/supplier.service';
+import { SupplierController } from './modules/supplier/supplier.controller';
 
 @Module({
   imports: [
@@ -77,8 +79,8 @@ import { ModuleGuard } from './global/module.guard';
     ]),
     SeederModule,
   ],
-  controllers: [AppController, AuthController, UserController, BrandController, RoleController],
-  providers: [AppService, AuthService, AuthGuard, ModuleGuard, UserService, BrandService, BaseResponse, GlobalService, RoleService]
+  controllers: [AppController, AuthController, UserController, BrandController, RoleController, SupplierController],
+  providers: [AppService, AuthService, AuthGuard, ModuleGuard, UserService, BrandService, BaseResponse, GlobalService, RoleService, SupplierService]
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly seederService: SeederService) { }
