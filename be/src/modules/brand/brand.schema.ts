@@ -8,7 +8,7 @@ export class Brand {
   brand_name: string; // e.g. "Indomie"
 
   @Prop()
-  description?: string;
+  brand_description?: string;
 
 }
 

@@ -2,7 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Brand, BrandDocument } from 'src/modules/brand/brand.schema';
-import { unitOfMeasure } from 'src/types/enums';
 
 @Injectable()
 export class BrandSeederService {
@@ -15,22 +14,18 @@ export class BrandSeederService {
     async run() {
         const seedData = [
             {
-                brand_name: 'Indomie Kaldu Ayam',
-                description: 'Indonesian Noodle',
+                brand_name: 'Indomie',
+                brand_description: 'Mie Instan',
             },
             {
-                brand_name: 'Gulaku 100gr',
-                description: 'Sugar money',
+                brand_name: 'Aqua',
+                brand_description: 'Air minum',
 
             },
             {
-                brand_name: 'Supermild 12',
-                description: 'Cigarette mild',
+                brand_name: 'Ultra Milk',
+                brand_description: 'Susu',
 
-            },
-            {
-                brand_name: "Minyakita 100ml",
-                description: "Oily liquid",
             }
         ];
 

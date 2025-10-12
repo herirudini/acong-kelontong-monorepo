@@ -1,8 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
 import { Brand } from './brand.schema';
 import { BrandService } from './brand.service';
-import type { Request, Response } from 'express';
+import type { Response } from 'express';
 import { BaseResponse } from 'src/utils/base-response';
 import { PaginationDto } from 'src/global/global.dto';
 
