@@ -68,7 +68,7 @@ export class ProductSeederService {
 
       for (const product of item.products) {
         let productVal;
-        const existingProduct = await this.brandModel.findOne({ brand_name: product.product_name });
+        const existingProduct = await this.productModel.findOne({ product_name: product.product_name });
         if (existingProduct) {
           productVal = existingProduct
         } else {
