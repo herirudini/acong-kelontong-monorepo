@@ -5,13 +5,13 @@ import { PaginationDto } from 'src/global/global.dto';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
-import { Product, ProductDocument } from './product.schema';
+import { Product } from './product.schema';
 
 @Injectable()
 export class ProductService {
 
   constructor(
-    @InjectModel(Product.name) private readonly productModel: Model<ProductDocument>,
+    @InjectModel(Product.name) private readonly productModel: Model<Product>,
     private global: GlobalService
   ) { }
 
@@ -21,10 +21,10 @@ export class ProductService {
     sortBy,
     sortDir,
     search,
-  }: PaginationDto): Promise<{ data: ProductDocument[]; meta: IPaginationRes }> {
+  }: PaginationDto): Promise<{ data: Product[]; meta: IPaginationRes }> {
     const searchFields: string[] = ['product_name'];
 
-    return this.global.getList<Product, ProductDocument>(
+    return this.global.getList<Product>(
       this.productModel,
       {
         page,
@@ -37,7 +37,7 @@ export class ProductService {
     )
   }
 
-  async createProduct(data: Product): Promise<ProductDocument> {
+  async createProduct(data: Product): Promise<Product> {
     try {
       const newProduct = await this.productModel.create(data);
       return newProduct;
@@ -46,7 +46,7 @@ export class ProductService {
     }
   }
 
-  async editProduct(id: string, data: Product): Promise<ProductDocument | undefined> {
+  async editProduct(id: string, data: Product): Promise<Product | undefined> {
     try {
       const updatedProduct = await this.productModel.findByIdAndUpdate(
         id,
@@ -62,7 +62,7 @@ export class ProductService {
     }
   }
 
-  async detailProduct(id: string): Promise<ProductDocument | undefined> {
+  async detailProduct(id: string): Promise<Product | undefined> {
     try {
       const detailProduct = await this.productModel.findById(id).exec();
       return detailProduct || undefined;
@@ -71,7 +71,7 @@ export class ProductService {
     }
   }
 
-  async deleteProduct(id: string): Promise<ProductDocument | undefined> {
+  async deleteProduct(id: string): Promise<Product | undefined> {
     try {
       const detailProduct = await this.productModel.findByIdAndDelete(id).exec();
       return detailProduct || undefined;

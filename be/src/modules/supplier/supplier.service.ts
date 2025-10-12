@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Supplier, SupplierDocument } from './supplier.schema';
+import { Supplier } from './supplier.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
@@ -9,10 +9,10 @@ import { BaseResponse } from 'src/utils/base-response';
 
 @Injectable()
 export class SupplierService {
-    constructor(
-      @InjectModel(Supplier.name) private readonly supplierModel: Model<SupplierDocument>,
-      private global: GlobalService
-    ) { }
+  constructor(
+    @InjectModel(Supplier.name) private readonly supplierModel: Model<Supplier>,
+    private global: GlobalService
+  ) { }
 
   async listSupplier({
     page,
@@ -20,10 +20,10 @@ export class SupplierService {
     sortBy,
     sortDir,
     search,
-  }: PaginationDto): Promise<{ data: SupplierDocument[]; meta: IPaginationRes }> {
+  }: PaginationDto): Promise<{ data: Supplier[]; meta: IPaginationRes }> {
     const searchFields: string[] = ['supplier_name'];
 
-    return this.global.getList<Supplier, SupplierDocument>(
+    return this.global.getList<Supplier>(
       this.supplierModel,
       {
         page,
@@ -36,7 +36,7 @@ export class SupplierService {
     )
   }
 
-  async createSupplier(data: Supplier): Promise<SupplierDocument> {
+  async createSupplier(data: Supplier): Promise<Supplier> {
     try {
       const newSupplier = await this.supplierModel.create(data);
       return newSupplier;
@@ -45,7 +45,7 @@ export class SupplierService {
     }
   }
 
-  async editSupplier(id: string, data: Supplier): Promise<SupplierDocument | undefined> {
+  async editSupplier(id: string, data: Supplier): Promise<Supplier | undefined> {
     try {
       const updatedSupplier = await this.supplierModel.findByIdAndUpdate(
         id,
@@ -61,7 +61,7 @@ export class SupplierService {
     }
   }
 
-  async detailSupplier(id: string): Promise<SupplierDocument | undefined> {
+  async detailSupplier(id: string): Promise<Supplier | undefined> {
     try {
       const detailSupplier = await this.supplierModel.findById(id).exec();
       return detailSupplier || undefined;
@@ -70,7 +70,7 @@ export class SupplierService {
     }
   }
 
-  async deleteSupplier(id: string): Promise<SupplierDocument | undefined> {
+  async deleteSupplier(id: string): Promise<Supplier | undefined> {
     try {
       const detailSupplier = await this.supplierModel.findByIdAndDelete(id).exec();
       return detailSupplier || undefined;

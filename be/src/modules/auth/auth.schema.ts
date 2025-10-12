@@ -9,8 +9,8 @@ import { Role, RoleDocument } from '../role/role.schema';
 @Schema({ timestamps: true })
 export class Auth {
 
-    @Prop({ type: String, ref: User.name, required: true })
-    user_id: string; // Reference to Users collection
+    @Prop({ type: Types.ObjectId, ref: User.name, required: true })
+    user_id: Types.ObjectId; // Reference to Users collection
     @Prop()
     token: string;
     @Prop()

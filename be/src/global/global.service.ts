@@ -15,7 +15,7 @@ export class IGetListParam {
 
 @Injectable()
 export class GlobalService {
-    async getList<M, D>(model: Model<D>, params: IGetListParam): Promise<{ data: D[]; meta: IPaginationRes }> {
+    async getList<M>(model: Model<M>, params: IGetListParam): Promise<{ data: M[]; meta: IPaginationRes }> {
         const pageNum = Math.max(1, Number(params.page) || 1);
         const pageSize = Math.max(1, Number(params.size) || 10);
         const skip = (pageNum - 1) * pageSize;

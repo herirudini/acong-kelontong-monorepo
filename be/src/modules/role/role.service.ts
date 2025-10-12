@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Role, RoleDocument } from './role.schema';
+import { Role } from './role.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { GlobalService } from 'src/global/global.service';
@@ -10,7 +10,7 @@ import { modules } from 'src/types/constants';
 @Injectable()
 export class RoleService {
   constructor(
-    @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
+    @InjectModel(Role.name) private roleModel: Model<Role>,
     private global: GlobalService
   ) { }
 
@@ -25,14 +25,14 @@ export class RoleService {
     sortDir: 'asc' | 'desc' = 'asc',
     search?: string,
     active?: boolean
-  ): Promise<{ data: RoleDocument[]; meta: IPaginationRes }> {
+  ): Promise<{ data: Role[]; meta: IPaginationRes }> {
     const searchFields: string[] = ['role_name'];
     let filter;
     if (active) {
       filter = { column: 'active', value: true }
     }
 
-    return this.global.getList<Role, RoleDocument>(
+    return this.global.getList<Role>(
       this.roleModel,
       {
         page,
@@ -46,7 +46,7 @@ export class RoleService {
     )
   }
 
-  async createRole(body: Role): Promise<RoleDocument> {
+  async createRole(body: Role): Promise<Role> {
     const role_name = body.role_name;
     const modules = body.modules;
 
@@ -61,12 +61,12 @@ export class RoleService {
     return newRole;
   }
 
-  async getDetailRole(role_id: string): Promise<RoleDocument | undefined> {
+  async getDetailRole(role_id: string): Promise<Role | undefined> {
     const role = await this.roleModel.findById(role_id);
     return role || undefined;
   }
 
-  async editRole(role_id: string, data: RoleDocument): Promise<RoleDocument | undefined> {
+  async editRole(role_id: string, data: Role): Promise<Role | undefined> {
     const {
       role_name,
       modules,

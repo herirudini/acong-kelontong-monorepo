@@ -1,10 +1,11 @@
 import { UserDocument } from "src/modules/user/user.schema";
 import type { Response } from 'express';
 import { RoleDocument } from 'src/modules/role/role.schema';
+import { Types } from 'mongoose';
 
 export interface IRefreshTokenPayload {
-  id: string;
-  id0: string;
+  id: Types.ObjectId;
+  id0: Types.ObjectId;
 }
 
 export interface ITokenPayload extends IRefreshTokenPayload {
