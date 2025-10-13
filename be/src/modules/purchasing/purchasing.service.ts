@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Document, Model, Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { Purchasing, PurchasingItem, PurchasingItemDocument } from './purchasing.schema';
-import { PurchasingMutationDTO } from './purchasing.dto';
+import { PurchasingItemDto, PurchasingMutationDTO } from './purchasing.dto';
 import { Product } from '../product/product.schema';
 import { Supplier } from '../supplier/supplier.schema';
 
@@ -39,21 +39,9 @@ export class PurchasingService {
 
     // Loop through each item and enrich data
     for (const item of dto.purchase_item) {
-      const product = await this.productModel.findById(item.product);
-      if (!product) return BaseResponse.notFound({ err: `Product not found: ${item.product}` });
-
+      await this.createPurchasingItem(item, purchase, supplier);
       const subtotal = item.qty * item.purchase_price;
       total += subtotal;
-
-      await this.purchasingItemModel.create({
-        purchase_order: purchase._id,
-        product: product._id,
-        product_name: product.product_name,
-        supplier_name: supplier.supplier_name,
-        qty: item.qty,
-        purchase_price: item.purchase_price,
-        exp_date: item.exp_date,
-      });
     }
 
     // Update total purchase price
@@ -62,29 +50,24 @@ export class PurchasingService {
     return this.detailPurchasing(purchase._id);
   }
 
-  async listPurchasing({
-    page,
-    size,
-    sortBy,
-    sortDir,
-    search,
-  }: PaginationDto): Promise<{ data: Purchasing[]; meta: IPaginationRes }> {
-    const searchFields: string[] = ['supplier_name'];
+  async createPurchasingItem(data: PurchasingItemDto, po: Purchasing & Document, supplier: Supplier): Promise<PurchasingItem | undefined> {
+    const product = await this.productModel.findById(data.product);
+    if (!product) return BaseResponse.notFound({ err: `Product not found: ${data.product}` });
 
-    return this.global.getList<Purchasing>(
-      this.purchasingModel,
-      {
-        page,
-        size,
-        sortBy,
-        sortDir,
-        search,
-        searchFields,
-      }
-    )
+    const created = await this.purchasingItemModel.create({
+      purchase_order: po._id,
+      product: product._id,
+      product_name: product.product_name,
+      supplier_name: supplier.supplier_name,
+      qty: data.qty,
+      purchase_price: data.purchase_price,
+      exp_date: data.exp_date,
+    });
+
+    return created || undefined
   }
 
-  async editPurchasing(id: string, dto: PurchasingMutationDTO): Promise<(Purchasing & { items: PurchasingItem[] }) | undefined> {
+  async editPurchasing(id: Types.ObjectId, dto: PurchasingMutationDTO): Promise<(Purchasing & { items: PurchasingItem[] }) | undefined> {
     try {
       const purchase = await this.purchasingModel.findById(id).exec();
       if (!purchase) return undefined;
@@ -113,32 +96,20 @@ export class PurchasingService {
         const product = await this.productModel.findById(dtoItem.product);
         if (!product) return BaseResponse.notFound({ err: `Product not found: ${dtoItem.product}` });
 
-        const subtotal = dtoItem.qty * dtoItem.purchase_price;
-        total += subtotal;
-
         const existing = existingItems.find(
           i => i.product.toString() === dtoItem.product
         );
 
         if (existing) {
-          // Update if qty or price changed
-          await this.purchasingItemModel.findByIdAndUpdate(existing._id, {
-            qty: dtoItem.qty,
-            purchase_price: dtoItem.purchase_price,
-            exp_date: dtoItem.exp_date,
-          });
+          // Update
+          await this.editPurchasingItem(existing._id as Types.ObjectId, dtoItem, purchase, supplier);
         } else {
-          // Create new if not exist
-          await this.purchasingItemModel.create({
-            purchase_order: purchase._id,
-            product: product._id,
-            product_name: product.product_name,
-            supplier_name: supplier.supplier_name,
-            qty: dtoItem.qty,
-            purchase_price: dtoItem.purchase_price,
-            exp_date: dtoItem.exp_date,
-          });
+          // Create new
+          await this.createPurchasingItem(dtoItem, purchase, supplier);
         }
+
+        const subtotal = dtoItem.qty * dtoItem.purchase_price;
+        total += subtotal;
       }
 
       // Update purchase main data
@@ -157,6 +128,53 @@ export class PurchasingService {
     }
   }
 
+  async editPurchasingItem(id: Types.ObjectId, data: PurchasingItemDto, po: Purchasing & Document, supplier: Supplier): Promise<PurchasingItem | undefined> {
+    const product = await this.productModel.findById(data.product);
+    if (!product) return BaseResponse.notFound({ err: `Product not found: ${data.product}` });
+
+    const updatedItem = await this.purchasingItemModel.findByIdAndUpdate(
+      id,
+      {
+        $set:
+        {
+          purchase_order: po._id,
+          product: product._id,
+          product_name: product.product_name,
+          supplier_name: supplier.supplier_name,
+          qty: data.qty,
+          purchase_price: data.purchase_price,
+          exp_date: data.exp_date,
+        }
+      },
+      {
+        new: true,         // return the updated doc
+        runValidators: true, // validate before saving
+      },
+    ).exec();
+    return updatedItem || undefined;
+  }
+
+  async listPurchasing({
+    page,
+    size,
+    sortBy,
+    sortDir,
+    search,
+  }: PaginationDto): Promise<{ data: Purchasing[]; meta: IPaginationRes }> {
+    const searchFields: string[] = ['supplier_name'];
+
+    return this.global.getList<Purchasing>(
+      this.purchasingModel,
+      {
+        page,
+        size,
+        sortBy,
+        sortDir,
+        search,
+        searchFields,
+      }
+    )
+  }
 
   async detailPurchasing(id: Types.ObjectId): Promise<(Purchasing & { items: PurchasingItem[] }) | undefined> {
     const detailPurchasing = await this.purchasingModel
@@ -175,12 +193,13 @@ export class PurchasingService {
     return { ...detailPurchasing, items };
   }
 
-  async deletePurchasing(id: string): Promise<Purchasing | undefined> {
+  async deletePurchasing(id: Types.ObjectId): Promise<Purchasing | undefined> {
     try {
-      const detailPurchasing = await this.purchasingModel.findByIdAndDelete(id).exec();
-      return detailPurchasing || undefined;
+      const deletedPurchasing = await this.purchasingModel.findByIdAndDelete(id).exec();
+      await this.purchasingItemModel.deleteMany({purchase_order: id});
+      return deletedPurchasing || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'detailPurchasing catch', err } })
+      return BaseResponse.unexpected({ err: { text: 'deletedPurchasing catch', err } })
     }
   }
 }

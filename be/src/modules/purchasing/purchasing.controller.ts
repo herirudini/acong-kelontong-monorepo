@@ -6,6 +6,7 @@ import { PurchasingService } from './purchasing.service';
 import type { Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PurchasingMutationDTO } from './purchasing.dto';
+import { Types } from 'mongoose';
 
 @Controller('purchasing')
 export class PurchasingController {
@@ -15,14 +16,11 @@ export class PurchasingController {
   ) { }
 
   @Post('')
-  @UseInterceptors(FileInterceptor('invoice_photo'))
   async createPurchasing(
-    @UploadedFile() file: Express.Multer.File,
     @Body() dto: PurchasingMutationDTO,
     @Res() res: Response,
   ) {
     try {
-      dto.invoice_photo = file?.filename;
       const purchasing = await this.service.createPurchasing(dto);
       return BaseResponse.success({ res, option: { message: "Success create purchasing", detail: purchasing } });
     } catch (err) {
@@ -44,13 +42,16 @@ export class PurchasingController {
   }
 
   @Put(':purchasing_id')
+  @UseInterceptors(FileInterceptor('invoice_photo'))
   async editPurchasing(
-    @Param('purchasing_id') purchasingId: string,
-    @Body() body: PurchasingMutationDTO,
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @UploadedFile() file: Express.Multer.File,
+    @Body() dto: PurchasingMutationDTO,
     @Res() res: Response,
   ) {
     try {
-      const purchasing = await this.service.editPurchasing(purchasingId, body);
+      dto.invoice_photo = file?.filename;
+      const purchasing = await this.service.editPurchasing(purchasingId, dto);
       return BaseResponse.success({ res, option: { message: "Success edit purchasing", detail: purchasing } });
     } catch (err) {
       return BaseResponse.error({ res, err });
@@ -59,7 +60,7 @@ export class PurchasingController {
 
   @Get(':purchasing_id')
   async detailPurchasing(
-    @Param('purchasing_id') purchasingId: string,
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
@@ -73,7 +74,7 @@ export class PurchasingController {
 
   @Delete(':purchasing_id')
   async deletePurchasing(
-    @Param('purchasing_id') purchasingId: string,
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
