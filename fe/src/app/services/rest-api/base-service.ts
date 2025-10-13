@@ -157,4 +157,16 @@ export class BaseService {
         })
       );
   }
+
+  // todoAPIInvoice(id, fileInput, body) {
+  //   const formData = new FormData();
+  //   formData.append('invoice_photo', fileInput.files[0]);
+  //   formData.append('supplier_name', body.supplier_name);
+  //   formData.append('purchase_date', body.purchase_date);
+
+  //   this.http.put(`/api/purchasing/${id}`, formData).subscribe({
+  //     next: res => console.log('Success:', res),
+  //     error: err => console.error(err)
+  //   });
+  // }
 }
