@@ -5,6 +5,7 @@ import { BrandService } from './brand.service';
 import type { Response } from 'express';
 import { BaseResponse } from 'src/utils/base-response';
 import { PaginationDto } from 'src/global/global.dto';
+import { Types } from 'mongoose';
 
 @UseGuards(AuthGuard)
 @Controller('brand')
@@ -41,7 +42,7 @@ export class BrandController {
 
     @Put(':brand_id')
     async editBrand(
-        @Param('brand_id') brandId: string,
+        @Param('brand_id') brandId: Types.ObjectId,
         @Body() body: Brand,
         @Res() res: Response,
     ) {
@@ -55,7 +56,7 @@ export class BrandController {
 
     @Get(':brand_id')
     async detailBrand(
-        @Param('brand_id') brandId: string,
+        @Param('brand_id') brandId: Types.ObjectId,
         @Res() res: Response,
     ) {
         try {
@@ -69,7 +70,7 @@ export class BrandController {
 
     @Delete(':brand_id')
     async deleteBrand(
-        @Param('brand_id') brandId: string,
+        @Param('brand_id') brandId: Types.ObjectId,
         @Res() res: Response,
     ) {
         try {

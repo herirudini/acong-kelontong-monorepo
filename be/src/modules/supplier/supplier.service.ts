@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Supplier } from './supplier.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
@@ -45,7 +45,7 @@ export class SupplierService {
     }
   }
 
-  async editSupplier(id: string, data: Supplier): Promise<Supplier | undefined> {
+  async editSupplier(id: Types.ObjectId, data: Supplier): Promise<Supplier | undefined> {
     try {
       const updatedSupplier = await this.supplierModel.findByIdAndUpdate(
         id,
@@ -61,7 +61,7 @@ export class SupplierService {
     }
   }
 
-  async detailSupplier(id: string): Promise<Supplier | undefined> {
+  async detailSupplier(id: Types.ObjectId): Promise<Supplier | undefined> {
     try {
       const detailSupplier = await this.supplierModel.findById(id).exec();
       return detailSupplier || undefined;
@@ -70,7 +70,7 @@ export class SupplierService {
     }
   }
 
-  async deleteSupplier(id: string): Promise<Supplier | undefined> {
+  async deleteSupplier(id: Types.ObjectId): Promise<Supplier | undefined> {
     try {
       const detailSupplier = await this.supplierModel.findByIdAndDelete(id).exec();
       return detailSupplier || undefined;

@@ -6,6 +6,7 @@ import type { RoleDocument } from './role.schema';
 import { AuthGuard } from '../auth/auth.guard';
 import { GetRolesDTO } from './role.dto';
 import { Permission } from 'src/global/permission.decoratior';
+import { Types } from 'mongoose';
 
 @UseGuards(AuthGuard)
 @Controller('roles')
@@ -49,7 +50,7 @@ export class RoleController {
   @Permission(['roles.view'])
   @Get(':role_id')
   async detail(
-    @Param('role_id') role_id: string,
+    @Param('role_id') role_id: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
@@ -66,7 +67,7 @@ export class RoleController {
   @Permission(['roles.edit'])
   @Put(':role_id')
   async edit(
-    @Param('role_id') role_id: string,
+    @Param('role_id') role_id: Types.ObjectId,
     @Body() body: RoleDocument,
     @Res() res: Response,
   ) {
@@ -81,7 +82,7 @@ export class RoleController {
   @Permission(['roles.delete'])
   @Delete(':role_id')
   async delete(
-    @Param('role_id') role_id: string,
+    @Param('role_id') role_id: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {

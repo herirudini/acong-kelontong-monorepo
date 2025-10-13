@@ -4,6 +4,7 @@ import { BaseResponse } from 'src/utils/base-response';
 import { Supplier } from './supplier.schema';
 import { SupplierService } from './supplier.service';
 import type { Response } from 'express';
+import { Types } from 'mongoose';
 
 @Controller('supplier')
 export class SupplierController {
@@ -39,7 +40,7 @@ export class SupplierController {
 
   @Put(':supplier_id')
   async editSupplier(
-    @Param('supplier_id') supplierId: string,
+    @Param('supplier_id') supplierId: Types.ObjectId,
     @Body() body: Supplier,
     @Res() res: Response,
   ) {
@@ -53,7 +54,7 @@ export class SupplierController {
 
   @Get(':supplier_id')
   async detailSupplier(
-    @Param('supplier_id') supplierId: string,
+    @Param('supplier_id') supplierId: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
@@ -67,7 +68,7 @@ export class SupplierController {
 
   @Delete(':supplier_id')
   async deleteSupplier(
-    @Param('supplier_id') supplierId: string,
+    @Param('supplier_id') supplierId: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {

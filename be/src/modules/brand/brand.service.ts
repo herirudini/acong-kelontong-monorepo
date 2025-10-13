@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Brand } from './brand.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { BaseResponse } from 'src/utils/base-response';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
@@ -45,7 +45,7 @@ export class BrandService {
         }
     }
 
-    async editBrand(id: string, data: Brand): Promise<Brand | undefined> {
+    async editBrand(id: Types.ObjectId, data: Brand): Promise<Brand | undefined> {
         try {
             const updatedBrand = await this.brandModel.findByIdAndUpdate(
                 id,
@@ -61,7 +61,7 @@ export class BrandService {
         }
     }
 
-    async detailBrand(id: string): Promise<Brand | undefined> {
+    async detailBrand(id: Types.ObjectId): Promise<Brand | undefined> {
         try {
             const detailBrand = await this.brandModel.findById(id).exec();
             return detailBrand || undefined;
@@ -70,7 +70,7 @@ export class BrandService {
         }
     }
 
-    async deleteBrand(id: string): Promise<Brand | undefined> {
+    async deleteBrand(id: Types.ObjectId): Promise<Brand | undefined> {
         try {
             const detailBrand = await this.brandModel.findByIdAndDelete(id).exec();
             return detailBrand || undefined;

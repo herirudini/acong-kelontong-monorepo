@@ -24,7 +24,7 @@ export interface IEditUser {
   last_name?: string;
   email?: string;
   password?: string;
-  role?: string;
+  role?: Types.ObjectId;
 }
 
 export type TModules =

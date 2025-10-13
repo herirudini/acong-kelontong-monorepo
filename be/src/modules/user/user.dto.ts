@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsMongoId,
 } from 'class-validator';
+import { Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
 
 export class GetUserListDto extends PaginationDto {
@@ -22,5 +23,5 @@ export class InviteUserDto {
   @IsNotEmpty()
   last_name: string;
   @IsMongoId() // ✅ checks it's a valid ObjectId string
-  role: string; // ✅ comes as string from request
+  role: Types.ObjectId;
 }

@@ -5,6 +5,7 @@ import { ProductService } from './product.service';
 import type { Response } from 'express';
 import { BaseResponse } from 'src/utils/base-response';
 import { PaginationDto } from 'src/global/global.dto';
+import { Types } from 'mongoose';
 
 @UseGuards(AuthGuard)
 @Controller('product')
@@ -41,7 +42,7 @@ export class ProductController {
 
     @Put(':product_id')
     async editProduct(
-        @Param('product_id') productId: string,
+        @Param('product_id') productId: Types.ObjectId,
         @Body() body: Product,
         @Res() res: Response,
     ) {
@@ -55,7 +56,7 @@ export class ProductController {
 
     @Get(':product_id')
     async detailProduct(
-        @Param('product_id') productId: string,
+        @Param('product_id') productId: Types.ObjectId,
         @Res() res: Response,
     ) {
         try {
@@ -69,7 +70,7 @@ export class ProductController {
 
     @Delete(':product_id')
     async deleteProduct(
-        @Param('product_id') productId: string,
+        @Param('product_id') productId: Types.ObjectId,
         @Res() res: Response,
     ) {
         try {

@@ -21,12 +21,12 @@ export class UserService {
     private global: GlobalService
   ) { }
 
-  async getDetailUser(user_id: string): Promise<User | undefined> {
+  async getDetailUser(user_id: Types.ObjectId): Promise<User | undefined> {
     const user = await this.userModel.findById(user_id).populate('role').exec();
     return user || undefined;
   }
 
-  async editUser(user_id: string, data: IEditUser): Promise<User | undefined> {
+  async editUser(user_id: Types.ObjectId, data: IEditUser): Promise<User | undefined> {
     const {
       first_name,
       last_name,
@@ -103,7 +103,7 @@ export class UserService {
     )
   }
 
-  async resendVerification(user_id: string): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
+  async resendVerification(user_id: Types.ObjectId): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
     const tmpUser = await this.userModel.findById(user_id).populate('role').exec();;
     if (!tmpUser) {
       return BaseResponse.notFound({ err: 'resendVerification tmpUser not found' });
@@ -164,7 +164,7 @@ export class UserService {
     return true;
   }
 
-  async deleteUser(user_id: string): Promise<User | undefined> {
+  async deleteUser(user_id: Types.ObjectId): Promise<User | undefined> {
     const execute = await this.userModel.findByIdAndDelete(user_id).populate('role');
     return execute || undefined;
   }

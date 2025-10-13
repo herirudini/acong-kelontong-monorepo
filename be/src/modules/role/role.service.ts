@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Role } from './role.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
@@ -61,12 +61,12 @@ export class RoleService {
     return newRole;
   }
 
-  async getDetailRole(role_id: string): Promise<Role | undefined> {
+  async getDetailRole(role_id: Types.ObjectId): Promise<Role | undefined> {
     const role = await this.roleModel.findById(role_id);
     return role || undefined;
   }
 
-  async editRole(role_id: string, data: Role): Promise<Role | undefined> {
+  async editRole(role_id: Types.ObjectId, data: Role): Promise<Role | undefined> {
     const {
       role_name,
       modules,
@@ -93,7 +93,7 @@ export class RoleService {
     }
   }
 
-  async deleteRole(role_id: string): Promise<boolean> {
+  async deleteRole(role_id: Types.ObjectId): Promise<boolean> {
     const role = await this.roleModel.findById(role_id);
     if (!role) return BaseResponse.notFound({ option: { message: 'Role not found' } })
     if (role.active) return BaseResponse.forbidden({ option: { message: 'Cannot delete active role' } })

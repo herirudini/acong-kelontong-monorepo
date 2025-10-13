@@ -1,14 +1,15 @@
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, IsDate, IsNumber, IsArray, IsBase64, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsDate, IsNumber, IsArray, IsOptional, IsMongoId } from 'class-validator';
+import { Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
 
 export class PurchasingItemDto {
-  @IsString()
+  @IsMongoId() // ✅ checks it's a valid ObjectId string
   @IsNotEmpty()
-  purchase_order: string;
-  @IsString()
+  purchase_order: Types.ObjectId;
+  @IsMongoId() // ✅ checks it's a valid ObjectId string
   @IsNotEmpty()
-  product: string;
+  product: Types.ObjectId;
   @IsString()
   @IsNotEmpty()
   supplier_name: string;
@@ -24,9 +25,9 @@ export class PurchasingItemDto {
 }
 
 export class PurchasingMutationDTO extends PaginationDto {
-  @IsString()
+  @IsMongoId() // ✅ checks it's a valid ObjectId string
   @IsNotEmpty()
-  supplier: string;
+  supplier: Types.ObjectId;
   @IsString()
   @IsNotEmpty()
   supplier_name: string;

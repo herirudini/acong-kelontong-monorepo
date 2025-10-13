@@ -52,7 +52,7 @@ export class PurchasingService {
 
   async createPurchasingItem(data: PurchasingItemDto, po: Purchasing & Document, supplier: Supplier): Promise<PurchasingItem | undefined> {
     const product = await this.productModel.findById(data.product);
-    if (!product) return BaseResponse.notFound({ err: `Product not found: ${data.product}` });
+    if (!product) return BaseResponse.notFound({ err: `createPurchasingItem Product not found: ${data.product_name}` });
 
     const created = await this.purchasingItemModel.create({
       purchase_order: po._id,
@@ -85,7 +85,7 @@ export class PurchasingService {
 
       // Delete items that are no longer in the new DTO
       const toDelete = existingItems.filter(
-        i => !dtoProductIds.includes(i.product.toString())
+        i => !dtoProductIds.includes(i.product)
       );
       await this.purchasingItemModel.deleteMany({
         _id: { $in: toDelete.map(i => i._id) },
@@ -93,11 +93,8 @@ export class PurchasingService {
 
       // Iterate over incoming items
       for (const dtoItem of dto.purchase_item) {
-        const product = await this.productModel.findById(dtoItem.product);
-        if (!product) return BaseResponse.notFound({ err: `Product not found: ${dtoItem.product}` });
-
         const existing = existingItems.find(
-          i => i.product.toString() === dtoItem.product
+          i => i.product === dtoItem.product
         );
 
         if (existing) {
@@ -130,7 +127,7 @@ export class PurchasingService {
 
   async editPurchasingItem(id: Types.ObjectId, data: PurchasingItemDto, po: Purchasing & Document, supplier: Supplier): Promise<PurchasingItem | undefined> {
     const product = await this.productModel.findById(data.product);
-    if (!product) return BaseResponse.notFound({ err: `Product not found: ${data.product}` });
+    if (!product) return BaseResponse.notFound({ err: `editPurchasingItem Product not found: ${data.product_name}` });
 
     const updatedItem = await this.purchasingItemModel.findByIdAndUpdate(
       id,

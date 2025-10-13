@@ -7,6 +7,7 @@ import { GetUserListDto, InviteUserDto } from './user.dto';
 import { encodeBase64 } from 'src/utils/helper';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Permission } from 'src/global/permission.decoratior';
+import { Types } from 'mongoose';
 
 @Controller('users')
 export class UserController {
@@ -72,7 +73,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('detail/:user_id')
   async detail(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
@@ -89,7 +90,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Put('detail/:user_id')
   async editProfile(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Body()
     body: {
       first_name: string;
@@ -111,7 +112,7 @@ export class UserController {
   @Permission(['users.delete'])
   @Delete('detail/:user_id')
   async deleteUser(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
@@ -126,7 +127,7 @@ export class UserController {
   @Permission(['users.create', 'users.edit'])
   @Post('detail/:user_id/re-invite')
   async resendVerification(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
@@ -161,9 +162,9 @@ export class UserController {
   @Permission(['users.create', 'users.edit'])
   @Put('detail/:user_id/role')
   async editRole(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Body() body: {
-      role: string;
+      role: Types.ObjectId;
     },
     @Res() res: Response,
   ) {

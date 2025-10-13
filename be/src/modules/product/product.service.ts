@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
@@ -46,7 +46,7 @@ export class ProductService {
     }
   }
 
-  async editProduct(id: string, data: Product): Promise<Product | undefined> {
+  async editProduct(id: Types.ObjectId, data: Product): Promise<Product | undefined> {
     try {
       const updatedProduct = await this.productModel.findByIdAndUpdate(
         id,
@@ -62,7 +62,7 @@ export class ProductService {
     }
   }
 
-  async detailProduct(id: string): Promise<Product | undefined> {
+  async detailProduct(id: Types.ObjectId): Promise<Product | undefined> {
     try {
       const detailProduct = await this.productModel.findById(id).exec();
       return detailProduct || undefined;
@@ -71,7 +71,7 @@ export class ProductService {
     }
   }
 
-  async deleteProduct(id: string): Promise<Product | undefined> {
+  async deleteProduct(id: Types.ObjectId): Promise<Product | undefined> {
     try {
       const detailProduct = await this.productModel.findByIdAndDelete(id).exec();
       return detailProduct || undefined;
