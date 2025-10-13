@@ -3,8 +3,8 @@ import { Model, FilterQuery } from 'mongoose';
 import { modules } from 'src/types/constants';
 import { IPaginationRes, PopulateParam, TOneOrMany } from 'src/types/interfaces';
 export class IGetListParam {
-  page: number;
-  size: number;
+  page?: number;
+  size?: number;
   sortBy?: string = '';
   sortDir?: 'asc' | 'desc' = 'asc';
   search?: string = '';
@@ -19,7 +19,7 @@ export class GlobalService {
 
   async getList<M>(model: Model<M>, params: IGetListParam): Promise<{ data: M[]; meta: IPaginationRes }> {
     const pageNum = Math.max(1, Number(params.page) || 1);
-    const pageSize = Math.max(1, Number(params.size) || 10);
+    const pageSize = Math.max(1, Number(params.size) || 1000);
     const skip = (pageNum - 1) * pageSize;
 
     // ✅ Start with empty filter object

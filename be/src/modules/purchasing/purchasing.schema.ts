@@ -3,6 +3,7 @@ import { Document, Types } from 'mongoose';
 import { Supplier, SupplierDocument } from '../supplier/supplier.schema';
 import { Product, ProductDocument } from '../product/product.schema';
 
+// HEADER
 @Schema({ timestamps: true })
 export class Purchasing {
   @Prop({ type: Types.ObjectId, ref: Supplier.name, required: true })
@@ -31,10 +32,11 @@ export class Purchasing {
 export type PurchasingDocument = Purchasing & Document & { supplier: SupplierDocument };
 export const PurchasingSchema = SchemaFactory.createForClass(Purchasing);
 
+// ITEMS as BODY
 @Schema({ timestamps: true })
 export class PurchasingItem {
-  @Prop({ type: Types.ObjectId, ref: Purchasing.name, required: true })
-  purchase_order: Types.ObjectId;
+  @Prop({ type: Types.ObjectId, ref: Purchasing.name, required: true, unique: true })
+  purchase_order: Types.ObjectId; // ref to the HEADER, must be unique
 
   @Prop({ type: Types.ObjectId, ref: Product.name, required: true })
   product: Types.ObjectId;

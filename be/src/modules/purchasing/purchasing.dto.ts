@@ -51,3 +51,7 @@ export class PurchasingMutationDTO extends PaginationDto {
   @IsString()
   invoice_photo?: string;
 }
+
+export class ListPurchasingItemsDTO extends PaginationDto {
+  purchasing_id: Types.ObjectId
+}

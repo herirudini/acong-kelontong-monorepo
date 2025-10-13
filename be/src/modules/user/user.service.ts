@@ -77,8 +77,8 @@ export class UserService {
   }
 
   async getListUser(
-    page: number,
-    size: number,
+    page?: number,
+    size?: number,
     sortBy?: string,
     sortDir: 'asc' | 'desc' = 'asc',
     search?: string,

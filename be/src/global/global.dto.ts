@@ -20,11 +20,11 @@ class FilterDto {
 export class PaginationDto {
     @IsInt()
     @Min(1)
-    page: number;
+    page?: number;
 
     @IsInt()
     @Min(1)
-    size: number;
+    size?: number;
 
     @IsOptional()
     @IsString()
