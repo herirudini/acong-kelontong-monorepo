@@ -31,6 +31,7 @@ import { ProductController } from './modules/product/product.controller';
 import { PurchasingService } from './modules/purchasing/purchasing.service';
 import { PurchasingController } from './modules/purchasing/purchasing.controller';
 import { Purchasing, PurchasingItem, PurchasingItemSchema, PurchasingSchema } from './modules/purchasing/purchasing.schema';
+import { GlobalController } from './global/global.controller';
 
 @Module({
   imports: [
@@ -86,7 +87,7 @@ import { Purchasing, PurchasingItem, PurchasingItemSchema, PurchasingSchema } fr
     ]),
     SeederModule,
   ],
-  controllers: [AppController, AuthController, UserController, BrandController, RoleController, SupplierController, ProductController, PurchasingController],
+  controllers: [AppController, AuthController, UserController, BrandController, RoleController, SupplierController, ProductController, PurchasingController, GlobalController],
   providers: [AppService, AuthService, AuthGuard, ModuleGuard, UserService, BrandService, BaseResponse, GlobalService, RoleService, SupplierService, ProductService, PurchasingService]
 })
 export class AppModule implements OnModuleInit {

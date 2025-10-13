@@ -92,20 +92,4 @@ export class RoleController {
       return BaseResponse.error({ res, err });
     }
   }
-
-  @UseGuards(AuthGuard)
-  @Get('permissions')
-  listPermission(
-    @Res() res: Response,
-  ) {
-    try {
-      const data = this.roleService.getPermissions();
-      return BaseResponse.success({
-        res,
-        option: { message: 'Success get list permission', detail: data },
-      });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
 }
