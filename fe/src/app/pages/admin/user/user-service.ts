@@ -23,10 +23,11 @@ interface IBodyInviteUser {
 interface IGetRoles extends ITableQueryData {
   active?: boolean
 }
+
 @Injectable({
-  providedIn: 'root',
+  providedIn: 'root'
 })
-export class UsersService extends BaseService {
+export class UserService extends BaseService {
   constructor(private alert: AlertService, private roleService: RolesService) {
     super();
   }

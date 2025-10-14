@@ -90,12 +90,12 @@ export const routes: Routes = [
         path: USER.url,
         canActivate: [PageGuardService],
         data: { ...USER },
-        loadComponent: () => import('./pages/admin/users/users').then(c => c.Users),
+        loadComponent: () => import('./pages/admin/user/user').then(c => c.User),
       }
     ]
   },
   { path: 'login', loadComponent: () => import('./layout/auth-layout/login/login').then(c => c.Login) },
-  { path: 'user-verification/:ticket', loadComponent: () => import('./pages/admin/users/user-verification/user-verification').then(c => c.UserVerification) },
+  { path: 'user-verification/:ticket', loadComponent: () => import('./pages/admin/user/user-verification/user-verification').then(c => c.UserVerification) },
   { path: 'error/404', loadComponent: () => import('./layout/error-layout/page-not-found/page-not-found').then(c => c.PageNotFound) },
   { path: '**', redirectTo: 'error/404' },
 ];

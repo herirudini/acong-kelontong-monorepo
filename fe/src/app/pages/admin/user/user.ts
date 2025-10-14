@@ -1,23 +1,23 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { IUser } from '../../../types/interfaces/user.interface';
-import { UsersService } from './users-service';
+import { UserService } from './user-service';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { IPaginationInput, ISelectFilter } from '../../../types/interfaces/common.interface';
 import { SORT_DIR } from '../../../types/constants/common.constants';
 import { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { UserForm } from './user-form/user-form';
+import { UserForm } from '../user/user-form/user-form';
 import { ConfirmModal } from '../../../shared/components/modals/confirm-modal/confirm-modal';
 import { AlertService } from '../../../shared/components/alert/alert-service';
 
 type formType = 'new' | 'edit' | 'view';
 @Component({
-  selector: 'app-users',
+  selector: 'app-user',
   imports: [GenericTable, TableColumn, ConfirmModal],
-  templateUrl: './users.html',
-  styleUrl: './users.scss'
+  templateUrl: './user.html',
+  styleUrl: './user.scss'
 })
-export class Users implements OnInit {
+export class User implements OnInit {
   @ViewChild('ConfirmModal') confrimModal?: ConfirmModal;
 
   isLoading: boolean = false;
@@ -93,7 +93,7 @@ export class Users implements OnInit {
 
   activeModal = Inject(NgbActiveModal);
 
-  constructor(private service: UsersService, private modalService: NgbModal, private alert: AlertService) { }
+  constructor(private service: UserService, private modalService: NgbModal, private alert: AlertService) { }
 
   modalOptions: NgbModalOptions = {
     size: 'xl'

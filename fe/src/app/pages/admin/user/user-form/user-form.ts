@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { UsersService } from '../users-service';
+import { UserService } from '../../user/user-service';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IRole } from '../../../../types/interfaces/user.interface';
 import { FormValidation } from '../../../../shared/directives/form-validation/form-validation';
@@ -29,7 +29,7 @@ export class UserForm implements OnInit, AfterViewInit {
     role: new FormControl(null, [Validators.required]),
   });
 
-  constructor(private userService: UsersService, private alert: AlertService) { }
+  constructor(private userService: UserService, private alert: AlertService) { }
 
   ngOnInit(): void {
     this.getRoles();
