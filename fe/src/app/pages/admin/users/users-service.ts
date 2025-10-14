@@ -34,7 +34,7 @@ export class UsersService extends BaseService {
   getUsers(
     qParams: IParamsUser
   ): Observable<IResList<IUser>> {
-    return this.getRequest({ url: Endpoint.USERS, qParams, spinner: false }).pipe(
+    return this.getRequest({ url: Endpoint.USER, qParams, spinner: false }).pipe(
       map((res: IResList<IUser>) => {
         const val = {
           meta: res?.meta as IPaginationInput,
@@ -58,7 +58,7 @@ export class UsersService extends BaseService {
   inviteUser(
     body: IBodyInviteUser
   ): Observable<IUser> {
-    return this.postRequest({ url: Endpoint.USERS, body }).pipe(
+    return this.postRequest({ url: Endpoint.USER, body }).pipe(
       map((res: IResDetail<IUser>) => {
         return res.detail;
       }),
@@ -71,7 +71,7 @@ export class UsersService extends BaseService {
   }
 
   resendInvitationEmail(user_id: string): Observable<IUser> {
-    return this.postRequest({ url: Endpoint.USERS_ID_REINVITE(user_id) }).pipe(
+    return this.postRequest({ url: Endpoint.USER_ID_REINVITE(user_id) }).pipe(
       map((res: IResDetail<IUser>) => {
         return res.detail;
       }),
@@ -87,7 +87,7 @@ export class UsersService extends BaseService {
     user_id: string,
     body: { role: string }
   ): Observable<IUser> {
-    return this.putRequest({ url: Endpoint.USERS_ID_ROLE(user_id), body }).pipe(
+    return this.putRequest({ url: Endpoint.USER_ID_ROLE(user_id), body }).pipe(
       map((res: IResDetail<IUser>) => {
         return res.detail;
       }),
@@ -100,7 +100,7 @@ export class UsersService extends BaseService {
   }
 
   getUserDetail(user_id: string): Observable<IUser> {
-    return this.getRequest({ url: Endpoint.USERS_ID(user_id) }).pipe(
+    return this.getRequest({ url: Endpoint.USER_ID(user_id) }).pipe(
       map((res: IResDetail<IUser>) => {
         return res.detail;
       }),
@@ -113,7 +113,7 @@ export class UsersService extends BaseService {
   }
 
   deleteUser(user_id: string): Observable<IUser> {
-    return this.deleteRequest({ url: Endpoint.USERS_ID(user_id) }).pipe(
+    return this.deleteRequest({ url: Endpoint.USER_ID(user_id) }).pipe(
       map((res: IResDetail<IUser>) => {
         return res.detail;
       }),
@@ -126,7 +126,7 @@ export class UsersService extends BaseService {
   }
 
   verifyUser(body: { ticket: string, new_password }): Observable<IUser> {
-    return this.putRequest({ url: Endpoint.USERS_VERIFY, body });
+    return this.putRequest({ url: Endpoint.USER_VERIFY, body });
   }
 
   getRoles(qParams: IGetRoles): Observable<IResList<IRole>> {

@@ -18,26 +18,26 @@ export const INVENTORY: IMenu = {
     icon: 'nav-icon bi bi-box-seam',
     labelKey: 'Inventory',
 }
-export const PRODUCTS: IMenu = {
-    code: 'products',
-    url: 'products',
+export const PRODUCT: IMenu = {
+    code: 'product',
+    url: 'product',
     icon: '',
     labelKey: 'Products',
-    permissions: ['products.view', 'products.create', 'products.edit', 'products.delete'],
+    permissions: ['product.view', 'product.create', 'product.edit', 'product.delete'],
 }
 export const BRANDS: IMenu = {
-    code: 'brands',
-    url: 'brands',
+    code: 'brand',
+    url: 'brand',
     icon: '',
     labelKey: 'Brands',
-    permissions: ['brands.view', 'brands.create', 'brands.edit', 'brands.delete'],
+    permissions: ['brand.view', 'brand.create', 'brand.edit', 'brand.delete'],
 }
 export const SUPPLIERS: IMenu = {
-    code: 'suppliers',
-    url: 'suppliers',
+    code: 'supplier',
+    url: 'supplier',
     icon: '',
     labelKey: 'Suppliers',
-    permissions: ['suppliers.view', 'suppliers.create', 'suppliers.edit', 'suppliers.delete'],
+    permissions: ['supplier.view', 'supplier.create', 'supplier.edit', 'supplier.delete'],
 }
 
 export const FINANCE: IMenu = {
@@ -67,41 +67,41 @@ export const ADMIN: IMenu = {
     icon: 'nav-icon bi bi-person-gear',
     labelKey: 'Admin',
 }
-export const ROLES: IMenu = {
-    code: 'roles',
-    url: 'roles',
+export const ROLE: IMenu = {
+    code: 'role',
+    url: 'role',
     icon: '',
-    labelKey: 'Roles',
-    permissions: ['roles.view', 'roles.create', 'roles.edit', 'roles.delete']
+    labelKey: 'Role',
+    permissions: ['role.view', 'role.create', 'role.edit', 'role.delete']
 }
 export const ROLE_DETAIL: IMenu = {
     code: 'form',
     url: 'form/:role_id',
     icon: '',
     labelKey: 'Role Detail',
-    permissions: ['roles.view'],
+    permissions: ['role.view'],
 }
 export const ROLE_CREATE: IMenu = {
     code: 'form',
     url: 'form',
     icon: '',
     labelKey: 'Role Create',
-    permissions: ['roles.view', 'roles.create'],
+    permissions: ['role.view', 'role.create'],
 }
 export const ROLE_EDIT: IMenu = {
     code: 'form',
     url: 'form/:role_id',
     icon: '',
     labelKey: 'Role Edit',
-    permissions: ['roles.view', 'roles.edit'],
+    permissions: ['role.view', 'role.edit'],
 }
 
-export const USERS: IMenu = {
-    code: 'users',
-    url: 'users',
+export const USER: IMenu = {
+    code: 'user',
+    url: 'user',
     icon: '',
-    labelKey: 'Users',
-    permissions: ['users.view', 'users.create', 'users.edit', 'users.delete']
+    labelKey: 'User',
+    permissions: ['user.view', 'user.create', 'user.edit', 'user.delete']
 }
 
 export const DASHBOARD: IMenu = {
@@ -120,7 +120,7 @@ export const Menus: IMenu[] = [
     {
         ...INVENTORY,
         children: [
-            PRODUCTS,
+            PRODUCT,
             BRANDS,
             SUPPLIERS,
         ]
@@ -136,14 +136,14 @@ export const Menus: IMenu[] = [
         ...ADMIN,
         children: [
             {
-                ...ROLES,
+                ...ROLE,
                 children: [
                     ROLE_DETAIL,
                     ROLE_CREATE,
                     ROLE_EDIT
                 ]
             },
-            USERS
+            USER
         ]
     }
 ];

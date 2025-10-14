@@ -7,12 +7,14 @@ export const errCodes = {
   authGuard: 'GUARD_401'
 }
 
-export const modules: TModules[] = ['cashier.view', 'cashier.create', 'cashier.edit', 'cashier.delete',
-  'products.view', 'products.create', 'products.edit', 'products.delete',
-  'brands.view', 'brands.create', 'brands.edit', 'brands.delete',
-  'suppliers.view', 'suppliers.create', 'suppliers.edit', 'suppliers.delete',
+export const modules: TModules[] = [
+  'cashier.view', 'cashier.create', 'cashier.edit', 'cashier.delete',
+  'product.view', 'product.create', 'product.edit', 'product.delete',
+  'brand.view', 'brand.create', 'brand.edit', 'brand.delete',
+  'supplier.view', 'supplier.create', 'supplier.edit', 'supplier.delete',
   'income.view', 'income.create', 'income.edit', 'income.delete',
   'expenses.view', 'expenses.create', 'expenses.edit', 'expenses.delete',
-  'roles.view', 'roles.create', 'roles.edit', 'roles.delete',
-  'users.view', 'users.create', 'users.edit', 'users.delete'];
+  'role.view', 'role.create', 'role.edit', 'role.delete',
+  'user.view', 'user.create', 'user.edit', 'user.delete',
+];
 

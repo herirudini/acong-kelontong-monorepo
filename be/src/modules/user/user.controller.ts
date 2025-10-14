@@ -9,7 +9,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { Permission } from 'src/global/permission.decoratior';
 import { Types } from 'mongoose';
 
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -17,7 +17,7 @@ export class UserController {
   ) { }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.view'])
+  @Permission(['user.view'])
   @Get('')
   async list(
     @Query() { page, size, sortBy, sortDir, search, verified }: GetUserListDto,
@@ -35,7 +35,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.create'])
+  @Permission(['user.create'])
   @Post('')
   async inviteUser(
     @Body() body: InviteUserDto,
@@ -109,7 +109,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.delete'])
+  @Permission(['user.delete'])
   @Delete('detail/:user_id')
   async deleteUser(
     @Param('user_id') user_id: Types.ObjectId,
@@ -124,7 +124,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.create', 'users.edit'])
+  @Permission(['user.create', 'user.edit'])
   @Post('detail/:user_id/re-invite')
   async resendVerification(
     @Param('user_id') user_id: Types.ObjectId,
@@ -159,7 +159,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.create', 'users.edit'])
+  @Permission(['user.create', 'user.edit'])
   @Put('detail/:user_id/role')
   async editRole(
     @Param('user_id') user_id: Types.ObjectId,

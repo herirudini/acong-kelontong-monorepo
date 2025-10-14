@@ -3,7 +3,7 @@ import { RolesService } from '../roles-service';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IRole } from '../../../../types/interfaces/user.interface';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ROLES } from '../../../../types/constants/menus';
+import { ROLE } from '../../../../types/constants/menus';
 import { FormValidation } from '../../../../shared/directives/form-validation/form-validation';
 import { AlertService } from '../../../../shared/components/alert/alert-service';
 
@@ -157,7 +157,7 @@ export class RolesForm implements OnInit {
     serviceArg.subscribe({
       next: () => {
       this.alert.success(`Success ${this.type == 'edit' ? 'edit':'create'} role!`)
-        this.router.navigateByUrl(ROLES.url)
+        this.router.navigateByUrl(ROLE.url)
       }
     })
   }

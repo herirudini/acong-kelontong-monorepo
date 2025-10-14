@@ -9,7 +9,7 @@
     [total]="pagination.total" (OnDataRefresh)="getList($event)" [isLoading]="isLoading">
     <div appTableColumn customColumnId="action">
       <ng-template let-item>
-        <div class="d-flex flex-row gap-1">
+        <div class="d-flex flex-row gap-1 justify-content-end">
           <a [routerLink]="['./form', item._id]" [queryParams]="{type: 'view'}" class="text-white pointer btn btn-secondary">
             <i class="fa-solid fa-eye"></i>
           </a>

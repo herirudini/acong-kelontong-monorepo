@@ -69,13 +69,13 @@
                         @for (column of columns; track $index) {
                         <th [class.pointer]="column.sort" [ngStyle]="generateInlineStyle(column)"
                             (click)="column.sort && total > 0 ? sortChanged(column.id) : $event.stopPropagation()"
-                            [ngClass]="'whitespace-nowrap ' + ' ' + column.extraHeaderClass">
+                            [ngClass]="'whitespace-nowrap'">
                             <div class="d-flex gap-1">
                                 @if(column.sort) {
                                 <app-sort-icon [sortId]="column.id" [sortVal]="{sortBy, sortDir}"></app-sort-icon>
                                 }
-                                {{ column.label | dynamicPipe:
-                                column.customHeaderPipe?.pipeType:column.customHeaderPipe?.pipeArgs ?? [] }}
+                                <div [ngClass]="'whitespace-nowrap ' + ' ' + column.extraHeaderClass">{{ column.label | dynamicPipe:
+                                column.customHeaderPipe?.pipeType:column.customHeaderPipe?.pipeArgs ?? [] }}</div>
                             </div>
                         </th>
                         }

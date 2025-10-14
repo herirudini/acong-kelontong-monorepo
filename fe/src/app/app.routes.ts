@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layout/main-layout/main-layout';
-import { BRANDS, CASHIER, EXPENSES, INCOME, PRODUCTS, SUPPLIERS, USERS, ROLES, DASHBOARD, ROLE_DETAIL, ROLE_CREATE, ROLE_EDIT } from './types/constants/menus';
+import { BRANDS, CASHIER, EXPENSES, INCOME, PRODUCT, SUPPLIERS, USER, ROLE, DASHBOARD, ROLE_DETAIL, ROLE_CREATE, ROLE_EDIT } from './types/constants/menus';
 import { AuthGuardService } from './services/guards/auth-guard/auth-guard-service';
 import { PageGuardService } from './services/guards/page-guard/page-guard-service';
 
@@ -28,9 +28,9 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard-v2/dashboard-v2').then(c => c.DashboardV2)
       },
       {
-        path: PRODUCTS.url,
+        path: PRODUCT.url,
         canActivate: [PageGuardService],
-        data: { ...PRODUCTS },
+        data: { ...PRODUCT },
         loadComponent: () => import('./pages/dashboard-v3/dashboard-v3').then(c => c.DashboardV3)
       },
       {
@@ -58,8 +58,8 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
       },
       {
-        path: ROLES.url,
-        data: { ...ROLES },
+        path: ROLE.url,
+        data: { ...ROLE },
         children: [
           {
             path: '',
@@ -87,9 +87,9 @@ export const routes: Routes = [
         ]
       },
       {
-        path: USERS.url,
+        path: USER.url,
         canActivate: [PageGuardService],
-        data: { ...USERS },
+        data: { ...USER },
         loadComponent: () => import('./pages/admin/users/users').then(c => c.Users),
       }
     ]

@@ -34,7 +34,7 @@ export class Roles implements OnInit {
     {
       label: 'Action',
       id: 'action',
-      extraHeaderClass: 'uppercase-text',
+      extraHeaderClass: 'uppercase-text w-100 d-flex justify-content-end',
       customElementId: 'action',
       minWidth: '3ch',
       maxWidth: '3ch'

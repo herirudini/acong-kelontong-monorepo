@@ -8,21 +8,21 @@ export const Endpoint = {
   LOGOUT: `${api}auth/logout`,
   REFRESH: `${api}auth/refresh`,
 
-  USERS: `${api}users`,
-  USERS_ID: (id: string) => {
-    return `${api}users/detail/${id}`
+  USER: `${api}user`,
+  USER_ID: (id: string) => {
+    return `${api}user/detail/${id}`
   },
-  USERS_ID_REINVITE: (id: string) => {
-    return `${api}users/detail/${id}/re-invite`
+  USER_ID_REINVITE: (id: string) => {
+    return `${api}user/detail/${id}/re-invite`
   },
-  USERS_ID_ROLE: (id: string) => {
-    return `${api}users/detail/${id}/role`
+  USER_ID_ROLE: (id: string) => {
+    return `${api}user/detail/${id}/role`
   },
-  USERS_VERIFY: `${api}users/verify`,
+  USER_VERIFY: `${api}user/verify`,
 
-  ROLES: `${api}roles`,
-  ROLES_ID: (id: string) => {
-    return `${api}roles/${id}`
+  ROLE: `${api}role`,
+  ROLE_ID: (id: string) => {
+    return `${api}role/${id}`
   },
 
   /* Admin endpoints */

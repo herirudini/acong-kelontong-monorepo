@@ -19,7 +19,7 @@ export class RolesService extends BaseService {
   getRoles(
     qParams: ITableQueryData
   ): Observable<IResList<IRole>> {
-    return this.getRequest({ url: Endpoint.ROLES, qParams, spinner: false }).pipe(
+    return this.getRequest({ url: Endpoint.ROLE, qParams, spinner: false }).pipe(
       map((res: IResList<IRole>) => {
         return res;
       }),
@@ -32,7 +32,7 @@ export class RolesService extends BaseService {
   }
 
   getRole(id: string): Observable<IRole> {
-    return this.getRequest({ url: Endpoint.ROLES_ID(id) }).pipe(
+    return this.getRequest({ url: Endpoint.ROLE_ID(id) }).pipe(
       map((res: IResDetail<IRole>) => {
         return res.detail;
       }),
@@ -47,7 +47,7 @@ export class RolesService extends BaseService {
   createRole(
     body: IRole
   ): Observable<IRole> {
-    return this.postRequest({ url: Endpoint.ROLES, body }).pipe(
+    return this.postRequest({ url: Endpoint.ROLE, body }).pipe(
       map((res: IResDetail<IRole>) => {
         return res.detail;
       }),
@@ -63,7 +63,7 @@ export class RolesService extends BaseService {
     id: string,
     body: IRole
   ): Observable<IRole> {
-    return this.putRequest({ url: Endpoint.ROLES_ID(id), body }).pipe(
+    return this.putRequest({ url: Endpoint.ROLE_ID(id), body }).pipe(
       map((res: IResDetail<IRole>) => {
         return res.detail;
       }),
@@ -78,7 +78,7 @@ export class RolesService extends BaseService {
   deleteRole(
     role_id: string
   ): Observable<IRole> {
-    return this.deleteRequest({ url: Endpoint.ROLES_ID(role_id) }).pipe(
+    return this.deleteRequest({ url: Endpoint.ROLE_ID(role_id) }).pipe(
       map((res: IResDetail<unknown>) => {
         this.alert.success('Success delete role');
       }),

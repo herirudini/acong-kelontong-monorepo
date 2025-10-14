@@ -9,13 +9,13 @@ import { Permission } from 'src/global/permission.decoratior';
 import { Types } from 'mongoose';
 
 @UseGuards(AuthGuard)
-@Controller('roles')
+@Controller('role')
 export class RoleController {
   constructor(
     private readonly roleService: RoleService,
   ) { }
 
-  @Permission(['users.create', 'users.edit', 'roles.view'])
+  @Permission(['user.create', 'user.edit', 'role.view'])
   @Get('')
   async list(
     @Query() { page, size, sortBy, sortDir, search, active }: GetRolesDTO,
@@ -32,7 +32,7 @@ export class RoleController {
     }
   }
 
-  @Permission(['roles.create'])
+  @Permission(['role.create'])
   @Post('')
   async createRole(
     @Body() body: RoleDocument,
@@ -47,7 +47,7 @@ export class RoleController {
     }
   }
 
-  @Permission(['roles.view'])
+  @Permission(['role.view'])
   @Get(':role_id')
   async detail(
     @Param('role_id') role_id: Types.ObjectId,
@@ -64,7 +64,7 @@ export class RoleController {
     }
   }
 
-  @Permission(['roles.edit'])
+  @Permission(['role.edit'])
   @Put(':role_id')
   async edit(
     @Param('role_id') role_id: Types.ObjectId,
@@ -79,7 +79,7 @@ export class RoleController {
     }
   }
 
-  @Permission(['roles.delete'])
+  @Permission(['role.delete'])
   @Delete(':role_id')
   async delete(
     @Param('role_id') role_id: Types.ObjectId,
