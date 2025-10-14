@@ -1,21 +1,20 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { RolesService } from '../roles-service';
+import { RoleService } from '../role-service';
 import { FormArray, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IRole } from '../../../../types/interfaces/user.interface';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ROLE } from '../../../../types/constants/menus';
 import { FormValidation } from '../../../../shared/directives/form-validation/form-validation';
 import { AlertService } from '../../../../shared/components/alert/alert-service';
-
 type formType = 'new' | 'edit' | 'view';
 
 @Component({
-  selector: 'app-roles-form',
+  selector: 'app-role-form',
   imports: [ReactiveFormsModule, FormValidation],
-  templateUrl: './roles-form.html',
-  styleUrl: './roles-form.scss'
+  templateUrl: './role-form.html',
+  styleUrl: './role-form.scss'
 })
-export class RolesForm implements OnInit {
+export class RoleForm implements OnInit {
   isLoading: boolean = false;
   @Input() type: formType = 'new';
   @Input() id?: string;
@@ -59,7 +58,7 @@ export class RolesForm implements OnInit {
     return this.form.get('modules') as FormArray<FormGroup>;
   }
 
-  constructor(private roleService: RolesService, private route: ActivatedRoute, private router: Router, private alert: AlertService) {
+  constructor(private roleService: RoleService, private route: ActivatedRoute, private router: Router, private alert: AlertService) {
     this.id = this.route.snapshot.paramMap.get('role_id') || undefined;
     const type = this.route.snapshot.queryParamMap.get('type') || undefined;
     if (type && ['new', 'edit', 'view'].includes(type)) {
@@ -127,11 +126,10 @@ export class RolesForm implements OnInit {
     this.getModules();
   }
 
-  onCheckChange(evt: any, index: number) {
+  onCheckChange(evt: any, permision: string, index: number) {
     const val = evt.target.checked;
-    const permision = evt.target.value
     console.log('evt', { permision, val });
-    this.modules.at(index).controls[permision] = val;
+    this.modules.at(index).controls[permision].patchValue(val);
   }
 
   submit() {
@@ -156,7 +154,7 @@ export class RolesForm implements OnInit {
     if (this.id) serviceArg = this.roleService.editRole(this.id, body)
     serviceArg.subscribe({
       next: () => {
-      this.alert.success(`Success ${this.type == 'edit' ? 'edit':'create'} role!`)
+        this.alert.success(`Success ${this.type == 'edit' ? 'edit' : 'create'} role!`)
         this.router.navigateByUrl(ROLE.url)
       }
     })

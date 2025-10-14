@@ -3,18 +3,18 @@ import { GenericTable, ITableQueryData } from '../../../shared/components/generi
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { IRole } from '../../../types/interfaces/user.interface';
 import { IPaginationInput } from '../../../types/interfaces/common.interface';
-import { RolesService } from './roles-service';
+import { RoleService } from './role-service';
 import { NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { RouterLink } from '@angular/router';
 import { ConfirmModal } from '../../../shared/components/modals/confirm-modal/confirm-modal';
 
 @Component({
-  selector: 'app-roles',
+  selector: 'app-role',
   imports: [GenericTable, TableColumn, RouterLink, ConfirmModal],
-  templateUrl: './roles.html',
-  styleUrl: './roles.scss'
+  templateUrl: './role.html',
+  styleUrl: './role.scss'
 })
-export class Roles implements OnInit {
+export class Role implements OnInit {
   @ViewChild('DeleteModal') confrimDelete?: ConfirmModal;
   isLoading: boolean = false;
   listRoles: IRole[] = [];
@@ -46,7 +46,7 @@ export class Roles implements OnInit {
     search: '',
   }
 
-  constructor(private service: RolesService) { }
+  constructor(private service: RoleService) { }
 
   modalOptions: NgbModalOptions = {
     size: 'xl'

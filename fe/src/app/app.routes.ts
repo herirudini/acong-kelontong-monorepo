@@ -64,25 +64,25 @@ export const routes: Routes = [
           {
             path: '',
             canActivate: [PageGuardService],
-            loadComponent: () => import('./pages/admin/roles/roles').then(c => c.Roles)
+            loadComponent: () => import('./pages/admin/role/role').then(c => c.Role)
           },
           {
             path: ROLE_CREATE.url,
             canActivate: [PageGuardService],
             data: { ...ROLE_CREATE },
-            loadComponent: () => import('./pages/admin/roles/roles-form/roles-form').then(c => c.RolesForm)
+            loadComponent: () => import('./pages/admin/role/role-form/role-form').then(c => c.RoleForm)
           },
           {
             path: ROLE_DETAIL.url,
             canActivate: [PageGuardService],
             data: { ...ROLE_DETAIL },
-            loadComponent: () => import('./pages/admin/roles/roles-form/roles-form').then(c => c.RolesForm)
+            loadComponent: () => import('./pages/admin/role/role-form/role-form').then(c => c.RoleForm)
           },
           {
             path: ROLE_EDIT.url,
             canActivate: [PageGuardService],
             data: { ...ROLE_EDIT },
-            loadComponent: () => import('./pages/admin/roles/roles-form/roles-form').then(c => c.RolesForm)
+            loadComponent: () => import('./pages/admin/role/role-form/role-form').then(c => c.RoleForm)
           },
         ]
       },

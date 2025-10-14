@@ -10,11 +10,10 @@ import { ITableQueryData } from '../../../shared/components/generic-table/generi
 @Injectable({
   providedIn: 'root'
 })
-export class RolesService extends BaseService {
+export class RoleService extends BaseService {
   constructor(private alert: AlertService) {
     super();
   }
-
 
   getRoles(
     qParams: ITableQueryData

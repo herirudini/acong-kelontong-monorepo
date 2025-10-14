@@ -7,7 +7,7 @@ import { Endpoint } from '../../../types/constants/endpoint';
 import { IPaginationInput } from '../../../types/interfaces/common.interface';
 import { IResDetail, IResList } from '../../../types/interfaces/http.interface';
 import { ITableQueryData } from '../../../shared/components/generic-table/generic-table';
-import { RolesService } from '../roles/roles-service';
+import { RoleService } from '../role/role-service';
 
 interface IParamsUser extends ITableQueryData {
   verified?: boolean;
@@ -28,7 +28,7 @@ interface IGetRoles extends ITableQueryData {
   providedIn: 'root'
 })
 export class UserService extends BaseService {
-  constructor(private alert: AlertService, private roleService: RolesService) {
+  constructor(private alert: AlertService, private roleService: RoleService) {
     super();
   }
 
