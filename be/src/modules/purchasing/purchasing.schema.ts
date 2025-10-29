@@ -3,6 +3,13 @@ import { Document, Types } from 'mongoose';
 import { Supplier, SupplierDocument } from '../supplier/supplier.schema';
 import { Product, ProductDocument } from '../product/product.schema';
 
+export enum PurchasingEn {
+  REQUEST = 'REQUEST',
+  PRPGRESS = 'PRPGRESS',
+  RECEIVE = 'RECEIVE',
+  DROP = 'DROP',
+}
+
 // HEADER
 @Schema({ timestamps: true })
 export class Purchasing {
@@ -15,8 +22,8 @@ export class Purchasing {
   @Prop({ type: Date })
   due_date: Date;
 
-  @Prop({ default: 'created', enum: ['created', 'on_progress', 'received', 'canceled'] })
-  status: string;
+  @Prop({ default: PurchasingEn.REQUEST, enum: PurchasingEn})
+  status: PurchasingEn;
 
   @Prop()
   invoice_number?: string;
@@ -49,6 +56,9 @@ export class PurchasingItem {
 
   @Prop({ type: Number, required: true })
   qty: number;
+
+  @Prop({ type: Number, required: true, default: 0 })
+  recieved_qty: number;
 
   @Prop({ type: Number, required: true })
   purchase_price: number;

@@ -6,7 +6,7 @@ import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { Purchasing, PurchasingItem, PurchasingItemDocument } from './purchasing.schema';
-import { ListPurchasingItemsDTO, PurchasingItemDto, PurchasingMutationDTO } from './purchasing.dto';
+import { ListPurchasingItemsDTO, PurchasingItemDto, PurchasingDto } from './purchasing.dto';
 import { Product } from '../product/product.schema';
 import { Supplier } from '../supplier/supplier.schema';
 
@@ -21,7 +21,7 @@ export class PurchasingService {
     @InjectModel(Product.name) private productModel: Model<Product>,
   ) { }
 
-  async createPurchasing(dto: PurchasingMutationDTO): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
+  async createPurchasing(dto: PurchasingDto): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
     // Fetch supplier info
     const supplier = await this.supplierModel.findById(dto.supplier);
     if (!supplier) return BaseResponse.notFound({ err: 'Supplier not found' });
@@ -50,7 +50,7 @@ export class PurchasingService {
     return created || undefined
   }
 
-  async editPurchasing(id: Types.ObjectId, dto: PurchasingMutationDTO): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
+  async editPurchasing(id: Types.ObjectId, dto: PurchasingDto): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
     try {
       const purchase = await this.purchasingModel.findById(id).exec();
       if (!purchase) return undefined;
@@ -186,7 +186,7 @@ export class PurchasingService {
   async detailPurchasingItem(id: Types.ObjectId): Promise<PurchasingItem | undefined> {
     const detailPurchasing = await this.purchasingItemModel
       .findById(id)
-      .populate('product')
+      .populate(['purchase_order', 'product'])
       .lean()
       .exec();
     return detailPurchasing || undefined

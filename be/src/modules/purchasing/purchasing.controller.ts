@@ -4,7 +4,7 @@ import { BaseResponse } from 'src/utils/base-response';
 import { PurchasingService } from './purchasing.service';
 import type { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PurchasingMutationDTO } from './purchasing.dto';
+import { PurchasingDto } from './purchasing.dto';
 import { Types } from 'mongoose';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -28,7 +28,7 @@ export class PurchasingController {
   }))
   async createPurchasing(
     @UploadedFile() file: Express.Multer.File,
-    @Body() dto: PurchasingMutationDTO,
+    @Body() dto: PurchasingDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
@@ -72,7 +72,7 @@ export class PurchasingController {
     @Param('purchasing_id') purchasingId: Types.ObjectId,
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
-    @Body() dto: PurchasingMutationDTO,
+    @Body() dto: PurchasingDto,
     @Res() res: Response,
   ) {
     try {

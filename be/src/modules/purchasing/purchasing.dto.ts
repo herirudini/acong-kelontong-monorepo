@@ -2,6 +2,7 @@ import { Type } from 'class-transformer';
 import { IsNotEmpty, IsString, IsDate, IsNumber, IsArray, IsOptional, IsMongoId } from 'class-validator';
 import { Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
+import { PurchasingEn } from './purchasing.schema';
 
 export class PurchasingItemDto {
   @IsMongoId() // ✅ checks it's a valid ObjectId string
@@ -21,10 +22,12 @@ export class PurchasingItemDto {
   @IsNumber()
   qty: number;
   @IsNumber()
+  recieved_qty: number;
+  @IsNumber()
   purchase_price: number;
 }
 
-export class PurchasingMutationDTO extends PaginationDto {
+export class PurchasingDto extends PaginationDto {
   @IsMongoId() // ✅ checks it's a valid ObjectId string
   @IsNotEmpty()
   supplier: Types.ObjectId;
@@ -39,7 +42,7 @@ export class PurchasingMutationDTO extends PaginationDto {
   due_date: Date;
   @IsString()
   @IsNotEmpty()
-  status: string;
+  status: PurchasingEn;
   @IsString()
   invoice_number: string;
   @IsNumber()
