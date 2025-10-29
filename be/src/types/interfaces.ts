@@ -27,7 +27,9 @@ export interface IEditUser {
   role?: Types.ObjectId;
 }
 
-export type TModules =
+export type TModules =  //This is a list of API Endpoint permission
+  'inventory.view' | 'inventory.create' | 'inventory.edit' | 'inventory.delete' |
+  'purchasing.view' | 'purchasing.create' | 'purchasing.edit' | 'purchasing.delete' |
   'cashier.view' | 'cashier.create' | 'cashier.edit' | 'cashier.delete' |
   'product.view' | 'product.create' | 'product.edit' | 'product.delete' |
   'brand.view' | 'brand.create' | 'brand.edit' | 'brand.delete' |

@@ -32,6 +32,9 @@ import { PurchasingService } from './modules/purchasing/purchasing.service';
 import { PurchasingController } from './modules/purchasing/purchasing.controller';
 import { Purchasing, PurchasingItem, PurchasingItemSchema, PurchasingSchema } from './modules/purchasing/purchasing.schema';
 import { GlobalController } from './global/global.controller';
+import { InventoryController } from './modules/inventory/inventory.controller';
+import { InventoryService } from './modules/inventory/inventory.service';
+import { Inventory, InventorySchema } from './modules/inventory/inventory.schema';
 
 @Module({
   imports: [
@@ -84,11 +87,12 @@ import { GlobalController } from './global/global.controller';
       { name: Brand.name, schema: BrandSchema },
       { name: Purchasing.name, schema: PurchasingSchema },
       { name: PurchasingItem.name, schema: PurchasingItemSchema },
+      { name: Inventory.name, schema: InventorySchema },
     ]),
     SeederModule,
   ],
-  controllers: [AppController, AuthController, UserController, BrandController, RoleController, SupplierController, ProductController, PurchasingController, GlobalController],
-  providers: [AppService, AuthService, AuthGuard, ModuleGuard, UserService, BrandService, BaseResponse, GlobalService, RoleService, SupplierService, ProductService, PurchasingService]
+  controllers: [AppController, AuthController, UserController, BrandController, RoleController, SupplierController, ProductController, PurchasingController, GlobalController, InventoryController],
+  providers: [AppService, AuthService, AuthGuard, ModuleGuard, UserService, BrandService, BaseResponse, GlobalService, RoleService, SupplierService, ProductService, PurchasingService, InventoryService]
 })
 export class AppModule implements OnModuleInit {
   constructor(private readonly seederService: SeederService) { }
