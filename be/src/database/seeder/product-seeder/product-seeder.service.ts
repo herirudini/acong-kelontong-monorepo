@@ -23,12 +23,12 @@ export class ProductSeederService {
           {
             product_name: 'Indomie Goreng 85g',
             product_description: 'Indomie goreng kecil',
-            unit_of_measure: 'pcs',
+            unit_of_measure: 'PCS',
           },
           {
             product_name: 'Indomie Soto 75g',
             product_description: 'Indomie kuah soto kecil',
-            unit_of_measure: 'pcs',
+            unit_of_measure: 'PCS',
           }
         ]
       },
@@ -40,7 +40,7 @@ export class ProductSeederService {
         products: [{
           product_name: 'Aqua 600ml',
           product_description: 'Aqua botol kecil',
-          unit_of_measure: 'pcs',
+          unit_of_measure: 'PCS',
         }]
       },
       {
@@ -51,7 +51,7 @@ export class ProductSeederService {
         products: [{
           product_name: 'Ultra Milk 200ml',
           product_description: 'Susu kotak ultra medium',
-          unit_of_measure: 'pcs',
+          unit_of_measure: 'PCS',
         }]
       }
     ];

@@ -18,6 +18,14 @@ export const INVENTORY: IMenu = {
     icon: 'nav-icon bi bi-box-seam',
     labelKey: 'Inventory',
 }
+
+
+export const CATALOGUE: IMenu = {
+    code: 'catalogue',
+    url: 'catalogue',
+    icon: 'nav-icon bi bi-journals',
+    labelKey: 'Catalogue',
+}
 export const PRODUCT: IMenu = {
     code: 'product',
     url: 'product',
@@ -118,11 +126,10 @@ export const Menus: IMenu[] = [
     DASHBOARD,
     CASHIER,
     {
-        ...INVENTORY,
+        ...CATALOGUE,
         children: [
             PRODUCT,
             BRANDS,
-            SUPPLIERS,
         ]
     },
     {

@@ -28,6 +28,18 @@ export const Endpoint = {
   /* Admin endpoints */
   PERMISSIONS: `${api}global/permissions`,
 
+  // Brand Endpoint
+  BRAND: `${api}brand`,
+  BRAND_ID: (id: string) => {
+    return `${api}brand/${id}`
+  },
+
+  // Product Endpoint
+  PRODUCT: `${api}product`,
+  PRODUCT_ID: (id: string) => {
+    return `${api}product/${id}`
+  },
+
 
   // /* Account endpoints */
   // ACCOUNT_SETUP: `${api}account/setup`,

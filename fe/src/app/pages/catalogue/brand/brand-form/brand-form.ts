@@ -3,8 +3,7 @@ import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { FormValidation } from '../../../../shared/directives/form-validation/form-validation';
 import { AlertService } from '../../../../shared/components/alert/alert-service';
 import { BrandService } from '../brand-service';
-
-type formType = 'new' | 'edit' | 'view';
+import { formType } from '../../../../types/interfaces/common.interface';
 
 @Component({
   selector: 'app-brand-form',

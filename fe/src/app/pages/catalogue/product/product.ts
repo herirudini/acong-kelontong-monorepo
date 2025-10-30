@@ -6,21 +6,21 @@ import { SORT_DIR } from '../../../types/constants/common.constants';
 import { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
 import { ConfirmModal } from '../../../shared/components/modals/confirm-modal/confirm-modal';
 import { AlertService } from '../../../shared/components/alert/alert-service';
-import { BrandService } from './brand-service';
-import { BrandForm } from './brand-form/brand-form';
-import { IBrand } from '../../../types/interfaces/catalogue.interface';
+import { IProduct } from '../../../types/interfaces/catalogue.interface';
+import { ProductService } from './product.service';
+import { ProductForm } from './product-form/product-form';
 
 @Component({
-  selector: 'app-brand',
+  selector: 'app-product',
   imports: [GenericTable, TableColumn, ConfirmModal],
-  templateUrl: './brand.html',
-  styleUrl: './brand.scss'
+  templateUrl: './product.html',
+  styleUrl: './product.scss'
 })
-export class Brand implements OnInit {
+export class Product implements OnInit {
   @ViewChild('ConfirmModal') confrimModal?: ConfirmModal;
 
   isLoading: boolean = false;
-  listBrand: IBrand[] = [];
+  listProduct: IProduct[] = [];
   filterSelect: ISelectFilter = {
     title: 'Filter status',
     selectOptions: [
@@ -42,19 +42,44 @@ export class Brand implements OnInit {
   };
   columns = [
     {
-      label: 'Name',
-      id: 'brand_name',
+      label: 'Product Name',
+      id: 'product_name',
       extraHeaderClass: 'uppercase-text',
-      backendPropName: 'brand_name',
+      backendPropName: 'product_name',
       sort: true,
       minWidth: '4ch',
       maxWidth: '4ch'
     },
     {
-      label: 'Description',
-      id: 'brand_description',
+      label: 'Brand',
+      id: 'brand.brand_name',
       extraHeaderClass: 'uppercase-text',
-      backendPropName: 'brand_description',
+      backendPropName: 'brand.brand_name',
+      minWidth: '4ch',
+      maxWidth: '4ch'
+    },
+    {
+      label: 'UOM',
+      id: 'unit_of_measure',
+      extraHeaderClass: 'uppercase-text',
+      backendPropName: 'unit_of_measure',
+      sort: true,
+      minWidth: '4ch',
+      maxWidth: '4ch'
+    },
+    {
+      label: 'Barcode',
+      id: 'barcode',
+      extraHeaderClass: 'uppercase-text',
+      backendPropName: 'barcode',
+      minWidth: '4ch',
+      maxWidth: '4ch'
+    },
+    {
+      label: 'Description',
+      id: 'product_description',
+      extraHeaderClass: 'uppercase-text',
+      backendPropName: 'product_description',
       maxWidth: '7ch'
     },
     {
@@ -77,14 +102,14 @@ export class Brand implements OnInit {
 
   activeModal = Inject(NgbActiveModal);
 
-  constructor(private service: BrandService, private modalService: NgbModal, private alert: AlertService) { }
+  constructor(private service: ProductService, private modalService: NgbModal, private alert: AlertService) { }
 
   modalOptions: NgbModalOptions = {
     size: 'xl'
   }
 
   showForm(type: formType, id?: string) {
-    const modalRef = this.modalService.open(BrandForm, this.modalOptions);
+    const modalRef = this.modalService.open(ProductForm, this.modalOptions);
     modalRef.componentInstance.type = type;
     modalRef.componentInstance.id = id;
     modalRef.componentInstance.close.subscribe((res) => {
@@ -95,7 +120,7 @@ export class Brand implements OnInit {
 
   getList(evt: ITableQueryData) {
     this.isLoading = true;
-    this.service.getBrands({
+    this.service.getProducts({
       page: evt.page,
       size: evt.size,
       sortBy: evt.sortBy,
@@ -103,14 +128,14 @@ export class Brand implements OnInit {
       search: evt.search,
     }).subscribe({
       next: (res) => {
-        this.listBrand = res.list ?? [];
+        this.listProduct = res.list ?? [];
         this.pagination = {
           page: res.meta?.page ?? 0,
           total: res.meta?.total ?? 0,
           size: res.meta?.size ?? 0,
           totalPages: res.meta?.totalPages ?? 0
         }
-        console.log({listBrand: this.listBrand})
+        console.log({listProduct: this.listProduct})
         this.isLoading = false;
       }, error: () => {
         this.isLoading = false;
@@ -122,20 +147,21 @@ export class Brand implements OnInit {
     this.getList(this.defaultTableParam);
   }
 
-  deleteBrand(brand: IBrand) {
-    const brand_id = brand._id;
-    const itemName = `${brand.brand_name}`;
+  deleteProduct(product: IProduct) {
+    const product_id = product._id;
+    const itemName = `${product.product_name}`;
     this.confrimModal?.show({ itemName }).then((res: any) => {
-      if (res && brand_id) {
-        this.execDeleteion(brand_id);
+      if (res && product_id) {
+        this.execDeleteion(product_id);
       }
     })
   }
 
   execDeleteion(role_id: string) {
-    this.service.deleteBrand(role_id).subscribe(() => {
-      this.alert.success('Brand deleted')
+    this.service.deleteProduct(role_id).subscribe(() => {
+      this.alert.success('Product deleted')
       this.getList(this.defaultTableParam);
     });
   }
 }
+

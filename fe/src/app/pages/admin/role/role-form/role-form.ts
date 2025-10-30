@@ -6,7 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ROLE } from '../../../../types/constants/menus';
 import { FormValidation } from '../../../../shared/directives/form-validation/form-validation';
 import { AlertService } from '../../../../shared/components/alert/alert-service';
-type formType = 'new' | 'edit' | 'view';
+import { formType } from '../../../../types/interfaces/common.interface';
 
 @Component({
   selector: 'app-role-form',

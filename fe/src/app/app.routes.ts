@@ -31,7 +31,7 @@ export const routes: Routes = [
         path: PRODUCT.url,
         canActivate: [PageGuardService],
         data: { ...PRODUCT },
-        loadComponent: () => import('./pages/dashboard-v3/dashboard-v3').then(c => c.DashboardV3)
+        loadComponent: () => import('./pages/catalogue/product/product').then(c => c.Product)
       },
       {
         path: BRANDS.url,

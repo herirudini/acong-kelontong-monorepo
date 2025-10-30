@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Model, FilterQuery } from 'mongoose';
 import { modules } from 'src/types/constants';
-import { IPaginationRes, PopulateParam, TOneOrMany } from 'src/types/interfaces';
+import { IPaginationRes, TOneOrMany } from 'src/types/interfaces';
+
+export type PopulateParam = { column: string; select?: any; match?: any; options?: any };
 export class IGetListParam {
   page?: number;
   size?: number;

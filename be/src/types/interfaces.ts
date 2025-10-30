@@ -39,7 +39,6 @@ export type TModules =  //This is a list of API Endpoint permission
   'user.view' | 'user.create' | 'user.edit' | 'user.delete' |
   'role.view' | 'role.create' | 'role.edit' | 'role.delete';
 
-export type TUOM = 'G' | 'KG' | 'ML' | 'L' | 'PCS' | 'BOX'
 export type TLogoutOption = 'all' | 'other' | 'current';
 
 export interface IPaginationRes {
@@ -63,6 +62,3 @@ export interface IBaseResponse {
 }
 
 export type TOneOrMany<T> = T | T[];
-
-export type PopulateParam = { column: string; select?: any; match?: any; options?: any };
-

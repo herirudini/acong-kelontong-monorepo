@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
-import { GlobalService } from 'src/global/global.service';
+import { GlobalService, PopulateParam } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { Product } from './product.schema';
@@ -22,7 +22,8 @@ export class ProductService {
     sortDir,
     search,
   }: PaginationDto): Promise<{ data: Product[]; meta: IPaginationRes }> {
-    const searchFields: string[] = ['product_name'];
+    const searchFields: string[] = ['product_name', 'product_description', 'barcode', 'brand.brand_name'];
+    const populate: PopulateParam = { column: 'brand' }
 
     return this.global.getList<Product>(
       this.productModel,
@@ -33,6 +34,7 @@ export class ProductService {
         sortDir,
         search,
         searchFields,
+        populate
       }
     )
   }
