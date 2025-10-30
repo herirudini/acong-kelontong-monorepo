@@ -21,7 +21,7 @@ export class BrandService {
         sortDir,
         search,
     }: PaginationDto): Promise<{ data: Brand[]; meta: IPaginationRes }> {
-        const searchFields: string[] = ['brand_name'];
+        const searchFields: string[] = ['brand_name', 'brand_description'];
 
         return this.global.getList<Brand>(
             this.brandModel,
