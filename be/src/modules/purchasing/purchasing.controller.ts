@@ -4,10 +4,11 @@ import { BaseResponse } from 'src/utils/base-response';
 import { PurchasingService } from './purchasing.service';
 import type { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PurchasingDto } from './purchasing.dto';
+import { PurchasingDto, PurchaseOrderDto, ReceiveOrderItemDto } from './purchasing.dto';
 import { Types } from 'mongoose';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { PurchasingEn } from './purchasing.schema';
 
 @Controller('purchasing')
 export class PurchasingController {
@@ -38,7 +39,11 @@ export class PurchasingController {
         const fullUrl = `${req.protocol}://${req.get('host')}${filePath}`;
         dto.invoice_photo = fullUrl; // store full URL
       }
-      const purchasing = await this.service.createPurchasing(dto);
+      const data: PurchasingDto & { status: PurchasingEn } = {
+        ...dto,
+        status: PurchasingEn.REQUEST
+      }
+      const purchasing = await this.service.createPurchasing(data);
       return BaseResponse.success({ res, option: { message: "Success create purchasing", detail: purchasing } });
     } catch (err) {
       return BaseResponse.error({ res, err });
@@ -85,6 +90,72 @@ export class PurchasingController {
       return BaseResponse.success({
         res,
         option: { message: 'Success edit purchasing', detail: purchasing },
+      });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @Put(':purchasing_id/process')
+  @UseInterceptors(FileInterceptor('invoice_photo', {
+    storage: diskStorage({
+      destination: './uploads/invoices',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
+      },
+    }),
+  }))
+  async purchaseOrder(
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request,
+    @Body() dto: PurchaseOrderDto,
+    @Res() res: Response,
+  ) {
+    try {
+      if (file) {
+        const filePath = `/uploads/invoices/${file.filename}`;
+        const fullUrl = `${req.protocol}://${req.get('host')}${filePath}`;
+        dto.invoice_photo = fullUrl; // store full URL
+      }
+      const purchasing = await this.service.purchaseOrder(purchasingId, dto);
+      return BaseResponse.success({
+        res,
+        option: { message: `Success processing purchase order`, detail: purchasing },
+      });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @Put(':purchasing_id/receive')
+  @UseInterceptors(FileInterceptor('invoice_photo', {
+    storage: diskStorage({
+      destination: './uploads/invoices',
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
+      },
+    }),
+  }))
+  async recieveOrder(
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @UploadedFile() file: Express.Multer.File,
+    @Req() req: Request,
+    @Body() dto: PurchaseOrderDto & ReceiveOrderItemDto,
+    @Res() res: Response,
+  ) {
+    try {
+      if (file) {
+        const filePath = `/uploads/invoices/${file.filename}`;
+        const fullUrl = `${req.protocol}://${req.get('host')}${filePath}`;
+        dto.invoice_photo = fullUrl; // store full URL
+      }
+      const purchasing = await this.service.receiveOrder(purchasingId, dto);
+      return BaseResponse.success({
+        res,
+        option: { message: `Success receive purchase order`, detail: purchasing },
       });
     } catch (err) {
       return BaseResponse.error({ res, err });

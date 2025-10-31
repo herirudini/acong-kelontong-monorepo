@@ -1,19 +1,23 @@
 import { Injectable } from '@nestjs/common';
-import { Inventory } from './inventory.schema';
+import { Inventory, InventoryEn } from './inventory.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { ClientSession, Model, Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
-import { EditInventoryDto, ReceiveOrderDto } from './inventory.dto';
+import { EditInventoryDto } from './inventory.dto';
+import { PurchasingItem } from '../purchasing/purchasing.schema';
+import { digitShortDate } from 'src/utils/helper';
+import { ReceiveOrderItemDto } from '../purchasing/purchasing.dto';
 
 @Injectable()
 export class InventoryService {
-    constructor(
-      @InjectModel(Inventory.name) private readonly inventoryModel: Model<Inventory>,
-      private global: GlobalService
-    ) { }
+  constructor(
+    @InjectModel(Inventory.name) private readonly inventoryModel: Model<Inventory>,
+    @InjectModel(PurchasingItem.name) private purchasingItemModel: Model<PurchasingItem>,
+    private global: GlobalService
+  ) { }
 
   async listInventory({
     page,
@@ -37,14 +41,29 @@ export class InventoryService {
     )
   }
 
-  async createInventory(data: ReceiveOrderDto): Promise<Inventory> {
-    try {
-      const newInventory = await this.inventoryModel.create(data);
-      return newInventory;
-    } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'createInventory catch', err } })
-    }
+  async createInventory(body: ReceiveOrderItemDto, session: ClientSession): Promise<Inventory> {
+    const poItem = await this.purchasingItemModel.findById(body.purchase_item).session(session);
+    if (!poItem) throw new Error('createInventory poItem not found');
+
+    const batchCode = `${digitShortDate(new Date())}-${poItem.product_name.replace(/\s+/g, '_')}-${poItem._id.toString().slice(-4)}`;
+
+    const data = {
+      purchase_item: body.purchase_item,
+      supplier_name: poItem.supplier_name,
+      product: poItem.product,
+      product_name: poItem.product_name,
+      exp_date: poItem.exp_date,
+      purchase_price: poItem.purchase_price,
+      sell_price: poItem.sell_price,
+      qty: poItem.recieved_qty,
+      remaining_qty: poItem.recieved_qty,
+      batch_code: batchCode,
+      status: InventoryEn.HALT,
+    };
+
+    return (await this.inventoryModel.create([data], { session }))[0];
   }
+
 
   async editInventory(id: Types.ObjectId, data: EditInventoryDto): Promise<Inventory | undefined> {
     try {
@@ -65,9 +84,9 @@ export class InventoryService {
   async detailInventory(id: Types.ObjectId): Promise<Inventory | undefined> {
     try {
       const detailInventory = await this.inventoryModel.findById(id)
-      .populate(['purchase_item', 'product'])
-      .lean()
-      .exec();
+        .populate(['purchase_item', 'product'])
+        .lean()
+        .exec();
       return detailInventory || undefined;
     } catch (err) {
       return BaseResponse.unexpected({ err: { text: 'detailInventory catch', err } })

@@ -5,7 +5,7 @@ import { Product, ProductDocument } from '../product/product.schema';
 
 export enum PurchasingEn {
   REQUEST = 'REQUEST',
-  PRPGRESS = 'PRPGRESS',
+  PROCESS = 'PROCESS',
   RECEIVE = 'RECEIVE',
   DROP = 'DROP',
 }
@@ -22,8 +22,11 @@ export class Purchasing {
   @Prop({ type: Date })
   due_date: Date;
 
-  @Prop({ default: PurchasingEn.REQUEST, enum: PurchasingEn})
-  status: PurchasingEn;
+  @Prop({ default: PurchasingEn.REQUEST, enum: PurchasingEn })
+  status?: PurchasingEn;
+
+  @Prop({ type: Date })
+  received_at?: Date;
 
   @Prop()
   invoice_number?: string;
@@ -62,6 +65,9 @@ export class PurchasingItem {
 
   @Prop({ type: Number, required: true })
   purchase_price: number;
+
+  @Prop({ type: Number, required: true })
+  sell_price: number;
 
   @Prop({ type: Date })
   exp_date?: Date;

@@ -6,7 +6,7 @@ import type { Response } from 'express';
 import { BaseResponse } from 'src/utils/base-response';
 import { PaginationDto } from 'src/global/global.dto';
 import { Types } from 'mongoose';
-import { EditInventoryDto, ReceiveOrderDto } from './inventory.dto';
+import { EditInventoryDto } from './inventory.dto';
 
 @UseGuards(AuthGuard)
 @Controller('inventory')
@@ -14,19 +14,6 @@ export class InventoryController {
   constructor(
     private readonly service: InventoryService,
   ) { }
-
-  @Post('')
-  async createInventory(
-    @Body() body: ReceiveOrderDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const inventory = await this.service.createInventory(body);
-      return BaseResponse.success({ res, option: { message: "Success create inventory", detail: inventory } });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
 
   @Get('')
   async listInventory(

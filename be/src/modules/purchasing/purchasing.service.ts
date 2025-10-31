@@ -1,44 +1,50 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Document, Model, Types } from 'mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
+import { Connection, Model, Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
-import { Purchasing, PurchasingItem, PurchasingItemDocument } from './purchasing.schema';
-import { ListPurchasingItemsDTO, PurchasingItemDto, PurchasingDto } from './purchasing.dto';
+import { Purchasing, PurchasingEn, PurchasingItem } from './purchasing.schema';
+import { ListPurchasingItemsDTO, PurchasingItemDto, PurchaseOrderDto, PurchasingDto, ReceiveOrderItemDto } from './purchasing.dto';
 import { Product } from '../product/product.schema';
 import { Supplier } from '../supplier/supplier.schema';
+import { InventoryService } from '../inventory/inventory.service';
 
 @Injectable()
 export class PurchasingService {
 
   constructor(
     private global: GlobalService,
+    private inventory: InventoryService,
     @InjectModel(Purchasing.name) private purchasingModel: Model<Purchasing>,
     @InjectModel(PurchasingItem.name) private purchasingItemModel: Model<PurchasingItem>,
     @InjectModel(Supplier.name) private supplierModel: Model<Supplier>,
     @InjectModel(Product.name) private productModel: Model<Product>,
+    @InjectConnection() private readonly connection: Connection,
   ) { }
 
-  async createPurchasing(dto: PurchasingDto): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
+  async createPurchasing(data: PurchasingDto & { status: PurchasingEn }): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
     // Fetch supplier info
-    const supplier = await this.supplierModel.findById(dto.supplier);
+    const supplier = await this.supplierModel.findById(data.supplier);
     if (!supplier) return BaseResponse.notFound({ err: 'Supplier not found' });
 
     // Create the purchase order
     const purchase = await this.purchasingModel.create({
       supplier: supplier._id,
       supplier_name: supplier.supplier_name,
-      due_date: dto.due_date,
+      due_date: data.due_date,
       status: 'created',
       total_purchase_price: 0,
     });
 
-    const bulkPurchasingItems = await this.bulkUpdatePurchasingItems(purchase._id, dto.purchase_item);
+    let total_price = 0;
+    if (data.purchase_item && data.purchase_item.length > 0) {
+      total_price = (await this.bulkUpdatePurchasingItems(purchase._id, data.purchase_item)).total_price;
+    }
 
     // Update total purchase price
-    purchase.total_purchase_price = bulkPurchasingItems.total_price;
+    purchase.total_purchase_price = total_price;
     await purchase.save();
     return this.detailPurchasing(purchase._id);
   }
@@ -50,24 +56,48 @@ export class PurchasingService {
     return created || undefined
   }
 
-  async editPurchasing(id: Types.ObjectId, dto: PurchasingDto): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
+  async editPurchasing(id: Types.ObjectId, data: PurchasingDto & { status?: PurchasingEn }): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
     try {
       const purchase = await this.purchasingModel.findById(id).exec();
       if (!purchase) return undefined;
 
-      const supplier = await this.supplierModel.findById(dto.supplier).exec();
+      const supplier = await this.supplierModel.findById(data.supplier).exec();
       if (!supplier) return BaseResponse.notFound({ err: 'Supplier not found' });
 
-      const bulkPurchasingItems = await this.bulkUpdatePurchasingItems(id, dto.purchase_item);
+      let totalPrice = 0;
+      if (data.purchase_item && data.purchase_item.length > 0) {
+        totalPrice = (await this.bulkUpdatePurchasingItems(id, data.purchase_item)).total_price;
+      }
 
-      // Update purchase main data
-      purchase.supplier = supplier._id;
-      purchase.supplier_name = supplier.supplier_name;
-      purchase.total_purchase_price = bulkPurchasingItems.total_price;
-      purchase.status = dto.status;
-      purchase.due_date = dto.due_date;
-      purchase.invoice_number = dto.invoice_number || purchase.invoice_number;
-      purchase.invoice_photo = dto.invoice_photo || purchase.invoice_photo;
+      const statDrop = ['status']
+      const statReceive = [...statDrop, 'invoice_number', 'invoice_photo']
+      const statProcess = [...statReceive, 'due_date']
+      const statRequest = [...statProcess, 'total_purchase_price', 'supplier_name', 'supplier']
+
+      let fields: string[];
+      switch (purchase.status) {
+        case PurchasingEn.DROP:
+          fields = statDrop;
+          break;
+        case PurchasingEn.RECEIVE:
+          fields = statReceive;
+          break;
+        case PurchasingEn.PROCESS:
+          fields = statProcess;
+          break;
+        default:
+          fields = statRequest
+      }
+
+      fields.forEach((field: string) => {
+        if (field === 'supplier' && supplier._id) purchase.supplier = supplier._id;
+        if (field === 'supplier_name' && supplier.supplier_name) purchase.supplier_name = supplier.supplier_name;
+        if (field === 'total_purchase_price') purchase.total_purchase_price = totalPrice;
+        if (field === 'due_date' && data.due_date) purchase.due_date = data.due_date;
+        if (field === 'invoice_number' && data.invoice_number) purchase.invoice_number = data.invoice_number;
+        if (field === 'invoice_photo' && data.invoice_photo) purchase.invoice_photo = data.invoice_photo;
+        if (field === 'status' && data.status) purchase.status = data.status;
+      });
 
       await purchase.save();
       return this.detailPurchasing(purchase._id);
@@ -208,6 +238,99 @@ export class PurchasingService {
       return deletedPurchasingItem || undefined;
     } catch (err) {
       return BaseResponse.unexpected({ err: { text: 'deletedPurchasingItem catch', err } })
+    }
+  }
+
+  async purchaseOrder(id: Types.ObjectId, dto: PurchaseOrderDto): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+    try {
+      const purchase = await this.purchasingModel.findById(id).session(session);
+      if (!purchase) {
+        await session.abortTransaction();
+        return BaseResponse.notFound({ err: { text: 'purchaseOrder purchase not found' } });
+      }
+
+      if (purchase?.status !== PurchasingEn.REQUEST) {
+        await session.abortTransaction();
+        return BaseResponse.forbidden({ err: { text: 'purchaseOrder invalid status purchase order' } })
+      }
+
+      const data = {
+        ...dto,
+        status: PurchasingEn.PROCESS
+      }
+      const updatedPurchase = await this.editPurchasing(id, data);
+      if (!updatedPurchase) {
+        await session.abortTransaction();
+        return BaseResponse.unexpected({ err: { text: 'purchaseOrder failed to editPurchasing' } });
+      }
+
+      await session.commitTransaction();
+      await session.endSession();
+
+      return updatedPurchase
+    } catch (err) {
+      await session.abortTransaction();
+      await session.endSession();
+      return BaseResponse.unexpected({ err: { text: 'purchaseOrder transaction failed', err } });
+    }
+  }
+
+  async receiveOrder(id: Types.ObjectId, dto: PurchaseOrderDto): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
+    const session = await this.connection.startSession();
+    session.startTransaction();
+
+    try {
+      const purchase = await this.purchasingModel.findById(id).session(session);
+      if (!purchase) {
+        await session.abortTransaction();
+        return BaseResponse.notFound({ err: { text: 'receiveOrder purchase not found' } });
+      }
+
+      if (purchase.status !== PurchasingEn.PROCESS) {
+        await session.abortTransaction();
+        return BaseResponse.forbidden({ err: { text: 'receiveOrder invalid status' } });
+      }
+
+      // ✅ Step 1: Update purchasing + items using your existing editPurchasing
+      const data = {
+        ...dto,
+        status: PurchasingEn.RECEIVE,
+      };
+
+      const updatedPurchase = await this.editPurchasing(id, data);
+      if (!updatedPurchase) {
+        await session.abortTransaction();
+        return BaseResponse.unexpected({ err: { text: 'receiveOrder failed to editPurchasing' } });
+      }
+
+      // ✅ Step 2: Fetch purchase items again after update (so received_qty is fresh)
+      const purchaseItems = await this.purchasingItemModel
+        .find({ purchase_order: id })
+        .session(session);
+
+      // ✅ Step 3: Create inventory for each item
+      for (const item of purchaseItems) {
+        try {
+          const itemToInvent = { purchase_item: item._id };
+          await this.inventory.createInventory(itemToInvent, session);
+        } catch (err) {
+          await session.abortTransaction();
+          await session.endSession();
+          return BaseResponse.unexpected({ err: { text: 'receiveOrder.createInventory failed', err } });
+        }
+      }
+
+      // ✅ Step 4: Commit if everything succeeds
+      await session.commitTransaction();
+      await session.endSession();
+
+      return updatedPurchase;
+    } catch (err) {
+      await session.abortTransaction();
+      await session.endSession();
+      return BaseResponse.unexpected({ err: { text: 'receiveOrder transaction failed', err } });
     }
   }
 }
