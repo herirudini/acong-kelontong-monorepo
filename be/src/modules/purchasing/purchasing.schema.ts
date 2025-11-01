@@ -58,7 +58,7 @@ export class PurchasingItem {
   supplier_name: string;
 
   @Prop({ type: Number, required: true })
-  qty: number;
+  purchase_qty: number;
 
   @Prop({ type: Number, required: true, default: 0 })
   recieved_qty: number;

@@ -6,7 +6,7 @@ import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { Purchasing, PurchasingEn, PurchasingItem } from './purchasing.schema';
-import { ListPurchasingItemsDTO, PurchasingItemDto, PurchaseOrderDto, PurchasingDto, ReceiveOrderItemDto } from './purchasing.dto';
+import { ListPurchasingItemsDTO, PurchasingItemDto, PurchaseOrderDto, PurchasingDto } from './purchasing.dto';
 import { Product } from '../product/product.schema';
 import { Supplier } from '../supplier/supplier.schema';
 import { InventoryService } from '../inventory/inventory.service';
@@ -39,7 +39,7 @@ export class PurchasingService {
       supplier: supplier._id,
       supplier_name: supplier.supplier_name,
       due_date: data.due_date,
-      status: 'created',
+      status: PurchasingEn.REQUEST,
       total_purchase_price: 0,
     }], { session });
 
@@ -58,25 +58,22 @@ export class PurchasingService {
   }
 
 
-  async createPurchasingItem(data: PurchasingItemDto, sessionIn: ClientSession): Promise<PurchasingItem | undefined> {
-    const session = sessionIn ? sessionIn : await this.connection.startSession();
-    if (!sessionIn) session.startTransaction();
-    const product = await this.productModel.findById(data.product).session(session);
-    if (!product) return BaseResponse.notFound({ err: `createPurchasingItem Product not found: ${data.product_name}` });
-    const created = (await this.purchasingItemModel.create([data, { session }]))[0];
-    if (!sessionIn) {
-      await session.commitTransaction();
-      await session.endSession();
-    }
-    return created || undefined
+  async createPurchasingItem(data: PurchasingItemDto, sessionIn?: ClientSession): Promise<PurchasingItem | undefined> {
+    return this.global.withTransaction(async (session) => {
+      const product = await this.productModel.findById(data.product).session(session);
+      if (!product) {
+        return BaseResponse.notFound({ err: `createPurchasingItem Product not found: ${data.product_name}` });
+      }
+      const created = (await this.purchasingItemModel.create([data], { session }))[0];
+      return created;
+    }, sessionIn)
   }
 
-  async editPurchasing(id: Types.ObjectId, data: PurchasingDto & { status?: PurchasingEn }, sessionIn: ClientSession): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
-    const session = sessionIn ? sessionIn : await this.connection.startSession();
-    if (!sessionIn) session.startTransaction();
-    try {
+
+  async editPurchasing(id: Types.ObjectId, data: PurchasingDto & { status?: PurchasingEn }, sessionIn?: ClientSession): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
+    return this.global.withTransaction(async (session) => {
       const purchase = await this.purchasingModel.findById(id).session(session);
-      if (!purchase) return undefined;
+      if (!purchase) return BaseResponse.notFound({ err: 'Purchasing not found' });
 
       const supplier = await this.supplierModel.findById(data.supplier).session(session);
       if (!supplier) return BaseResponse.notFound({ err: 'Supplier not found' });
@@ -117,85 +114,64 @@ export class PurchasingService {
       });
 
       await purchase.save({ session });
-      if (!sessionIn) {
-        await session.commitTransaction();
-        await session.endSession();
-      }
       return this.detailPurchasing(purchase._id);
-    } catch (err) {
-      if (!sessionIn) {
-        if (!sessionIn) await session.abortTransaction();
-        await session.endSession();
-      }
-      return BaseResponse.unexpected({ err: { text: 'editPurchasing catch', err } });
-    } finally {
-      if (!sessionIn) await session.endSession();
-    }
+    }, sessionIn);
   }
 
   async editPurchasingItem(
     id: Types.ObjectId,
     data: PurchasingItemDto,
-    sessionIn: ClientSession
+    sessionIn?: ClientSession
   ): Promise<PurchasingItem | undefined> {
-    const session = sessionIn ? sessionIn : await this.connection.startSession();
-    if (!sessionIn) session.startTransaction();
-    const product = await this.productModel.findById(data.product).session(session);
-    if (!product) return BaseResponse.notFound({ err: `Product not found: ${data.product_name}` });
+    return this.global.withTransaction(async (session) => {
+      const product = await this.productModel.findById(data.product).session(session);
+      if (!product) return BaseResponse.notFound({ err: `Product not found: ${data.product_name}` });
 
-    const updatedItem = await this.purchasingItemModel.findByIdAndUpdate(
-      id,
-      { $set: data },
-      {
-        new: true,
-        runValidators: true,
-      },
-    ).session(session);
-    if (!sessionIn) {
-      await session.commitTransaction();
-      await session.endSession();
-    }
-    return updatedItem || undefined;
+      const updatedItem = await this.purchasingItemModel.findByIdAndUpdate(
+        id,
+        { $set: data },
+        {
+          new: true,
+          runValidators: true,
+        },
+      ).session(session);
+      return updatedItem || undefined;
+    }, sessionIn);
   }
 
   async bulkUpdatePurchasingItems(
     purchasing_id: Types.ObjectId,
     data: PurchasingItemDto[],
-    sessionIn: ClientSession
+    sessionIn?: ClientSession
   ): Promise<{ data: PurchasingItem[]; meta: IPaginationRes; total_price: number }> {
-    const session = sessionIn ? sessionIn : await this.connection.startSession();
-    if (!sessionIn) session.startTransaction();
-    const existingItems = await this.purchasingItemModel.find({
-      purchase_order: purchasing_id,
-    }).session(session);
+    return this.global.withTransaction(async (session) => {
+      const existingItems = await this.purchasingItemModel.find({
+        purchase_order: purchasing_id,
+      }).session(session);
 
-    const dtoProductIds = data.map(it => it.product);
-    let total_price = 0;
+      const dtoProductIds = data.map(it => it.product);
+      let total_price = 0;
 
-    const toDelete = existingItems.filter(
-      i => !dtoProductIds.includes(i.product)
-    );
-    await this.purchasingItemModel.deleteMany({
-      _id: { $in: toDelete.map(i => i._id) },
-    }).session(session);
+      const toDelete = existingItems.filter(
+        i => !dtoProductIds.includes(i.product)
+      );
+      await this.purchasingItemModel.deleteMany({
+        _id: { $in: toDelete.map(i => i._id) },
+      }).session(session);
 
-    await Promise.all(data.map(async item => {
-      const existing = existingItems.find(i => i.product === item.product);
-      const newData = { ...item, purchase_order: purchasing_id };
-      if (existing) {
-        await this.editPurchasingItem(existing._id, newData, session);
-      } else {
-        await this.createPurchasingItem(newData, session);
-      }
-      total_price += item.qty * item.purchase_price;
-    }));
-
-    if (!sessionIn) {
-      await session.commitTransaction();
-      await session.endSession();
-    }
-    const list = await this.listPurchasingItems({ purchasing_id });
-    return { ...list, total_price };
+      await Promise.all(data.map(async item => {
+        const existing = existingItems.find(i => i.product.toString() === item.product.toString());
+        const newData = { ...item, purchase_order: purchasing_id };
+        if (existing) {
+          await this.editPurchasingItem(existing._id, newData, session);
+        } else {
+          await this.createPurchasingItem(newData, session);
+        }
+        total_price += item.purchase_qty * item.purchase_price;
+      }));
+      const list = await this.listPurchasingItems({ purchasing_id });
+      return { ...list, total_price };
+    }, sessionIn);
   }
 
 
@@ -269,146 +245,66 @@ export class PurchasingService {
     return detailPurchasing || undefined
   }
 
-  async deletePurchasing(id: Types.ObjectId, sessionIn: ClientSession): Promise<Purchasing | undefined> {
-    const session = sessionIn ? sessionIn : await this.connection.startSession();
-    if (!sessionIn) session.startTransaction();
-    try {
+  async deletePurchasing(id: Types.ObjectId, sessionIn?: ClientSession): Promise<Purchasing | undefined> {
+    return this.global.withTransaction(async (session) => {
       const deletedPurchasing = await this.purchasingModel.findByIdAndDelete(id).session(session);
-      await this.purchasingItemModel.deleteMany([{ purchase_order: id }], { session });
-      if (!sessionIn) {
-        await session.commitTransaction();
-        await session.endSession();
-      }
+      await this.purchasingItemModel.deleteMany({ purchase_order: id }).session(session);
       return deletedPurchasing || undefined;
-    } catch (err) {
-      if (!sessionIn) {
-        await session.abortTransaction();
-        await session.endSession();
-      }
-      return BaseResponse.unexpected({ err: { text: 'deletedPurchasing catch', err } })
-    } finally {
-      if (!sessionIn) await session.endSession();
-    }
+    }, sessionIn);
   }
 
-  async deletePurchasingItem(id: Types.ObjectId, sessionIn: ClientSession): Promise<PurchasingItem | undefined> {
-    const session = sessionIn ? sessionIn : await this.connection.startSession();
-    if (!sessionIn) session.startTransaction();
-    try {
+  async deletePurchasingItem(id: Types.ObjectId, sessionIn?: ClientSession): Promise<PurchasingItem | undefined> {
+    return this.global.withTransaction(async (session) => {
       const deletedPurchasingItem = await this.purchasingItemModel.findByIdAndDelete(id).session(session);
-      if (!sessionIn) {
-        await session.commitTransaction();
-        await session.endSession();
-      }
       return deletedPurchasingItem || undefined;
-    } catch (err) {
-      if (!sessionIn) {
-        await session.abortTransaction();
-        await session.endSession();
-      }
-      return BaseResponse.unexpected({ err: { text: 'deletedPurchasingItem catch', err } })
-    } finally {
-      if (!sessionIn) await session.endSession();
-    }
+    }, sessionIn);
   }
 
   async purchaseOrder(id: Types.ObjectId, dto: PurchaseOrderDto): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
-    try {
+    return this.global.withTransaction(async (session) => {
       const purchase = await this.purchasingModel.findById(id).session(session);
       if (!purchase) {
-        await session.abortTransaction();
         return BaseResponse.notFound({ err: { text: 'purchaseOrder purchase not found' } });
       }
-
       if (purchase?.status !== PurchasingEn.REQUEST) {
-        await session.abortTransaction();
         return BaseResponse.forbidden({ err: { text: 'purchaseOrder invalid status purchase order' } })
       }
-
       const data = {
         ...dto,
         status: PurchasingEn.PROCESS
       }
       const updatedPurchase = await this.editPurchasing(id, data, session);
       if (!updatedPurchase) {
-        await session.abortTransaction();
         return BaseResponse.unexpected({ err: { text: 'purchaseOrder failed to editPurchasing' } });
       }
-
-      await session.commitTransaction();
-      await session.endSession();
       return updatedPurchase
-    } catch (err) {
-      await session.abortTransaction();
-      await session.endSession();
-      return BaseResponse.unexpected({ err: { text: 'purchaseOrder transaction failed', err } });
-    } finally {
-      await session.endSession();
-    }
+    });
   }
 
-  async receiveOrder(id: Types.ObjectId, dto: PurchaseOrderDto): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {
-    const session = await this.connection.startSession();
-    session.startTransaction();
-
-    try {
+  async receiveOrder(
+    id: Types.ObjectId,
+    dto: PurchaseOrderDto
+  ): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes } }) | undefined> {
+    return this.global.withTransaction(async (session) => {
       const purchase = await this.purchasingModel.findById(id).session(session);
-      if (!purchase) {
-        await session.abortTransaction();
+      if (!purchase)
         return BaseResponse.notFound({ err: { text: 'receiveOrder purchase not found' } });
-      }
-
-      if (purchase.status !== PurchasingEn.PROCESS) {
-        await session.abortTransaction();
+      if (purchase.status !== PurchasingEn.PROCESS)
         return BaseResponse.forbidden({ err: { text: 'receiveOrder invalid status' } });
-      }
-
-      // ✅ Step 1: Update purchasing + items using your existing editPurchasing
-      const data = {
+      // ✅ Step 1: Update purchasing and its items
+      const updatedPurchase = await this.editPurchasing(id, {
         ...dto,
-        status: PurchasingEn.RECEIVE,
-      };
-
-      const updatedPurchase = await this.editPurchasing(id, data, session);
-      if (!updatedPurchase) {
-        await session.abortTransaction();
+        status: PurchasingEn.RECEIVE
+      }, session);
+      if (!updatedPurchase)
         return BaseResponse.unexpected({ err: { text: 'receiveOrder failed to editPurchasing' } });
-      }
-
-      // ✅ Step 2: Fetch purchase items again after update (so received_qty is fresh)
-      const purchaseItems = await this.purchasingItemModel
-        .find({ purchase_order: id })
-        .session(session);
-
-      // ✅ Step 3: Create inventory for each item
+      // ✅ Step 2: Fetch items after update
+      const purchaseItems = await this.purchasingItemModel.find({ purchase_order: id }).session(session);
+      // ✅ Step 3: Safely loop and create inventory
       for (const item of purchaseItems) {
-        try {
-          const itemToInvent = { purchase_item: item._id };
-          await this.inventory.createInventory(itemToInvent, session);
-        } catch (err) {
-          await session.abortTransaction();
-          await session.endSession();
-          return BaseResponse.unexpected({ err: { text: 'receiveOrder.createInventory failed', err } });
-        } finally {
-          await session.endSession();
-        }
+        await this.inventory.createInventory({ purchase_item: item._id }, session);
       }
-
-      // ✅ Step 4: Commit if everything succeeds
-      await session.commitTransaction();
-      await session.endSession();
-
       return updatedPurchase;
-    } catch (err) {
-      await session.abortTransaction();
-      await session.endSession();
-      return BaseResponse.unexpected({ err: { text: 'receiveOrder transaction failed', err } });
-    } finally {
-      await session.endSession();
-    }
+    });
   }
-
-  
 }

@@ -1,5 +1,4 @@
-import { IsNotEmpty, IsNumber, IsMongoId } from 'class-validator';
-import { Types } from 'mongoose';
+import { IsNumber } from 'class-validator';
 import { InventoryEn } from './inventory.schema';
 
 export class EditInventoryDto {

@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Put, Query, Res, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '../auth/auth.guard';
-import { Inventory } from './inventory.schema';
 import { InventoryService } from './inventory.service';
 import type { Response } from 'express';
 import { BaseResponse } from 'src/utils/base-response';

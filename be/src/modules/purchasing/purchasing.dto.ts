@@ -20,7 +20,7 @@ export class PurchasingItemDto {
   @IsDate()
   exp_date: string;
   @IsNumber()
-  qty: number;
+  purchase_qty: number;
   @IsNumber()
   recieved_qty: number;
   @IsNumber()

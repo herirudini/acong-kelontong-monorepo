@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Model, FilterQuery } from 'mongoose';
+import { InjectConnection } from '@nestjs/mongoose';
+import { Model, FilterQuery, ClientSession, Connection } from 'mongoose';
 import { modules } from 'src/types/constants';
 import { IPaginationRes, TOneOrMany } from 'src/types/interfaces';
 
@@ -18,6 +19,11 @@ export class IGetListParam {
 
 @Injectable()
 export class GlobalService {
+
+  constructor(
+    @InjectConnection() private readonly connection: Connection,
+  ) { }
+
 
   async getList<M>(model: Model<M>, params: IGetListParam): Promise<{ data: M[]; meta: IPaginationRes }> {
     const pageNum = Math.max(1, Number(params.page) || 1);
@@ -96,6 +102,25 @@ export class GlobalService {
 
   getPermissions() {
     return modules;
+  }
+
+  async withTransaction<T>(
+    fn: (session: ClientSession) => Promise<T>,
+    sessionIn?: ClientSession
+  ): Promise<T> {
+    const isNew = !sessionIn;
+    const session = sessionIn || await this.connection.startSession();
+    if (isNew) session.startTransaction();
+    try {
+      const result = await fn(session);
+      if (isNew) await session.commitTransaction();
+      return result;
+    } catch (err) {
+      if (isNew) await session.abortTransaction();
+      throw err;
+    } finally {
+      if (isNew) await session.endSession();
+    }
   }
 
 }

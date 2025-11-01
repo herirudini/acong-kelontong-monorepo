@@ -41,27 +41,29 @@ export class InventoryService {
     )
   }
 
-  async createInventory(body: ReceiveOrderItemDto, session: ClientSession): Promise<Inventory> {
-    const poItem = await this.purchasingItemModel.findById(body.purchase_item).session(session);
-    if (!poItem) throw new Error('createInventory poItem not found');
+  async createInventory(body: ReceiveOrderItemDto, sessionIn: ClientSession): Promise<Inventory> {
+    return this.global.withTransaction(async (session) => {
+      const poItem = await this.purchasingItemModel.findById(body.purchase_item).session(session);
+      if (!poItem) throw new Error('createInventory poItem not found');
 
-    const batchCode = `${digitShortDate(new Date())}-${poItem.product_name.replace(/\s+/g, '_')}-${poItem._id.toString().slice(-4)}`;
+      const batchCode = `${digitShortDate(new Date())}-${poItem.product_name.replace(/\s+/g, '_')}-${poItem._id.toString().slice(-4)}`;
 
-    const data = {
-      purchase_item: body.purchase_item,
-      supplier_name: poItem.supplier_name,
-      product: poItem.product,
-      product_name: poItem.product_name,
-      exp_date: poItem.exp_date,
-      purchase_price: poItem.purchase_price,
-      sell_price: poItem.sell_price,
-      qty: poItem.recieved_qty,
-      remaining_qty: poItem.recieved_qty,
-      batch_code: batchCode,
-      status: InventoryEn.HALT,
-    };
+      const data: Inventory = {
+        purchase_item: body.purchase_item,
+        supplier_name: poItem.supplier_name,
+        product: poItem.product,
+        product_name: poItem.product_name,
+        exp_date: poItem.exp_date,
+        purchase_price: poItem.purchase_price,
+        sell_price: poItem.sell_price,
+        item_qty: poItem.recieved_qty,
+        remaining_qty: poItem.recieved_qty,
+        batch_code: batchCode,
+        status: InventoryEn.HALT,
+      };
 
-    return (await this.inventoryModel.create([data], { session }))[0];
+      return (await this.inventoryModel.create([data], { session }))[0];
+    }, sessionIn)
   }
 
 

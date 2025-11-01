@@ -23,7 +23,7 @@ export class Inventory {
   @Prop({ type: Number, required: true }) purchase_price: number;
 
   @Prop({ type: Number, required: true }) sell_price: number;
-  @Prop({ type: Number, required: true }) qty: number;
+  @Prop({ type: Number, required: true }) item_qty: number;
   @Prop({ type: Number, required: true }) remaining_qty: number;
 
   @Prop() batch_code?: string;
