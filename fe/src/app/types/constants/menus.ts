@@ -40,6 +40,27 @@ export const BRANDS: IMenu = {
     labelKey: 'Brands',
     permissions: ['brand.view', 'brand.create', 'brand.edit', 'brand.delete'],
 }
+
+export const PROCUREMENT: IMenu = {
+    code: 'procurement',
+    url: 'procurement',
+    icon: '',
+    labelKey: 'Procurement',
+}
+export const PURCHASE_ORDER: IMenu = {
+    code: 'purchase-order',
+    url: 'purchase-order',
+    icon: '',
+    labelKey: 'Purchase Order',
+    permissions: ['purchasing.view', 'purchasing.create', 'purchasing.edit', 'purchasing.delete'],
+}
+export const RECEIVE_ORDER: IMenu = {
+    code: 'receive-order',
+    url: 'receive-order',
+    icon: '',
+    labelKey: 'Receive Order',
+    permissions: ['purchasing.view', 'inventory.create', 'purchasing.edit'],
+}
 export const SUPPLIERS: IMenu = {
     code: 'supplier',
     url: 'supplier',

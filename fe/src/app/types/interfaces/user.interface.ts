@@ -1,4 +1,6 @@
 export type TModules =
+    'inventory.view' | 'inventory.create' | 'inventory.edit' | 'inventory.delete' |
+    'purchasing.view' | 'purchasing.create' | 'purchasing.edit' | 'purchasing.delete' |
     'cashier.view' | 'cashier.create' | 'cashier.edit' | 'cashier.delete' |
     'product.view' | 'product.create' | 'product.edit' | 'product.delete' |
     'brand.view' | 'brand.create' | 'brand.edit' | 'brand.delete' |
