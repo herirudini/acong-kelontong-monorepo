@@ -6,7 +6,7 @@
         </div>
     </div>
     <app-generic-table ngSkipHydration [columns]="columns" [data]="listProduct" [usePagination]="true" [useSearch]="true"
-        [filterSelect]="filterSelect" [total]="pagination.total" (OnDataRefresh)="getList($event)"
+        [total]="pagination.total" (OnDataRefresh)="getList($event)"
         [isLoading]="isLoading">
         <div appTableColumn customColumnId="action">
             <ng-template let-item>

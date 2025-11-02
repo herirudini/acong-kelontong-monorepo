@@ -4,21 +4,45 @@ import { IMenu } from "../interfaces/menu.interface";
 // UI management of Menu is managed by FE, whether it'd be child or independent, its up to FE.
 // Permission from BE only to flag if particular module is eligible tobe shown
 
+export const SALES: IMenu = {
+    code: 'sales',
+    url: 'sales',
+    icon: 'nav-icon bi bi-cart3',
+    labelKey: 'Sales',
+};
 export const CASHIER: IMenu = {
     code: 'cashier',
     url: 'cashier',
-    icon: 'nav-icon bi bi-cart3',
+    icon: '',
     labelKey: 'Cashier',
     permissions: ['cashier.view', 'cashier.create', 'cashier.edit', 'cashier.delete'],
 };
+export const SALES_HISTORY: IMenu = {
+    code: 'sales-history',
+    url: 'sales-history',
+    icon: '',
+    labelKey: 'Sales History',
+    permissions: ['cashier.view', 'cashier.create', 'cashier.edit', 'cashier.delete'],
+};
 
+export const SUPPLIES: IMenu = {
+    code: 'supplies',
+    url: 'supplies',
+    icon: 'nav-icon bi bi-box-seam',
+    labelKey: 'Supplies',
+};
 export const INVENTORY: IMenu = {
     code: 'inventory',
     url: 'inventory',
-    icon: 'nav-icon bi bi-box-seam',
+    icon: '',
     labelKey: 'Inventory',
 }
-
+export const SHOWCASE: IMenu = {
+    code: 'showcase',
+    url: 'showcase',
+    icon: '',
+    labelKey: 'Showcase',
+}
 
 export const CATALOGUE: IMenu = {
     code: 'catalogue',
@@ -44,7 +68,7 @@ export const BRANDS: IMenu = {
 export const PROCUREMENT: IMenu = {
     code: 'procurement',
     url: 'procurement',
-    icon: '',
+    icon: 'nav-icon bi bi-clipboard-check',
     labelKey: 'Procurement',
 }
 export const PURCHASE_ORDER: IMenu = {
@@ -75,12 +99,12 @@ export const FINANCE: IMenu = {
     icon: 'nav-icon bi bi-coin',
     labelKey: 'Finance',
 }
-export const INCOME: IMenu = {
-    code: 'income',
-    url: 'income',
+export const CASHFLOW: IMenu = {
+    code: 'cashflow',
+    url: 'cashflow',
     icon: '',
     labelKey: 'Income',
-    permissions: ['income.view', 'income.create', 'income.edit', 'income.delete'],
+    permissions: ['cashflow.view', 'cashflow.create', 'cashflow.edit', 'cashflow.delete'],
 }
 export const EXPENSES: IMenu = {
     code: 'expenses',
@@ -88,6 +112,13 @@ export const EXPENSES: IMenu = {
     icon: '',
     labelKey: 'Expenses',
     permissions: ['expenses.view', 'expenses.create', 'expenses.edit', 'expenses.delete'],
+}
+export const CAPITAL: IMenu = {
+    code: 'capital',
+    url: 'capital',
+    icon: '',
+    labelKey: 'Capital Account',
+    permissions: ['capital.view', 'capital.create', 'capital.edit', 'capital.delete'],
 }
 
 export const ADMIN: IMenu = {
@@ -145,7 +176,28 @@ export const DASHBOARD: IMenu = {
 export const Menus: IMenu[] = [
     // TODO: remove this dummy later
     DASHBOARD,
-    CASHIER,
+    {
+        ...SALES,
+        children: [
+            CASHIER,
+            SALES_HISTORY
+        ]
+    },
+    {
+        ...SUPPLIES,
+        children: [
+            INVENTORY,
+            SHOWCASE
+        ]
+    },
+    {
+        ...PROCUREMENT,
+        children: [
+            PURCHASE_ORDER,
+            RECEIVE_ORDER,
+            SUPPLIERS
+        ]
+    },
     {
         ...CATALOGUE,
         children: [
@@ -156,8 +208,9 @@ export const Menus: IMenu[] = [
     {
         ...FINANCE,
         children: [
-            INCOME,
+            CASHFLOW,
             EXPENSES,
+            CAPITAL
         ]
     },
     {

@@ -14,9 +14,10 @@ export const modules: TModules[] = [
   'product.view', 'product.create', 'product.edit', 'product.delete',
   'brand.view', 'brand.create', 'brand.edit', 'brand.delete',
   'supplier.view', 'supplier.create', 'supplier.edit', 'supplier.delete',
-  'income.view', 'income.create', 'income.edit', 'income.delete',
+  'capital.view', 'capital.create', 'capital.edit', 'capital.delete',
+  'cashflow.view', 'cashflow.create', 'cashflow.edit', 'cashflow.delete',
   'expenses.view', 'expenses.create', 'expenses.edit', 'expenses.delete',
-  'role.view', 'role.create', 'role.edit', 'role.delete',
   'user.view', 'user.create', 'user.edit', 'user.delete',
+  'role.view', 'role.create', 'role.edit', 'role.delete'
 ];
 

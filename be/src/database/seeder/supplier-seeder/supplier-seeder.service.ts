@@ -16,19 +16,20 @@ export class SupplierSeederService {
       {
         supplier_name: 'PT Indofood Sukses',
         supplier_email: 'sukses@mail.mail',
-        supplier_contact: '089089089089',
+        supplier_address: 'Bandung',
+        supplier_phone: '089089089089',
       },
       {
         supplier_name: 'PT Tirta Investama',
         supplier_email: 'investama@mail.mail',
-        supplier_contact: '089089089089',
-
+        supplier_address: 'Jakarta',
+        supplier_phone: '089089089089',
       },
       {
         supplier_name: 'Ultra Milk',
         supplier_email: 'milk@mail.mail',
-        supplier_contact: '089089089089',
-
+        supplier_address: 'Surabaya',
+        supplier_phone: '089089089089',
       }
     ];
 

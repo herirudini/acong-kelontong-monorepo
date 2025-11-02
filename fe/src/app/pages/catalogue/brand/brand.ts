@@ -21,19 +21,7 @@ export class Brand implements OnInit {
 
   isLoading: boolean = false;
   listBrand: IBrand[] = [];
-  filterSelect: ISelectFilter = {
-    title: 'Filter status',
-    selectOptions: [
-      {
-        label: 'Verified',
-        value: true
-      },
-      {
-        label: 'Unverified',
-        value: false
-      }
-    ]
-  }
+  
   pagination: IPaginationInput = {
     page: 1,
     total: 100,

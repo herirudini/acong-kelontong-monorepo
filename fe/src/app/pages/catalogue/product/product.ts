@@ -21,19 +21,7 @@ export class Product implements OnInit {
 
   isLoading: boolean = false;
   listProduct: IProduct[] = [];
-  filterSelect: ISelectFilter = {
-    title: 'Filter status',
-    selectOptions: [
-      {
-        label: 'Verified',
-        value: true
-      },
-      {
-        label: 'Unverified',
-        value: false
-      }
-    ]
-  }
+  
   pagination: IPaginationInput = {
     page: 1,
     total: 100,

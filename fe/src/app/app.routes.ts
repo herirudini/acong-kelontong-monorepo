@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { MainLayout } from './layout/main-layout/main-layout';
-import { BRANDS, CASHIER, EXPENSES, INCOME, PRODUCT, SUPPLIERS, USER, ROLE, DASHBOARD, ROLE_DETAIL, ROLE_CREATE, ROLE_EDIT } from './types/constants/menus';
+import { BRANDS, CASHIER, EXPENSES, CASHFLOW, PRODUCT, SUPPLIERS, USER, ROLE, DASHBOARD, ROLE_DETAIL, ROLE_CREATE, ROLE_EDIT, PURCHASE_ORDER, RECEIVE_ORDER, CAPITAL, SALES_HISTORY, INVENTORY, SHOWCASE } from './types/constants/menus';
 import { AuthGuardService } from './services/guards/auth-guard/auth-guard-service';
 import { PageGuardService } from './services/guards/page-guard/page-guard-service';
 
@@ -28,6 +28,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard-v2/dashboard-v2').then(c => c.DashboardV2)
       },
       {
+        path: SALES_HISTORY.url,
+        data: { ...SALES_HISTORY },
+        canActivate: [PageGuardService],
+        loadComponent: () => import('./pages/dashboard-v2/dashboard-v2').then(c => c.DashboardV2)
+      },
+      {
         path: PRODUCT.url,
         canActivate: [PageGuardService],
         data: { ...PRODUCT },
@@ -40,21 +46,51 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/catalogue/brand/brand').then(c => c.Brand)
       },
       {
+        path: INVENTORY.url,
+        canActivate: [PageGuardService],
+        data: { ...INVENTORY },
+        loadComponent: () => import('./pages/catalogue/product/product').then(c => c.Product)
+      },
+      {
+        path: SHOWCASE.url,
+        canActivate: [PageGuardService],
+        data: { ...SHOWCASE },
+        loadComponent: () => import('./pages/catalogue/product/product').then(c => c.Product)
+      },
+      {
         path: SUPPLIERS.url,
         canActivate: [PageGuardService],
         data: { ...SUPPLIERS },
-        loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
+        loadComponent: () => import('./pages/procurement/supplier/supplier').then(c => c.Supplier)
       },
       {
-        path: INCOME.url,
+        path: PURCHASE_ORDER.url,
         canActivate: [PageGuardService],
-        data: { ...INCOME },
+        data: { ...PURCHASE_ORDER },
+        loadComponent: () => import('./pages/procurement/purchase-order/purchase-order').then(c => c.PurchaseOrder)
+      },
+      {
+        path: RECEIVE_ORDER.url,
+        canActivate: [PageGuardService],
+        data: { ...RECEIVE_ORDER },
+        loadComponent: () => import('./pages/procurement/receive-order/receive-order').then(c => c.ReceiveOrder)
+      },
+      {
+        path: CASHFLOW.url,
+        canActivate: [PageGuardService],
+        data: { ...CASHFLOW },
         loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
       },
       {
         path: EXPENSES.url,
         canActivate: [PageGuardService],
         data: { ...EXPENSES },
+        loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
+      },
+      {
+        path: CAPITAL.url,
+        canActivate: [PageGuardService],
+        data: { ...CAPITAL },
         loadComponent: () => import('./pages/forms/general-elements/general-elements').then(c => c.GeneralElements)
       },
       {

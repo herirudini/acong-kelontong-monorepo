@@ -7,9 +7,11 @@ export class Supplier {
   @Prop({ required: true, unique: true })
   supplier_name: string; // e.g. "PT Indofood Sukses Tbk"
   @Prop({ required: true })
-  supplier_contact?: string;
+  supplier_phone?: string;
   @Prop({ required: true })
   supplier_email?: string;
+  @Prop({ required: true })
+  supplier_address?: string;
 
 }
 

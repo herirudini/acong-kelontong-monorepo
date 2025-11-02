@@ -6,21 +6,21 @@ import { Endpoint } from '../../../types/constants/endpoint';
 import { IPaginationInput } from '../../../types/interfaces/common.interface';
 import { IResDetail, IResList } from '../../../types/interfaces/http.interface';
 import { ITableQueryData } from '../../../shared/components/generic-table/generic-table';
-import { IBrand } from '../../../types/interfaces/catalogue.interface';
+import { ISupplier } from '../../../types/interfaces/procurement.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class BrandService extends BaseService {
+export class SupplierService extends BaseService {
   constructor(private alert: AlertService) {
     super();
   }
 
-  getBrands(
+  getSuppliers(
     qParams: ITableQueryData
-  ): Observable<IResList<IBrand>> {
-    return this.getRequest({ url: Endpoint.BRAND, qParams, spinner: false }).pipe(
-      map((res: IResList<IBrand>) => {
+  ): Observable<IResList<ISupplier>> {
+    return this.getRequest({ url: Endpoint.SUPPLIER, qParams, spinner: false }).pipe(
+      map((res: IResList<ISupplier>) => {
         const val = {
           meta: res?.meta as IPaginationInput,
           list: res?.list
@@ -29,67 +29,68 @@ export class BrandService extends BaseService {
       }),
       catchError((err) => {
         console.error(err);
-        this.alert.error('Cannot get list brand');
+        this.alert.error('Cannot get list supplier');
         return of(undefined); // emit undefined so the stream completes gracefully
       })
     ) as any;
   }
 
-  createBrand(
-    body: IBrand
-  ): Observable<IBrand> {
-    return this.postRequest({ url: Endpoint.BRAND, body }).pipe(
-      map((res: IResDetail<IBrand>) => {
+  createSupplier(
+    body: ISupplier
+  ): Observable<ISupplier> {
+    return this.postRequest({ url: Endpoint.SUPPLIER, body }).pipe(
+      map((res: IResDetail<ISupplier>) => {
         return res.detail;
       }),
       catchError((err) => {
         console.error(err);
-        this.alert.error('Cannot create brand');
+        this.alert.error('Cannot create supplier');
         return of(undefined); // emit undefined so the stream completes gracefully
       })
     ) as any;
   }
 
-  editBrand(
-    brand_id: string,
-    body: IBrand
-  ): Observable<IBrand> {
-    return this.putRequest({ url: Endpoint.BRAND_ID(brand_id), body }).pipe(
-      map((res: IResDetail<IBrand>) => {
+  editSupplier(
+    supplier_id: string,
+    body: ISupplier
+  ): Observable<ISupplier> {
+    return this.putRequest({ url: Endpoint.SUPPLIER_ID(supplier_id), body }).pipe(
+      map((res: IResDetail<ISupplier>) => {
         return res.detail;
       }),
       catchError((err) => {
         console.error(err);
-        this.alert.error('Cannot edit brand');
+        this.alert.error('Cannot edit supplier');
         return of(undefined); // emit undefined so the stream completes gracefully
       })
     ) as any;
   }
 
-  getBrandDetail(brand_id: string): Observable<IBrand> {
-    return this.getRequest({ url: Endpoint.BRAND_ID(brand_id) }).pipe(
-      map((res: IResDetail<IBrand>) => {
+  getSupplierDetail(supplier_id: string): Observable<ISupplier> {
+    return this.getRequest({ url: Endpoint.SUPPLIER_ID(supplier_id) }).pipe(
+      map((res: IResDetail<ISupplier>) => {
         return res.detail;
       }),
       catchError((err) => {
         console.error(err);
-        this.alert.error('Cannot get brand detail');
+        this.alert.error('Cannot get supplier detail');
         return of(undefined); // emit undefined so the stream completes gracefully
       })
     ) as any;
   }
 
-  deleteBrand(brand_id: string): Observable<IBrand> {
-    return this.deleteRequest({ url: Endpoint.BRAND_ID(brand_id) }).pipe(
-      map((res: IResDetail<IBrand>) => {
+  deleteSupplier(supplier_id: string): Observable<ISupplier> {
+    return this.deleteRequest({ url: Endpoint.SUPPLIER_ID(supplier_id) }).pipe(
+      map((res: IResDetail<ISupplier>) => {
         return res.detail;
       }),
       catchError((err) => {
         console.error(err);
-        this.alert.error('Cannot delete brand');
+        this.alert.error('Cannot delete supplier');
         return of(undefined); // emit undefined so the stream completes gracefully
       })
     ) as any;
   }
 
 }
+

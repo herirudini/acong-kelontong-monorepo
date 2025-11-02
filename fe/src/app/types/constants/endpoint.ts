@@ -40,6 +40,12 @@ export const Endpoint = {
     return `${api}product/${id}`
   },
 
+  // Supplier Endpoint
+  SUPPLIER: `${api}supplier`,
+  SUPPLIER_ID: (id: string) => {
+    return `${api}supplier/${id}`
+  },
+
 
   // /* Account endpoints */
   // ACCOUNT_SETUP: `${api}account/setup`,
