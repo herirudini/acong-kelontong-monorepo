@@ -36,12 +36,14 @@ export const INVENTORY: IMenu = {
     url: 'inventory',
     icon: '',
     labelKey: 'Inventory',
+    permissions: ['inventory.view', 'inventory.create', 'inventory.edit', 'inventory.delete'],
 }
 export const SHOWCASE: IMenu = {
     code: 'showcase',
     url: 'showcase',
     icon: '',
     labelKey: 'Showcase',
+    permissions: ['showcase.view', 'showcase.create', 'showcase.edit', 'showcase.delete'],
 }
 
 export const CATALOGUE: IMenu = {
@@ -54,14 +56,14 @@ export const PRODUCT: IMenu = {
     code: 'product',
     url: 'product',
     icon: '',
-    labelKey: 'Products',
+    labelKey: 'Product',
     permissions: ['product.view', 'product.create', 'product.edit', 'product.delete'],
 }
 export const BRANDS: IMenu = {
     code: 'brand',
     url: 'brand',
     icon: '',
-    labelKey: 'Brands',
+    labelKey: 'Brand',
     permissions: ['brand.view', 'brand.create', 'brand.edit', 'brand.delete'],
 }
 
@@ -103,7 +105,7 @@ export const CASHFLOW: IMenu = {
     code: 'cashflow',
     url: 'cashflow',
     icon: '',
-    labelKey: 'Income',
+    labelKey: 'Cashflow',
     permissions: ['cashflow.view', 'cashflow.create', 'cashflow.edit', 'cashflow.delete'],
 }
 export const EXPENSES: IMenu = {

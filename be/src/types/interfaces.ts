@@ -29,6 +29,7 @@ export interface IEditUser {
 
 export type TModules =  //This is a list of API Endpoint permission
   'inventory.view' | 'inventory.create' | 'inventory.edit' | 'inventory.delete' |
+  'showcase.view' | 'showcase.create' | 'showcase.edit' | 'showcase.delete' |
   'purchasing.view' | 'purchasing.create' | 'purchasing.edit' | 'purchasing.delete' |
   'cashier.view' | 'cashier.create' | 'cashier.edit' | 'cashier.delete' |
   'product.view' | 'product.create' | 'product.edit' | 'product.delete' |
