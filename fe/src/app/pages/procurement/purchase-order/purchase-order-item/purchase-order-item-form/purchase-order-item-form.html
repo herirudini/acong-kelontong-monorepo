@@ -2,7 +2,7 @@
   <h4 class="modal-title" id="modal-title">
     <div class="card-title text-capitalize">{{type}} Purchase Item</div>
   </h4>
-  <button type="button" class="btn-close" aria-describedby="modal-title" (click)="close.emit()"></button>
+  <button type="button" class="btn-close" aria-describedby="modal-title" (click)="onClose.emit()"></button>
 </div>
 <fieldset [disabled]="type==='view'">
   <form [formGroup]="form" appFormValidation (ngSubmit)="submit()">
@@ -48,7 +48,7 @@
     </div>
     @if (type!=='view') {
     <div class="modal-footer">
-      <button class="btn btn-secondary" type="button" (click)="close.emit()">Cancel</button>
+      <button class="btn btn-secondary" type="button" (click)="onClose.emit()">Cancel</button>
       <button class="btn btn-primary" type="submit">Submit</button>
     </div>
     }

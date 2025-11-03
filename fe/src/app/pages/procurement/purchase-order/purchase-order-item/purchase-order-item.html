@@ -2,7 +2,9 @@
   <div class="card-header mb-4">
     <div class="d-flex flex-row justify-content-between gap-4">
       <h3 class="card-title">Purchase Item List</h3>
-      <a class="btn btn-primary" (click)="showForm('new')">Add Item</a>
+      @if (type !== 'view') {
+      <button class="btn btn-primary" (click)="showForm('new')">Add Item</button>
+      }
     </div>
   </div>
   <app-generic-table ngSkipHydration [columns]="columns" [data]="listPurchasingItem" [usePagination]="true"
@@ -13,12 +15,14 @@
           <a (click)="showForm('view', item._id)" class="text-white pointer btn btn-secondary">
             <i class="fa-solid fa-eye"></i>
           </a>
-          <a (click)="showForm('edit', item._id)" class="text-white pointer btn btn-warning">
+          @if (type !== 'view') {
+          <button (click)="showForm('edit', item._id)" class="text-white pointer btn btn-warning">
             <i class="fa-solid fa-pencil"></i>
-          </a>
+          </button>
           <button (click)="deletePurchaseItem(item)" class="text-white pointer btn btn-danger">
             <i class="fa-solid fa-trash"></i>
           </button>
+          }
         </div>
       </ng-template>
     </div>
@@ -30,3 +34,7 @@
 </div>
 
 <app-confirm-modal #ConfirmModal></app-confirm-modal>
+<ng-template #POItemForm>
+  <app-purchase-order-item-form [type]="form_type" [purchase_id]="purchase_id"
+    [purchase_item_id]="purchase_item_id" (onClose)="close($event)"></app-purchase-order-item-form>
+</ng-template>

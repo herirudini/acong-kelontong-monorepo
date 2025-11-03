@@ -1,5 +1,5 @@
-<fieldset>
-  <form [formGroup]="form" appFormValidation (ngSubmit)="next()">
+<form [formGroup]="form" appFormValidation (ngSubmit)="next()">
+  <fieldset [disabled]="type==='view'">
     <div class="card-body">
       <div class="d-flex flex-row flex-wrap justify-content-between gap-2">
         <div class="w-100">
@@ -31,9 +31,9 @@
         </div>
       </div>
     </div>
-    <div class="card-footer d-flex gap-2">
-      <button class="btn btn-secondary" type="button" (click)="back.emit()">Back</button>
-      <button class="btn btn-primary" type="submit">Next</button>
-    </div>
-  </form>
-</fieldset>
+  </fieldset>
+  <div class="card-footer d-flex gap-2">
+    <button class="btn btn-secondary" type="button" (click)="back.emit()">Exit</button>
+    <button class="btn btn-primary" type="submit">Next</button>
+  </div>
+</form>

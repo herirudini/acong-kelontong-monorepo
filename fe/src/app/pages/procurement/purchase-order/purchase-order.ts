@@ -60,17 +60,20 @@ export class PurchaseOrder implements OnInit {
       label: 'Supplier Name',
       id: 'supplier_name',
       extraHeaderClass: 'uppercase-text',
+      sort: true
     },
     {
       label: 'Due Date',
       id: 'due_date',
       extraHeaderClass: 'uppercase-text',
-      dataType: 'DATE'
+      dataType: 'DATE',
+      sort: true
     },
     {
       label: 'Status',
       id: 'status',
       extraHeaderClass: 'uppercase-text',
+      sort: true
     },
     {
       label: 'Total Purchase Price',

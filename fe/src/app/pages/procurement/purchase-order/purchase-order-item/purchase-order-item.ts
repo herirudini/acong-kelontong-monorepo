@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Inject, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Inject, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { IPurchasingItem } from '../../../../types/interfaces/procurement.interface';
 import { PurchaseOrderService } from '../purchase-order.service';
 import { AlertService } from '../../../../shared/components/alert/alert-service';
@@ -13,7 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-purchase-order-item',
-  imports: [GenericTable, TableColumn, ConfirmModal],
+  imports: [GenericTable, TableColumn, ConfirmModal, PurchaseOrderItemForm],
   templateUrl: './purchase-order-item.html',
   styleUrl: './purchase-order-item.scss'
 })
@@ -23,10 +23,15 @@ export class PurchaseOrderItem implements OnInit {
   @Output() back: EventEmitter<unknown> = new EventEmitter<unknown>()
 
   @ViewChild('ConfirmModal') confrimModal?: ConfirmModal;
+  @ViewChild('POItemForm', { static: false }) poItemForm?: TemplateRef<PurchaseOrderItemForm>;
+
+  @Input() type: formType = 'view';
 
   isLoading: boolean = false;
   listPurchasingItem: IPurchasingItem[] = [];
-  purchase_id: string | null = null;
+  purchase_id?: string;
+  purchase_item_id?: string;
+  form_type?: formType;
 
   pagination: IPaginationInput = {
     page: 1,
@@ -95,22 +100,25 @@ export class PurchaseOrderItem implements OnInit {
   activeModal = Inject(NgbActiveModal);
 
   constructor(private service: PurchaseOrderService, private modalService: NgbModal, private alert: AlertService, private route: ActivatedRoute) {
-    this.purchase_id = this.route.snapshot.paramMap.get('po_id') || null;
+    this.purchase_id = this.route.snapshot.paramMap.get('po_id') || undefined;
   }
 
   modalOptions: NgbModalOptions = {
     size: 'xl'
   }
 
+  modalRef
   showForm(type: formType, id?: string) {
-    const modalRef = this.modalService.open(PurchaseOrderItemForm, this.modalOptions);
-    modalRef.componentInstance.type = type;
-    modalRef.componentInstance.purchase_id = this.purchase_id;
-    modalRef.componentInstance.purhcase_item_id = id;
-    modalRef.componentInstance.close.subscribe((res) => {
-      modalRef.dismiss();
-      if (res) this.getList(this.defaultTableParam);
-    })
+    this.modalRef = this.modalService.open(this.poItemForm, this.modalOptions);
+    this.form_type = type;
+    this.purchase_id = this.purchase_id;
+    this.purchase_item_id = id;
+  }
+
+  close(save: boolean) {
+    console.log('save', save)
+    if (save) this.getList(this.defaultTableParam);
+    this.modalRef.dismiss();
   }
 
   getList(evt: ITableQueryData) {

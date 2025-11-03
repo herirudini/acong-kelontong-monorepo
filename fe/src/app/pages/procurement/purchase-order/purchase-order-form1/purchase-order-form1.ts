@@ -9,6 +9,7 @@ import { PurchaseOrderService } from '../purchase-order.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NgbDate, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { nativeToNgbDate, ngbToNativeDate } from '../../../../shared/components/date-range-filter/date-range-filter';
+import { formType } from '../../../../types/interfaces/common.interface';
 
 @Component({
   selector: 'app-purchase-order-form1',
@@ -22,6 +23,7 @@ export class PurchaseOrderForm1 implements OnInit {
   purchasingDetail?: IPurchasing;
   @Output() submitPO: EventEmitter<unknown> = new EventEmitter<unknown>()
   @Output() back: EventEmitter<unknown> = new EventEmitter<unknown>()
+  @Input() type: formType = 'view';
 
   invoicePhotoFile?: File;
 

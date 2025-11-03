@@ -7,10 +7,8 @@ import {
   OnDestroy,
   OnInit,
   Output,
-  PipeTransform,
   QueryList,
   TemplateRef,
-  Type,
 } from '@angular/core';
 import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { TableColumn } from '../../directives/table-column/table-column';

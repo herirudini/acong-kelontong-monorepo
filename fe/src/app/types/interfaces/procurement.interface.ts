@@ -50,6 +50,7 @@ export interface IPurchasing {
   invoice_photo?: string;
   total_purchase_price: number;
   items?: IPurchasingItem[];
+  createdAt?: Date;
 }
 export interface IPurchasingItem {
   _id?: string;

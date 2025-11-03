@@ -16,10 +16,10 @@ import { nativeToNgbDate, ngbToNativeDate } from '../../../../../shared/componen
   styleUrl: './purchase-order-item-form.scss'
 })
 export class PurchaseOrderItemForm implements OnInit, AfterViewInit, OnChanges {
-  @Input() type: formType = 'new';
-  @Input() purchase_id: string | null = null;
-  @Input() purchase_item_id: string | null = null;
-  @Output() close: EventEmitter<boolean> = new EventEmitter<boolean>()
+  @Input() type?: formType = 'new';
+  @Input() purchase_id?: string;
+  @Input() purchase_item_id?: string;
+  @Output() onClose: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   isLoading: boolean = false;
   products: IProduct[] = [];
@@ -37,32 +37,47 @@ export class PurchaseOrderItemForm implements OnInit, AfterViewInit, OnChanges {
   }
 
   ngOnInit(): void {
-    this.getRoles();
+    this.getProducts();
+    if (this.purchase_item_id) {
+      this.service.getPurchaseItemDetail(this.purchase_item_id).subscribe((res) => {
+        this.form.patchValue({
+          ...res,
+          product: res.product._id,
+          exp_date: nativeToNgbDate(res.exp_date)
+        });
+      })
+    }
+    if (this.purchase_id) {
+      this.form.controls.purchase_order.patchValue(this.purchase_id);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-
+    if (changes) {
+      console.log({ changes })
+      if (this.purchase_item_id) {
+        this.service.getPurchaseItemDetail(this.purchase_item_id).subscribe((res) => {
+          this.form.patchValue({
+            ...res,
+            exp_date: nativeToNgbDate(res.exp_date)
+          });
+          console.log('this.form.value', this.form.value)
+        })
+      }
+      if (this.purchase_id) {
+        this.form.controls.purchase_order.patchValue(this.purchase_id);
+      }
+    }
   }
 
-  getRoles() {
+  getProducts() {
     this.productSvc.getProducts({ page: 0, size: 1000 }).subscribe((res) => {
       this.products = res.list ?? [];
     })
   }
 
   ngAfterViewInit(): void {
-    if (this.purchase_item_id) {
-      this.service.getPurchaseItemDetail(this.purchase_item_id).subscribe((res) => {
-        this.form.patchValue({
-          ...res,
-          exp_date: nativeToNgbDate(res.exp_date)
-        });
-        console.log('this.form.value', this.form.value)
-      })
-    }
-    if (this.purchase_id) {
-      this.form.controls.purchase_order.patchValue(this.purchase_id);
-    }
+
   }
 
   submit() {
@@ -74,7 +89,7 @@ export class PurchaseOrderItemForm implements OnInit, AfterViewInit, OnChanges {
     if (this.type === 'edit' && this.purchase_item_id) serviceArgs = this.service.editPurchaseItem(this.purchase_item_id, body);
     serviceArgs.subscribe((res) => {
       this.alert.success(`Success ${this.type == 'edit' ? 'edit' : 'add'} purchasing item!`);
-      this.close.emit(true);
+      this.onClose.emit(true);
     })
   }
 }
