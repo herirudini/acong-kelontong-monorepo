@@ -1,0 +1,80 @@
+import { AfterViewInit, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AlertService } from '../../../../../shared/components/alert/alert-service';
+import { FormValidation } from '../../../../../shared/directives/form-validation/form-validation';
+import { formType } from '../../../../../types/interfaces/common.interface';
+import { PurchaseOrderService } from '../../purchase-order.service';
+import { IProduct } from '../../../../../types/interfaces/catalogue.interface';
+import { ProductService } from '../../../../catalogue/product/product.service';
+import { ActivatedRoute } from '@angular/router';
+import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { nativeToNgbDate, ngbToNativeDate } from '../../../../../shared/components/date-range-filter/date-range-filter';
+@Component({
+  selector: 'app-purchase-order-item-form',
+  imports: [ReactiveFormsModule, FormValidation, NgbDatepickerModule],
+  templateUrl: './purchase-order-item-form.html',
+  styleUrl: './purchase-order-item-form.scss'
+})
+export class PurchaseOrderItemForm implements OnInit, AfterViewInit, OnChanges {
+  @Input() type: formType = 'new';
+  @Input() purchase_id: string | null = null;
+  @Input() purchase_item_id: string | null = null;
+  @Output() close: EventEmitter<boolean> = new EventEmitter<boolean>()
+
+  isLoading: boolean = false;
+  products: IProduct[] = [];
+
+  form: FormGroup = new FormGroup({
+    purchase_order: new FormControl(this.purchase_id, [Validators.required]),
+    product: new FormControl(null, [Validators.required]),
+    exp_date: new FormControl(null),
+    purchase_qty: new FormControl(null, [Validators.required]),
+    purchase_price: new FormControl(null, [Validators.required]),
+    sell_price: new FormControl(null),
+  });
+
+  constructor(private service: PurchaseOrderService, private alert: AlertService, private productSvc: ProductService, private route: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
+    this.getRoles();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+
+  }
+
+  getRoles() {
+    this.productSvc.getProducts({ page: 0, size: 1000 }).subscribe((res) => {
+      this.products = res.list ?? [];
+    })
+  }
+
+  ngAfterViewInit(): void {
+    if (this.purchase_item_id) {
+      this.service.getPurchaseItemDetail(this.purchase_item_id).subscribe((res) => {
+        this.form.patchValue({
+          ...res,
+          exp_date: nativeToNgbDate(res.exp_date)
+        });
+        console.log('this.form.value', this.form.value)
+      })
+    }
+    if (this.purchase_id) {
+      this.form.controls.purchase_order.patchValue(this.purchase_id);
+    }
+  }
+
+  submit() {
+    if (!this.purchase_id) return this.alert.error('Missing purchase id, please reload page')
+    if (this.form.invalid) return this.alert.error('Please check your inputs');
+    const body = this.form.value;
+    body.exp_date = ngbToNativeDate(body.exp_date);
+    let serviceArgs = this.service.createPurchaseItem(body);
+    if (this.type === 'edit' && this.purchase_item_id) serviceArgs = this.service.editPurchaseItem(this.purchase_item_id, body);
+    serviceArgs.subscribe((res) => {
+      this.alert.success(`Success ${this.type == 'edit' ? 'edit' : 'add'} purchasing item!`);
+      this.close.emit(true);
+    })
+  }
+}

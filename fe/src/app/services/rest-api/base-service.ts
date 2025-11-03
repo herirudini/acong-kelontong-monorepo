@@ -27,11 +27,11 @@ export class BaseService {
   }
 
   postRequest(req: IReqMutation): Observable<any> {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
+    // const headers = {
+    //   'Content-Type': 'application/json',
+    // };
     const requestOptions = {
-      headers: new HttpHeaders(headers),
+      // headers: new HttpHeaders(headers),
     };
     if (req.qParams) {
       req.qParams['spinner'] = req.spinner

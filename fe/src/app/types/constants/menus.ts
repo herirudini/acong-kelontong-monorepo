@@ -80,6 +80,20 @@ export const PURCHASE_ORDER: IMenu = {
     labelKey: 'Purchase Order',
     permissions: ['purchasing.view', 'purchasing.create', 'purchasing.edit', 'purchasing.delete'],
 }
+export const PURCHASE_ORDER_NEW: IMenu = {
+    code: 'form',
+    url: 'form',
+    icon: '',
+    labelKey: 'New Purchase Order',
+    permissions: ['purchasing.create', 'purchasing.edit'],
+}
+export const PURCHASE_ORDER_EDIT: IMenu = {
+    code: 'form',
+    url: 'form/:po_id',
+    icon: '',
+    labelKey: 'Edit Purchase Order',
+    permissions: ['purchasing.create', 'purchasing.edit'],
+}
 export const RECEIVE_ORDER: IMenu = {
     code: 'receive-order',
     url: 'receive-order',

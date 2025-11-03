@@ -4,13 +4,14 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { IDateRangeFilter } from '../../../types/interfaces/common.interface';
 
-function ngbToNativeDate(ngbDate: NgbDate | null): Date | undefined {
+export function ngbToNativeDate(ngbDate: NgbDate | null): Date | undefined {
   if (!ngbDate) return undefined;
   return new Date(ngbDate.year, ngbDate.month - 1, ngbDate.day);
 }
 
-function nativeToNgbDate(date?: Date): NgbDate | null {
+export function nativeToNgbDate(date?: Date): NgbDate | null {
   if (!date) return null
+  if (typeof date !== typeof Date) date = new Date(date)
   return new NgbDate(
     date.getFullYear(),
     date.getMonth() + 1, // NgbDate months are 1-based (January is 1), while Date months are 0-based (January is 0)

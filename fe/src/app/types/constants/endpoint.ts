@@ -46,6 +46,15 @@ export const Endpoint = {
     return `${api}supplier/${id}`
   },
 
+  // Purchasing Endpoint
+  PURCHASING: `${api}purchasing`,
+  PURCHASING_ID: (id: string) => {
+    return `${api}purchasing/${id}`
+  },
+  PURCHASING_ITEM: `${api}purchasing-item`,
+  PURCHASING_ITEM_ID: (id: string) => {
+    return `${api}purchasing-item/${id}`
+  },
 
   // /* Account endpoints */
   // ACCOUNT_SETUP: `${api}account/setup`,
