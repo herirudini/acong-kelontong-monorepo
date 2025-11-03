@@ -18,7 +18,7 @@
                         class="text-white pointer btn btn-warning">
                         <i class="fa-solid fa-pencil"></i>
                     </a>
-                    <button (click)="deletePurchasing(item)" class="text-white pointer btn btn-danger"
+                    <button (click)="deletePurchasing(item._id)" class="text-white pointer btn btn-danger"
                         [disabled]="item.status !== 'REQUEST'">
                         <i class="fa-solid fa-trash"></i>
                     </button>

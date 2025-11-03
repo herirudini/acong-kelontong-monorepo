@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
+import { ColumnProps, GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { IUser } from '../../../types/interfaces/user.interface';
 import { UserService } from './user-service';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
@@ -41,45 +41,35 @@ export class User implements OnInit {
     size: 10,
     totalPages: 1
   };
-  columns = [
+  columns: Array<ColumnProps> = [
     {
       label: 'Name',
       id: 'name',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'first_name',
       sort: true,
-      minWidth: '4ch',
-      maxWidth: '4ch'
     },
     {
       label: 'Role',
       id: 'role.role_name',
       extraHeaderClass: 'uppercase-text',
-      minWidth: '5ch',
-      maxWidth: '5ch'
     },
     {
       label: 'Email',
       id: 'email',
       extraHeaderClass: 'uppercase-text',
-      minWidth: '5ch',
-      maxWidth: '5ch'
     },
     {
       label: 'Status',
       id: 'verified',
       extraHeaderClass: 'uppercase-text',
       customElementId: 'status',
-      minWidth: '3ch',
-      maxWidth: '3ch'
     },
     {
       label: 'Action',
       id: 'action',
       extraHeaderClass: 'uppercase-text w-100 d-flex justify-content-end',
       customElementId: 'action',
-      minWidth: '3ch',
-      maxWidth: '3ch'
     }
   ]
 

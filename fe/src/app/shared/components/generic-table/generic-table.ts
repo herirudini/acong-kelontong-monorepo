@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   Component,
   ContentChildren,
@@ -16,8 +16,7 @@ import { Subject, debounceTime, distinctUntilChanged } from 'rxjs';
 import { TableColumn } from '../../directives/table-column/table-column';
 import { IDateRangeFilter, IPaginationOutput, ISelectFilter, ISelectValue, ISort, TSortDir } from '../../../types/interfaces/common.interface';
 import { getNestedProperty } from '../../../utils/helper';
-import { DATE_FORMAT, SORT_DIR } from '../../../types/constants/common.constants';
-import { DynamicPipe } from '../../pipes/dynamic-pipe/dynamic-pipe';
+import { CURRENCY_FORMAT, DATE_FORMAT, SORT_DIR } from '../../../types/constants/common.constants';
 import { FormsModule } from '@angular/forms';
 import { SelectFilter } from '../select-filter/select-filter';
 import { DateRangeFilter } from '../date-range-filter/date-range-filter';
@@ -30,20 +29,8 @@ export interface ColumnProps {
   label: string;
   sort?: boolean;
   customElementId?: string; // Element ID for dynamic HTML content
-  width?: string;
-  minWidth?: string;
-  maxWidth?: string;
-  customValueTransformer?: (val: any) => any;
-  customHeaderPipe?: {
-    pipeType: Type<PipeTransform>;   // 👈 use Type of a Pipe
-    pipeArgs: any[];
-  },
-  customPipe?: {
-    pipeType: Type<PipeTransform>;   // 👈 use Type of a Pipe
-    pipeArgs: any[];
-  },
   extraHeaderClass?: string;
-  dataType?: any;
+  dataType?: 'CURRENCY'|'DATE';
 }
 
 export interface ITableQueryData extends ISort, IPaginationOutput {
@@ -58,11 +45,14 @@ export const defaultComonQueryData = {
 
 @Component({
   selector: 'app-generic-table',
-  imports: [CommonModule, DynamicPipe, FormsModule, SelectFilter, DateRangeFilter, Pagination, SortIcon],
+  imports: [CommonModule, FormsModule, SelectFilter, DateRangeFilter, Pagination, SortIcon],
   templateUrl: './generic-table.html',
   styleUrl: './generic-table.scss'
 })
 export class GenericTable implements OnInit, OnDestroy {
+  DATE_FORMAT = DATE_FORMAT;
+  CURRENCY_FORMAT = CURRENCY_FORMAT;
+
   // trackByFn = trackByFn;
   @Input() columns: Array<ColumnProps> = [];
   @Input() data: any[] = [];
@@ -92,16 +82,13 @@ export class GenericTable implements OnInit, OnDestroy {
   @Output() OnDataRefresh: EventEmitter<ITableQueryData> = new EventEmitter<ITableQueryData>();
   @Output() DownloadButtonClicked: EventEmitter<any> = new EventEmitter<any>();
   @Output() OnCheckboxChange: EventEmitter<any> = new EventEmitter<any>();
-  //for costume column
+
+  //for costum column
   @ContentChildren(TableColumn)
-  columnDefinitions: QueryList<TableColumn> = {} as QueryList<TableColumn>;
+  columnDefinitions: QueryList<TableColumn> = {} as QueryList<TableColumn>; // This contains elements with appTableColumn directive, needed for custom column
 
   private searchSubject = new Subject<string>();
   private readonly debounceTimeMs = 500; // Set the debounce time (in milliseconds)
-
-  // constructor(public datePipe: DatePipe) { }
-
-  datePipe: Type<PipeTransform> = DatePipe;
 
   public get columnTemplates(): { [key: string]: TemplateRef<any> } {
     if (this.columnDefinitions != null) {
@@ -145,19 +132,6 @@ export class GenericTable implements OnInit, OnDestroy {
 
   downloadButtonClicked() {
     this.DownloadButtonClicked.emit();
-  }
-
-  isDateColumn(column: ColumnProps): boolean {
-    return column?.dataType === typeof Date;
-  }
-
-  getDateFormat(column: ColumnProps): string {
-    return DATE_FORMAT;
-  }
-
-  transformValueIfNeeded(value: any, column: ColumnProps): any {
-    return column.customValueTransformer ?
-      column.customValueTransformer(value) : value;
   }
 
   getRowDataValue(rowData: any, nestedPropertyName: string): any {

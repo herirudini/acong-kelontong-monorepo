@@ -3,13 +3,12 @@ import { IPurchasingItem } from '../../../../types/interfaces/procurement.interf
 import { PurchaseOrderService } from '../purchase-order.service';
 import { AlertService } from '../../../../shared/components/alert/alert-service';
 import { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
-import { GenericTable, ITableQueryData } from '../../../../shared/components/generic-table/generic-table';
+import { ColumnProps, GenericTable, ITableQueryData } from '../../../../shared/components/generic-table/generic-table';
 import { ConfirmModal } from '../../../../shared/components/modals/confirm-modal/confirm-modal';
 import { TableColumn } from '../../../../shared/directives/table-column/table-column';
 import { SORT_DIR } from '../../../../types/constants/common.constants';
 import { IPaginationInput, formType } from '../../../../types/interfaces/common.interface';
 import { PurchaseOrderItemForm } from './purchase-order-item-form/purchase-order-item-form';
-import { CurrencyPipe } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -35,15 +34,13 @@ export class PurchaseOrderItem implements OnInit {
     size: 10,
     totalPages: 1
   };
-  columns = [
+  columns: Array<ColumnProps> = [
     {
       label: 'Product',
       id: 'product_name',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'product_name',
       sort: true,
-      minWidth: '4ch',
-      maxWidth: '4ch'
     },
     {
       label: 'Supplier',
@@ -51,57 +48,39 @@ export class PurchaseOrderItem implements OnInit {
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'supplier_name',
       sort: true,
-      minWidth: '4ch',
-      maxWidth: '4ch'
     },
     {
       label: 'Purchase QTY',
       id: 'purchase_qty',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'purchase_qty',
-      minWidth: '2ch',
-      maxWidth: '2ch'
     },
     {
       label: 'Purchase Price',
       id: 'purchase_price',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'purchase_price',
-      minWidth: '4ch',
-      maxWidth: '4ch',
-      customPipe: {
-        pipeType: CurrencyPipe,
-        pipeArgs: ['IDR']
-      },
+      dataType: 'CURRENCY'
     },
     {
       label: 'Sale Price',
       id: 'sell_price',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'sell_price',
-      minWidth: '4ch',
-      maxWidth: '4ch',
-      customPipe: {
-        pipeType: CurrencyPipe,
-        pipeArgs: ['IDR']
-      },
+      dataType: 'CURRENCY'
     },
     {
       label: 'Expired Date',
       id: 'exp_date',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'exp_date',
-      minWidth: '4ch',
-      maxWidth: '4ch',
-      dataType: typeof Date
+      dataType: 'DATE'
     },
     {
       label: 'Action',
       id: 'action',
       extraHeaderClass: 'uppercase-text w-100 d-flex justify-content-end',
       customElementId: 'action',
-      minWidth: '3ch',
-      maxWidth: '3ch'
     }
   ]
 

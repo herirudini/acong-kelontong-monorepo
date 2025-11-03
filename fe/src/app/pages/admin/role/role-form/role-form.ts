@@ -7,6 +7,7 @@ import { ROLE } from '../../../../types/constants/menus';
 import { FormValidation } from '../../../../shared/directives/form-validation/form-validation';
 import { AlertService } from '../../../../shared/components/alert/alert-service';
 import { formType } from '../../../../types/interfaces/common.interface';
+import { ColumnProps } from '../../../../shared/components/generic-table/generic-table';
 
 @Component({
   selector: 'app-role-form',
@@ -19,7 +20,7 @@ export class RoleForm implements OnInit {
   @Input() type: formType = 'new';
   @Input() id?: string;
 
-  columns = [
+   columns: Array<ColumnProps> = [
     {
       label: 'Module',
       id: 'module',

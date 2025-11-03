@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
+import { ColumnProps, GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { IRole } from '../../../types/interfaces/user.interface';
 import { IPaginationInput } from '../../../types/interfaces/common.interface';
@@ -24,20 +24,17 @@ export class Role implements OnInit {
     size: 10,
     totalPages: 1
   };
-  columns = [
+   columns: Array<ColumnProps> = [
     {
       label: 'Role Name',
       id: 'role_name',
       extraHeaderClass: 'uppercase-text',
-      minWidth: '2ch',
     },
     {
       label: 'Action',
       id: 'action',
       extraHeaderClass: 'uppercase-text w-100 d-flex justify-content-end',
       customElementId: 'action',
-      minWidth: '3ch',
-      maxWidth: '3ch'
     }
   ]
   defaultQuery = {

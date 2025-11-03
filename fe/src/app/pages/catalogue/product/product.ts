@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
+import { ColumnProps, GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { formType, IPaginationInput, ISelectFilter } from '../../../types/interfaces/common.interface';
 import { SORT_DIR } from '../../../types/constants/common.constants';
@@ -28,23 +28,19 @@ export class Product implements OnInit {
     size: 10,
     totalPages: 1
   };
-  columns = [
+   columns: Array<ColumnProps> = [
     {
       label: 'Product Name',
       id: 'product_name',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'product_name',
       sort: true,
-      minWidth: '4ch',
-      maxWidth: '4ch'
     },
     {
       label: 'Brand',
       id: 'brand.brand_name',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'brand.brand_name',
-      minWidth: '4ch',
-      maxWidth: '4ch'
     },
     {
       label: 'UOM',
@@ -52,31 +48,24 @@ export class Product implements OnInit {
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'unit_of_measure',
       sort: true,
-      minWidth: '4ch',
-      maxWidth: '4ch'
     },
     {
       label: 'Barcode',
       id: 'barcode',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'barcode',
-      minWidth: '4ch',
-      maxWidth: '4ch'
     },
     {
       label: 'Description',
       id: 'product_description',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'product_description',
-      maxWidth: '7ch'
     },
     {
       label: 'Action',
       id: 'action',
       extraHeaderClass: 'uppercase-text w-100 d-flex justify-content-end',
       customElementId: 'action',
-      minWidth: '3ch',
-      maxWidth: '3ch'
     }
   ]
 

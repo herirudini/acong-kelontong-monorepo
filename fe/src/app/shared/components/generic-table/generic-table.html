@@ -5,7 +5,8 @@
             <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-4">
                 @if (filterSelect) {
                 <div class="flex-1">
-                    <app-select-filter [filterSelect]="filterSelect" (OnChangeFilter)="filterSelectChange($event)"></app-select-filter>
+                    <app-select-filter [filterSelect]="filterSelect"
+                        (OnChangeFilter)="filterSelectChange($event)"></app-select-filter>
                 </div>
                 }
 
@@ -74,8 +75,8 @@
                                 @if(column.sort) {
                                 <app-sort-icon [sortId]="column.id" [sortVal]="{sortBy, sortDir}"></app-sort-icon>
                                 }
-                                <div [ngClass]="'whitespace-nowrap ' + ' ' + column.extraHeaderClass">{{ column.label | dynamicPipe:
-                                column.customHeaderPipe?.pipeType:column.customHeaderPipe?.pipeArgs ?? [] }}</div>
+                                <div [ngClass]="'whitespace-nowrap ' + ' ' + column.extraHeaderClass">{{ column.label }}
+                                </div>
                             </div>
                         </th>
                         }
@@ -118,12 +119,17 @@
                         <ng-container [ngTemplateOutlet]="columnTemplates[column.customElementId]"
                             [ngTemplateOutletContext]="{
                           $implicit: row,
-                          value: transformValueIfNeeded(getRowDataValue(row, column.id), column)
+                          value: getRowDataValue(row, column.id)
                         }">
                         </ng-container>
                         } @else {
-                        <!-- | dynamicPipe: (isDateColumn(column) ? datePipe : null): [getDateFormat(column)] -->
-                        {{ ( transformValueIfNeeded(getRowDataValue(row, column.id), column) | dynamicPipe: (isDateColumn(column) ? datePipe : undefined): [getDateFormat(column)] | dynamicPipe: column.customPipe?.pipeType:column.customPipe?.pipeArgs ?? []) || "-" }}
+                        @if (!column.dataType) {
+                        {{ ( getRowDataValue(row, column.id)) || "-"}}
+                        } @else if (column.dataType === 'DATE') {
+                        {{ ( getRowDataValue(row, column.id) | date: DATE_FORMAT) || "-"}}
+                        } @else {
+                        {{ ( getRowDataValue(row, column.id) | currency:CURRENCY_FORMAT) || "-"}}
+                        }
                         }
                     </td>
                     }

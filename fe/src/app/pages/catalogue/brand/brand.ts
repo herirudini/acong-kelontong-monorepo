@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
+import { ColumnProps, GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { formType, IPaginationInput, ISelectFilter } from '../../../types/interfaces/common.interface';
 import { SORT_DIR } from '../../../types/constants/common.constants';
@@ -21,37 +21,32 @@ export class Brand implements OnInit {
 
   isLoading: boolean = false;
   listBrand: IBrand[] = [];
-  
+
   pagination: IPaginationInput = {
     page: 1,
     total: 100,
     size: 10,
     totalPages: 1
   };
-  columns = [
+  columns: Array<ColumnProps> = [
     {
       label: 'Name',
       id: 'brand_name',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'brand_name',
       sort: true,
-      minWidth: '4ch',
-      maxWidth: '4ch'
     },
     {
       label: 'Description',
       id: 'brand_description',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'brand_description',
-      maxWidth: '7ch'
     },
     {
       label: 'Action',
       id: 'action',
       extraHeaderClass: 'uppercase-text w-100 d-flex justify-content-end',
       customElementId: 'action',
-      minWidth: '3ch',
-      maxWidth: '3ch'
     }
   ]
 
@@ -98,7 +93,7 @@ export class Brand implements OnInit {
           size: res.meta?.size ?? 0,
           totalPages: res.meta?.totalPages ?? 0
         }
-        console.log({listBrand: this.listBrand})
+        console.log({ listBrand: this.listBrand })
         this.isLoading = false;
       }, error: () => {
         this.isLoading = false;

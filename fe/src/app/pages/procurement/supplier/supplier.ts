@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit, ViewChild } from '@angular/core';
-import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
+import { ColumnProps, GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { formType, IPaginationInput, ISelectFilter } from '../../../types/interfaces/common.interface';
 import { SORT_DIR } from '../../../types/constants/common.constants';
@@ -21,51 +21,44 @@ export class Supplier implements OnInit {
 
   isLoading: boolean = false;
   listSupplier: ISupplier[] = [];
-  
+
   pagination: IPaginationInput = {
     page: 1,
     total: 100,
     size: 10,
     totalPages: 1
   };
-  columns = [
+  columns: Array<ColumnProps> = [
     {
       label: 'Name',
       id: 'supplier_name',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'supplier_name',
       sort: true,
-      minWidth: '4ch',
-      maxWidth: '4ch'
     },
     {
       label: 'Phone',
       id: 'supplier_phone',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'supplier_phone',
-      maxWidth: '4ch'
     },
     {
       label: 'Email',
       id: 'supplier_email',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'supplier_email',
-      maxWidth: '4ch'
     },
     {
       label: 'Address',
       id: 'supplier_address',
       extraHeaderClass: 'uppercase-text',
       backendPropName: 'supplier_address',
-      maxWidth: '4ch'
     },
     {
       label: 'Action',
       id: 'action',
       extraHeaderClass: 'uppercase-text w-100 d-flex justify-content-end',
       customElementId: 'action',
-      minWidth: '3ch',
-      maxWidth: '3ch'
     }
   ]
 
@@ -112,7 +105,7 @@ export class Supplier implements OnInit {
           size: res.meta?.size ?? 0,
           totalPages: res.meta?.totalPages ?? 0
         }
-        console.log({listSupplier: this.listSupplier})
+        console.log({ listSupplier: this.listSupplier })
         this.isLoading = false;
       }, error: () => {
         this.isLoading = false;

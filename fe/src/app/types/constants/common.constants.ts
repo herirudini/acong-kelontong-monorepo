@@ -6,6 +6,7 @@ export const errCodes = {
 }
 
 export const DATE_FORMAT = 'dd/MM/yyyy';
+export const CURRENCY_FORMAT = 'IDR';
 
 export enum SORT_DIR {
   ASC = 'asc',

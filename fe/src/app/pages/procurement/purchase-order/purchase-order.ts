@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
+import { ColumnProps, GenericTable, ITableQueryData } from '../../../shared/components/generic-table/generic-table';
 import { TableColumn } from '../../../shared/directives/table-column/table-column';
 import { IPaginationInput, ISelectFilter } from '../../../types/interfaces/common.interface';
 import { NgbModalOptions } from '@ng-bootstrap/ng-bootstrap';
@@ -7,7 +7,6 @@ import { RouterLink } from '@angular/router';
 import { ConfirmModal } from '../../../shared/components/modals/confirm-modal/confirm-modal';
 import { IPurchasing } from '../../../types/interfaces/procurement.interface';
 import { PurchaseOrderService } from './purchase-order.service';
-import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-purchase-order',
@@ -56,44 +55,34 @@ export class PurchaseOrder implements OnInit {
   // invoice_photo?: string;
   // total_purchase_price: number;
   // items?: IPurchasingItem[];
-  columns = [
+  columns: Array<ColumnProps> = [
     {
       label: 'Supplier Name',
       id: 'supplier_name',
       extraHeaderClass: 'uppercase-text',
-      minWidth: '5ch',
     },
     {
       label: 'Due Date',
       id: 'due_date',
       extraHeaderClass: 'uppercase-text',
-      minWidth: '3ch',
-      dataType: typeof Date
+      dataType: 'DATE'
     },
     {
       label: 'Status',
       id: 'status',
       extraHeaderClass: 'uppercase-text',
-      minWidth: '3ch',
-      maxWidth: '3ch'
     },
     {
       label: 'Total Purchase Price',
       id: 'total_purchase_price',
       extraHeaderClass: 'uppercase-text',
-      minWidth: '5ch',
-      customPipe: {
-        pipeType: CurrencyPipe,
-        pipeArgs: ['IDR']
-      },
+      dataType: 'CURRENCY'
     },
     {
       label: 'Action',
       id: 'action',
       extraHeaderClass: 'uppercase-text w-100 d-flex justify-content-end',
       customElementId: 'action',
-      minWidth: '3ch',
-      maxWidth: '3ch'
     }
   ]
   defaultQuery = {
@@ -118,6 +107,7 @@ export class PurchaseOrder implements OnInit {
       search: evt.search,
     }).subscribe({
       next: (res) => {
+        console.log({ res })
         this.listPurchasing = res.list ?? [];
         this.pagination = {
           page: res.meta?.page ?? 0,
