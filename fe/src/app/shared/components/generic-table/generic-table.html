@@ -67,7 +67,7 @@
                         }
 
                         @for (column of columns; track $index) {
-                        <th [class.pointer]="column.sort" [ngStyle]="generateInlineStyle(column)"
+                        <th [class.pointer]="column.sort"
                             (click)="column.sort && total > 0 ? sortChanged(column.id) : $event.stopPropagation()"
                             [ngClass]="'whitespace-nowrap'">
                             <div class="d-flex gap-1">
@@ -88,7 +88,7 @@
                 @for (_ of [].constructor(size); track $index) {
                 <tr>
                     @for (_ of [].constructor(columns.length+1); let i = $index; track $index) {
-                    <td [ngStyle]="generateInlineStyle(columns[i])">
+                    <td>
                         <div class="badge-loading"></div>
                     </td>
                     }
@@ -111,7 +111,7 @@
                     }
 
                     @for (column of columns; track $index) {
-                    <td [ngStyle]="generateInlineStyle(column)" [ngClass]="{
+                    <td [ngClass]="{
                       'whitespace-nowrap': column.customElementId === 'action'
                     }">
                         @if (column.customElementId) {
@@ -123,8 +123,7 @@
                         </ng-container>
                         } @else {
                         <!-- | dynamicPipe: (isDateColumn(column) ? datePipe : null): [getDateFormat(column)] -->
-                        {{ ( transformValueIfNeeded(getRowDataValue(row, column.id), column) | dynamicPipe:
-                        column.customPipe?.pipeType:column.customPipe?.pipeArgs ?? []) || "-" }}
+                        {{ ( transformValueIfNeeded(getRowDataValue(row, column.id), column) | dynamicPipe: (isDateColumn(column) ? datePipe : undefined): [getDateFormat(column)] | dynamicPipe: column.customPipe?.pipeType:column.customPipe?.pipeArgs ?? []) || "-" }}
                         }
                     </td>
                     }

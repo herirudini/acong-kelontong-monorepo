@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import {
   Component,
   ContentChildren,
@@ -101,7 +101,7 @@ export class GenericTable implements OnInit, OnDestroy {
 
   // constructor(public datePipe: DatePipe) { }
 
-  // datePipe: Type<PipeTransform> = DatePipe;
+  datePipe: Type<PipeTransform> = DatePipe;
 
   public get columnTemplates(): { [key: string]: TemplateRef<any> } {
     if (this.columnDefinitions != null) {
@@ -145,28 +145,6 @@ export class GenericTable implements OnInit, OnDestroy {
 
   downloadButtonClicked() {
     this.DownloadButtonClicked.emit();
-  }
-
-  generateInlineStyle(column: ColumnProps): any {
-    const iStyle: any = {};
-    if (!column) return iStyle;
-    column.minWidth ??= column.width;
-    column.maxWidth ??= column.width;
-
-    [
-      ['width', 'width'],
-      ['minWidth', 'min-width'],
-      ['maxWidth', 'max-width'],
-    ].forEach(([prop, cssProp]: string[]) => {
-      const val = column[prop as keyof ColumnProps];
-
-      // deliberate use of != instead of !== to include undefined
-      if (val != null) {
-        iStyle[cssProp] = val;
-      }
-    })
-
-    return iStyle;
   }
 
   isDateColumn(column: ColumnProps): boolean {
