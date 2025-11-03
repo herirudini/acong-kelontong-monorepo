@@ -4,7 +4,7 @@ import { BaseResponse } from 'src/utils/base-response';
 import { PurchasingService } from './purchasing.service';
 import type { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PurchasingDto, PurchaseOrderDto, ReceiveOrderItemDto } from './purchasing.dto';
+import { PurchasingDto, PurchaseOrderDto, ReceiveOrderItemDto, ListPurchasingItemsDTO, PurchasingItemDto } from './purchasing.dto';
 import { Types } from 'mongoose';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -188,5 +188,81 @@ export class PurchasingController {
       return BaseResponse.error({ res, err });
     }
   }
+
+  @Get(':purchasing_id/items')
+  async listPurchasingItem(
+    @Query() query: ListPurchasingItemsDTO,
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @Res() res: Response,
+  ) {
+    try {
+      query.purchasing_id = purchasingId;
+      const { data, meta } = await this.service.listPurchasingItems(query);
+      return BaseResponse.success({ res, option: { message: 'Success get list purchasing', list: data, meta } });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
 }
 
+@Controller('purchasing-item')
+export class PurchasingItemController {
+
+  constructor(
+    private readonly service: PurchasingService,
+  ) { }
+  
+  @Post('')
+  async createPurchaseItem(
+    @Body() body: PurchasingItemDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const purchaseItem = await this.service.createPurchasingItem(body);
+      return BaseResponse.success({ res, option: { message: "Success create purchaseItem", detail: purchaseItem } });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @Put(':purchase_item_id')
+  async editPurchaseItem(
+    @Param('purchase_item_id') purchaseItemId: Types.ObjectId,
+    @Body() body: PurchasingItemDto,
+    @Res() res: Response,
+  ) {
+    try {
+      const purchaseItem = await this.service.editPurchasingItem(purchaseItemId, body);
+      return BaseResponse.success({ res, option: { message: "Success edit purchaseItem", detail: purchaseItem } });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @Get(':purchase_item_id')
+  async detailPurchaseItem(
+    @Param('purchase_item_id') purchaseItemId: Types.ObjectId,
+    @Res() res: Response,
+  ) {
+    try {
+      const purchaseItem = await this.service.detailPurchasingItem(purchaseItemId);
+      return BaseResponse.success({ res, option: { message: "Success get detail purchaseItem", detail: purchaseItem } });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+
+  @Delete(':purchase_item_id')
+  async deletePurchaseItem(
+    @Param('purchase_item_id') purchaseItemId: Types.ObjectId,
+    @Res() res: Response,
+  ) {
+    try {
+      const purchaseItem = await this.service.deletePurchasingItem(purchaseItemId);
+      return BaseResponse.success({ res, option: { message: "Success get detail purchaseItem", detail: purchaseItem } });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+}

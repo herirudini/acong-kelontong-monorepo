@@ -45,12 +45,6 @@ export class PurchasingService {
 
     const createdPurchase = purchase[0];
 
-    let total_price = 0;
-    if (data.purchase_item && data.purchase_item.length > 0) {
-      total_price = (await this.bulkUpdatePurchasingItems(createdPurchase._id, data.purchase_item, session)).total_price;
-    }
-
-    createdPurchase.total_purchase_price = total_price;
     await createdPurchase.save({ session });
     await session.commitTransaction();
     await session.endSession();
@@ -58,13 +52,24 @@ export class PurchasingService {
   }
 
 
-  async createPurchasingItem(data: PurchasingItemDto, sessionIn?: ClientSession): Promise<PurchasingItem | undefined> {
+  async createPurchasingItem(dto: PurchasingItemDto, sessionIn?: ClientSession): Promise<PurchasingItem | undefined> {
     return this.global.withTransaction(async (session) => {
-      const product = await this.productModel.findById(data.product).session(session);
+      const product = await this.productModel.findById(dto.product).session(session);
       if (!product) {
-        return BaseResponse.notFound({ err: `createPurchasingItem Product not found: ${data.product_name}` });
+        return BaseResponse.notFound({ err: `createPurchasingItem Product not found` });
+      }
+      const purchasing = await this.purchasingModel.findById(dto.purchase_order).session(session);
+      if (!purchasing) {
+        return BaseResponse.notFound({ err: `createPurchasingItem Purchasing not found` });
+      }
+      const data = {
+        ...dto,
+        supplier_name: purchasing.supplier_name,
+        product_name: product.product_name,
       }
       const created = (await this.purchasingItemModel.create([data], { session }))[0];
+      if (!created) return BaseResponse.notFound({ err: 'editPurchasingItem created not found' });
+      await this.updatePurchasingTotalPrice(created?.purchase_order, session);
       return created;
     }, sessionIn)
   }
@@ -77,11 +82,6 @@ export class PurchasingService {
 
       const supplier = await this.supplierModel.findById(data.supplier).session(session);
       if (!supplier) return BaseResponse.notFound({ err: 'Supplier not found' });
-
-      let totalPrice = 0;
-      if (data.purchase_item && data.purchase_item.length > 0) {
-        totalPrice = (await this.bulkUpdatePurchasingItems(id, data.purchase_item, session)).total_price;
-      }
 
       const statDrop = ['status']
       const statReceive = [...statDrop, 'invoice_number', 'invoice_photo']
@@ -106,7 +106,6 @@ export class PurchasingService {
       fields.forEach((field: string) => {
         if (field === 'supplier' && supplier._id) purchase.supplier = supplier._id;
         if (field === 'supplier_name' && supplier.supplier_name) purchase.supplier_name = supplier.supplier_name;
-        if (field === 'total_purchase_price') purchase.total_purchase_price = totalPrice;
         if (field === 'due_date' && data.due_date) purchase.due_date = data.due_date;
         if (field === 'invoice_number' && data.invoice_number) purchase.invoice_number = data.invoice_number;
         if (field === 'invoice_photo' && data.invoice_photo) purchase.invoice_photo = data.invoice_photo;
@@ -120,13 +119,21 @@ export class PurchasingService {
 
   async editPurchasingItem(
     id: Types.ObjectId,
-    data: PurchasingItemDto,
+    dto: PurchasingItemDto,
     sessionIn?: ClientSession
   ): Promise<PurchasingItem | undefined> {
     return this.global.withTransaction(async (session) => {
-      const product = await this.productModel.findById(data.product).session(session);
-      if (!product) return BaseResponse.notFound({ err: `Product not found: ${data.product_name}` });
-
+      const purchasing = await this.purchasingModel.findById(dto.purchase_order).session(session);
+      if (!purchasing) {
+        return BaseResponse.notFound({ err: `editPurchasingItem Purchasing not found` });
+      }
+      const product = await this.productModel.findById(dto.product).session(session);
+      if (!product) return BaseResponse.notFound({ err: `editPurchasingItem Product not found` });
+      const data = {
+        ...dto,
+        supplier_name: purchasing.supplier_name,
+        product_name: product.product_name,
+      }
       const updatedItem = await this.purchasingItemModel.findByIdAndUpdate(
         id,
         { $set: data },
@@ -135,6 +142,8 @@ export class PurchasingService {
           runValidators: true,
         },
       ).session(session);
+      if (!updatedItem) return BaseResponse.notFound({ err: 'editPurchasingItem updatedItem not found' });
+      await this.updatePurchasingTotalPrice(updatedItem?.purchase_order, session);
       return updatedItem || undefined;
     }, sessionIn);
   }
@@ -256,8 +265,25 @@ export class PurchasingService {
   async deletePurchasingItem(id: Types.ObjectId, sessionIn?: ClientSession): Promise<PurchasingItem | undefined> {
     return this.global.withTransaction(async (session) => {
       const deletedPurchasingItem = await this.purchasingItemModel.findByIdAndDelete(id).session(session);
+      if (!deletedPurchasingItem) return BaseResponse.notFound({ err: 'deletePurchasingItem not found' });
+      await this.updatePurchasingTotalPrice(deletedPurchasingItem?.purchase_order, session);
       return deletedPurchasingItem || undefined;
     }, sessionIn);
+  }
+
+  async updatePurchasingTotalPrice(purchase_order: Types.ObjectId, sessionIn?: ClientSession): Promise<Purchasing | undefined> {
+    return this.global.withTransaction(async (session) => {
+      const purchase = await this.purchasingModel.findById(purchase_order).session(session);
+      if (!purchase) return BaseResponse.notFound({ err: 'Purchasing not found' });
+      const items = await this.purchasingItemModel.find({ purchase_order: purchase_order }).session(session).lean();
+      if (!items || items.length < 1) {
+        return undefined;
+      }
+      const total_price = items.reduce((sum, item) => sum + item.purchase_qty * item.purchase_price, 0);
+      purchase.total_purchase_price = total_price;
+      const result = await purchase.save({ session });
+      return result
+    }, sessionIn)
   }
 
   async purchaseOrder(id: Types.ObjectId, dto: PurchaseOrderDto): Promise<(Purchasing & { items: { data: PurchasingItem[]; meta: IPaginationRes; } }) | undefined> {

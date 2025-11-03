@@ -11,12 +11,6 @@ export class PurchasingItemDto {
   @IsMongoId() // ✅ checks it's a valid ObjectId string
   @IsNotEmpty()
   product: Types.ObjectId;
-  @IsString()
-  @IsNotEmpty()
-  supplier_name: string;
-  @IsString()
-  @IsNotEmpty()
-  product_name: string;
   @IsDate()
   exp_date: string;
   @IsNumber()
@@ -28,27 +22,6 @@ export class PurchasingItemDto {
   @IsNumber()
   sell_price: number;
 }
-export class PurchasingDto extends PaginationDto {
-  @IsMongoId() // ✅ checks it's a valid ObjectId string
-  @IsNotEmpty()
-  supplier?: Types.ObjectId;
-  @IsString()
-  @IsNotEmpty()
-  supplier_name?: string;
-  @IsDate()
-  @IsNotEmpty()
-  due_date?: Date;
-  @IsString()
-  invoice_number?: string;
-  @IsNumber()
-  total_purchase_price?: number;
-  @IsArray()
-  @Type(() => PurchasingItemDto)
-  purchase_item?: PurchasingItemDto[];
-  @IsOptional()
-  @IsString()
-  invoice_photo?: string;
-}
 export class PurchaseOrderDto {
   @IsOptional()
   @IsString()
@@ -59,6 +32,15 @@ export class PurchaseOrderDto {
   @IsArray()
   @Type(() => PurchasingItemDto)
   purchase_item: PurchasingItemDto[];
+}
+export class PurchasingDto extends PurchaseOrderDto {
+  @IsMongoId() // ✅ checks it's a valid ObjectId string
+  @IsNotEmpty()
+  supplier?: Types.ObjectId;
+  @IsString()
+  @IsDate()
+  @IsNotEmpty()
+  due_date?: Date;
 }
 export class ReceiveOrderItemDto {
   @IsMongoId() // ✅ checks it's a valid ObjectId string
