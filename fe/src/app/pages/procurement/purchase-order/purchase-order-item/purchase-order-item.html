@@ -1,0 +1,40 @@
+<div class="card-body">
+  <div class="card-header mb-4">
+    <div class="d-flex flex-row justify-content-between gap-4">
+      <h3 class="card-title">Purchase Item List</h3>
+      @if (type !== 'view') {
+      <button class="btn btn-primary" (click)="showForm('new')">Add Item</button>
+      }
+    </div>
+  </div>
+  <app-generic-table ngSkipHydration [columns]="columns" [data]="listPurchasingItem" [usePagination]="true"
+    [useSearch]="true" [total]="pagination.total" (OnDataRefresh)="getList($event)" [isLoading]="isLoading">
+    <div appTableColumn customColumnId="action">
+      <ng-template let-item>
+        <div class="d-flex flex-row gap-1 justify-content-end">
+          <a (click)="showForm('view', item._id)" class="text-white pointer btn btn-secondary">
+            <i class="fa-solid fa-eye"></i>
+          </a>
+          @if (type !== 'view') {
+          <button (click)="showForm('edit', item._id)" class="text-white pointer btn btn-warning">
+            <i class="fa-solid fa-pencil"></i>
+          </button>
+          <button (click)="deletePurchaseItem(item)" class="text-white pointer btn btn-danger">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+          }
+        </div>
+      </ng-template>
+    </div>
+  </app-generic-table>
+</div>
+<div class="card-footer d-flex gap-2">
+  <button class="btn btn-secondary" type="button" (click)="back.emit()">Back</button>
+  <button class="btn btn-primary" type="button" (click)="nextStep.emit()">Next</button>
+</div>
+
+<app-confirm-modal #ConfirmModal></app-confirm-modal>
+<ng-template #POItemForm>
+  <app-purchase-order-item-form [type]="form_type" [purchase_id]="purchase_id"
+    [purchase_item_id]="purchase_item_id" (onClose)="close($event)"></app-purchase-order-item-form>
+</ng-template>

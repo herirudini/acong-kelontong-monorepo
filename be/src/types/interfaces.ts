@@ -1,10 +1,11 @@
 import { UserDocument } from "src/modules/user/user.schema";
 import type { Response } from 'express';
 import { RoleDocument } from 'src/modules/role/role.schema';
+import { Types } from 'mongoose';
 
 export interface IRefreshTokenPayload {
-  id: string;
-  id0: string;
+  id: Types.ObjectId;
+  id0: Types.ObjectId;
 }
 
 export interface ITokenPayload extends IRefreshTokenPayload {
@@ -23,20 +24,23 @@ export interface IEditUser {
   last_name?: string;
   email?: string;
   password?: string;
-  role?: string;
+  role?: Types.ObjectId;
 }
 
-export type TModules =
+export type TModules =  //This is a list of API Endpoint permission
+  'inventory.view' | 'inventory.create' | 'inventory.edit' | 'inventory.delete' |
+  'showcase.view' | 'showcase.create' | 'showcase.edit' | 'showcase.delete' |
+  'purchasing.view' | 'purchasing.create' | 'purchasing.edit' | 'purchasing.delete' |
   'cashier.view' | 'cashier.create' | 'cashier.edit' | 'cashier.delete' |
-  'products.view' | 'products.create' | 'products.edit' | 'products.delete' |
-  'brands.view' | 'brands.create' | 'brands.edit' | 'brands.delete' |
-  'suppliers.view' | 'suppliers.create' | 'suppliers.edit' | 'suppliers.delete' |
-  'income.view' | 'income.create' | 'income.edit' | 'income.delete' |
+  'product.view' | 'product.create' | 'product.edit' | 'product.delete' |
+  'brand.view' | 'brand.create' | 'brand.edit' | 'brand.delete' |
+  'supplier.view' | 'supplier.create' | 'supplier.edit' | 'supplier.delete' |
+  'capital.view' | 'capital.create' | 'capital.edit' | 'capital.delete' |
+  'cashflow.view' | 'cashflow.create' | 'cashflow.edit' | 'cashflow.delete' |
   'expenses.view' | 'expenses.create' | 'expenses.edit' | 'expenses.delete' |
-  'users.view' | 'users.create' | 'users.edit' | 'users.delete' |
-  'roles.view' | 'roles.create' | 'roles.edit' | 'roles.delete';
+  'user.view' | 'user.create' | 'user.edit' | 'user.delete' |
+  'role.view' | 'role.create' | 'role.edit' | 'role.delete';
 
-export type TUOM = 'G' | 'KG' | 'ML' | 'L' | 'PCS' | 'BOX'
 export type TLogoutOption = 'all' | 'other' | 'current';
 
 export interface IPaginationRes {
@@ -60,6 +64,3 @@ export interface IBaseResponse {
 }
 
 export type TOneOrMany<T> = T | T[];
-
-export type PopulateParam = { column: string; select?: any; match?: any; options?: any };
-

@@ -26,7 +26,7 @@ export function decrypt<T = any>(encrypted: string): T | undefined {
 
 
 export const generateRandomToken = (): string => {
-    return randomBytes(32).toString("hex");
+  return randomBytes(32).toString("hex");
 };
 
 export function sha256Base64(input: string): string {
@@ -45,11 +45,19 @@ export function decodeBase64(base64: string): string {
 
 
 export function addDays(date: Date, days: number): Date {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
 }
 
 export function toNumber(text: any): number {
-  return Number(text||0)
+  return Number(text || 0)
+}
+
+export function digitShortDate(date: Date): string {
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  }).replace(',', '');
 }

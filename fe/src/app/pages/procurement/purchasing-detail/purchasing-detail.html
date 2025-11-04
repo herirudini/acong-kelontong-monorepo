@@ -1,0 +1,54 @@
+<div class="d-flex flex-row flex-wrap justify-content-between gap-2 mb-5">
+  <table>
+    <tbody>
+      <tr>
+        <td class="fw-bold p-1 col-3 align-top">Supplier</td>
+        <td class="align-top">{{purchase?.supplier_name || '-'}}</td>
+      </tr>
+      <tr>
+        <td class="fw-bold p-1 col-3 align-top">Request Date</td>
+        <td class="align-top">{{(purchase?.createdAt | date: DATE_FORMAT) || '-'}}</td>
+      </tr>
+      <tr>
+        <td class="fw-bold p-1 col-3 align-top">Due Date</td>
+        <td class="align-top">{{(purchase?.due_date | date: DATE_FORMAT) || '-'}}</td>
+      </tr>
+      <tr>
+        <td class="fw-bold p-1 col-3 align-top">Received Date</td>
+        <td class="align-top">{{(purchase?.received_at | date: DATE_FORMAT) || '-'}}</td>
+      </tr>
+      <tr>
+        <td class="fw-bold p-1 col-3 align-top">Total Price</td>
+        <td class="align-top">{{(purchase?.total_purchase_price | currency: CURRENCY_FORMAT) || '-'}}</td>
+      </tr>
+      <tr>
+        <td class="fw-bold p-1 col-3 align-top">Invoice Number</td>
+        <td class="align-top">{{purchase?.invoice_number || '-'}}</td>
+      </tr>
+      <tr>
+        <td class="fw-bold p-1 col-3 align-top">Invoice Photo</td>
+        <td class="align-top">
+          <img class="col-5" [src]="purchase?.invoice_photo" alt="Invoice">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<app-generic-table ngSkipHydration [columns]="columns" [data]="listPurchasingItem" [usePagination]="true"
+  [useSearch]="true" [total]="pagination.total" (OnDataRefresh)="tableRefresh($event)" [isLoading]="isLoading">
+  <div appTableColumn customColumnId="action">
+    <ng-template let-item>
+      <div class="d-flex flex-row gap-1 justify-content-end">
+        <a (click)="showForm(item._id)" class="text-white pointer btn btn-secondary">
+          <i class="fa-solid fa-eye"></i>
+        </a>
+      </div>
+    </ng-template>
+  </div>
+</app-generic-table>
+
+<ng-template #POItemForm>
+  <app-purchase-order-item-form [type]="'view'" [purchase_id]="purchase_id"
+    [purchase_item_id]="purchase_item_id" (onClose)="modalRef.dismiss()"></app-purchase-order-item-form>
+</ng-template>

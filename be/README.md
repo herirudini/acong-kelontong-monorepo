@@ -96,3 +96,29 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+
+## DEV
+This app contains Session transaction, MongoDB transactions require a replica set:
+Stop: 
+sudo systemctl stop mongod
+
+Edit the MongoDB config file (usually at /etc/mongod.conf):
+replication:
+  replSetName: rs0
+
+Restart:
+sudo systemctl start mongod
+
+Run mongoshell:
+mongosh
+then: rs.initiate()
+if success you will see:
+{
+  "ok" : 1,
+  "members" : [ { "_id" : 0, "name" : "localhost:27017", "stateStr" : "PRIMARY" } ]
+}
+
+makesure the URI has replica set enabled: 
+MONGO_URI=mongodb://localhost:27017/AcongKelontongLocal?retryWrites=true&w=majority&replicaSet=rs0
+

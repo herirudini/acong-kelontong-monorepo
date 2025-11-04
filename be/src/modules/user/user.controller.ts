@@ -7,8 +7,9 @@ import { GetUserListDto, InviteUserDto } from './user.dto';
 import { encodeBase64 } from 'src/utils/helper';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Permission } from 'src/global/permission.decoratior';
+import { Types } from 'mongoose';
 
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(
     private readonly userService: UserService,
@@ -16,7 +17,7 @@ export class UserController {
   ) { }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.view'])
+  @Permission(['user.view'])
   @Get('')
   async list(
     @Query() { page, size, sortBy, sortDir, search, verified }: GetUserListDto,
@@ -34,7 +35,7 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.create'])
+  @Permission(['user.create'])
   @Post('')
   async inviteUser(
     @Body() body: InviteUserDto,
@@ -42,7 +43,7 @@ export class UserController {
   ) {
     try {
       const invite = await this.userService.inviteUser(body)
-      if (!invite) return BaseResponse.forbidden({ option: { message: 'User Exist' } })
+      if (!invite) throw BaseResponse.forbidden({ option: { message: 'User Exist' } })
       const ticket = { pass1: invite.tmpUser._id, pass2: invite.tmpPassword }
       const base64 = encodeBase64(JSON.stringify(ticket))
       const linkChangePassword = `${process.env.FE_DOMAIN}/${process.env.URL_CHANGE_PASSWORD as string}/${base64}`;
@@ -72,7 +73,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Get('detail/:user_id')
   async detail(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
@@ -89,7 +90,7 @@ export class UserController {
   @UseGuards(AuthGuard)
   @Put('detail/:user_id')
   async editProfile(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Body()
     body: {
       first_name: string;
@@ -108,10 +109,10 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.delete'])
+  @Permission(['user.delete'])
   @Delete('detail/:user_id')
   async deleteUser(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
@@ -123,10 +124,10 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.create', 'users.edit'])
+  @Permission(['user.create', 'user.edit'])
   @Post('detail/:user_id/re-invite')
   async resendVerification(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
@@ -158,12 +159,12 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard)
-  @Permission(['users.create', 'users.edit'])
+  @Permission(['user.create', 'user.edit'])
   @Put('detail/:user_id/role')
   async editRole(
-    @Param('user_id') user_id: string,
+    @Param('user_id') user_id: Types.ObjectId,
     @Body() body: {
-      role: string;
+      role: Types.ObjectId;
     },
     @Res() res: Response,
   ) {
@@ -187,7 +188,7 @@ export class UserController {
       if (isVerified) {
         return BaseResponse.success({ res, option: { message: "User verified successfully" } });
       } else {
-        return BaseResponse.invalid({ res, option: { message: "Invalid or expired verification token" } });
+        throw BaseResponse.invalid({ res, option: { message: "Invalid or expired verification token" } });
       }
     } catch (err) {
       return BaseResponse.error({ res, err });

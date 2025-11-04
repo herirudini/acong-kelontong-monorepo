@@ -8,26 +8,53 @@ export const Endpoint = {
   LOGOUT: `${api}auth/logout`,
   REFRESH: `${api}auth/refresh`,
 
-  USERS: `${api}users`,
-  USERS_ID: (id: string) => {
-    return `${api}users/detail/${id}`
+  USER: `${api}user`,
+  USER_ID: (id: string) => {
+    return `${api}user/detail/${id}`
   },
-  USERS_ID_REINVITE: (id: string) => {
-    return `${api}users/detail/${id}/re-invite`
+  USER_ID_REINVITE: (id: string) => {
+    return `${api}user/detail/${id}/re-invite`
   },
-  USERS_ID_ROLE: (id: string) => {
-    return `${api}users/detail/${id}/role`
+  USER_ID_ROLE: (id: string) => {
+    return `${api}user/detail/${id}/role`
   },
-  USERS_VERIFY: `${api}users/verify`,
+  USER_VERIFY: `${api}user/verify`,
 
-  ROLES: `${api}roles`,
-  ROLES_ID: (id: string) => {
-    return `${api}roles/${id}`
+  ROLE: `${api}role`,
+  ROLE_ID: (id: string) => {
+    return `${api}role/${id}`
   },
 
   /* Admin endpoints */
-  PERMISSIONS: `${api}roles/permissions`,
+  PERMISSIONS: `${api}global/permissions`,
 
+  // Brand Endpoint
+  BRAND: `${api}brand`,
+  BRAND_ID: (id: string) => {
+    return `${api}brand/${id}`
+  },
+
+  // Product Endpoint
+  PRODUCT: `${api}product`,
+  PRODUCT_ID: (id: string) => {
+    return `${api}product/${id}`
+  },
+
+  // Supplier Endpoint
+  SUPPLIER: `${api}supplier`,
+  SUPPLIER_ID: (id: string) => {
+    return `${api}supplier/${id}`
+  },
+
+  // Purchasing Endpoint
+  PURCHASING: `${api}purchasing`,
+  PURCHASING_ID: (id: string) => {
+    return `${api}purchasing/${id}`
+  },
+  PURCHASING_ITEM: `${api}purchasing-item`,
+  PURCHASING_ITEM_ID: (id: string) => {
+    return `${api}purchasing-item/${id}`
+  },
 
   // /* Account endpoints */
   // ACCOUNT_SETUP: `${api}account/setup`,

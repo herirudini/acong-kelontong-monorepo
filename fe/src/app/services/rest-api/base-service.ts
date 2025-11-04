@@ -27,11 +27,11 @@ export class BaseService {
   }
 
   postRequest(req: IReqMutation): Observable<any> {
-    const headers = {
-      'Content-Type': 'application/json',
-    };
+    // const headers = {
+    //   'Content-Type': 'application/json',
+    // };
     const requestOptions = {
-      headers: new HttpHeaders(headers),
+      // headers: new HttpHeaders(headers),
     };
     if (req.qParams) {
       req.qParams['spinner'] = req.spinner
@@ -150,6 +150,7 @@ export class BaseService {
             let link: any = document.createElement('a');
             link.id = 'pdfLink' + filename;
             link.href = source;
+            link.target = '_blank';
             link.download = filename.toString();
             link.click();
             link = null;
@@ -157,4 +158,16 @@ export class BaseService {
         })
       );
   }
+
+  // todoAPIInvoice(id, fileInput, body) {
+  //   const formData = new FormData();
+  //   formData.append('invoice_photo', fileInput.files[0]);
+  //   formData.append('supplier_name', body.supplier_name);
+  //   formData.append('purchase_date', body.purchase_date);
+
+  //   this.http.put(`/api/purchasing/${id}`, formData).subscribe({
+  //     next: res => console.log('Success:', res),
+  //     error: err => console.error(err)
+  //   });
+  // }
 }

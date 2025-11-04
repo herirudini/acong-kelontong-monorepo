@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
     const req = context.switchToHttp().getRequest();
     const authHeader = req.headers['authorization'];
     if (!authHeader) {
-      return BaseResponse.unauthorized({ err: 'Auth Guard Missing token', option: { message: 'Unauthorized' } });
+      throw BaseResponse.unauthorized({ err: 'Auth Guard Missing token', option: { message: 'Unauthorized' } });
     }
 
     const accesToken = authHeader.split(' ')[1];
@@ -30,7 +30,7 @@ export class AuthGuard implements CanActivate {
       req.user = user;
       return true;
     } catch {
-      return BaseResponse.unauthorized({ err: 'Auth Guard unverified', option: { message: 'Unauthorized', error_code: errCodes.authGuard } });
+      throw BaseResponse.unauthorized({ err: 'Auth Guard unverified', option: { message: 'Unauthorized', error_code: errCodes.authGuard } });
     }
   }
 }

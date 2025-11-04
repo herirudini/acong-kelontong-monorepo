@@ -1,0 +1,105 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { ClientSession, Model, Types } from 'mongoose';
+import { GlobalService } from 'src/global/global.service';
+import { BaseResponse } from 'src/utils/base-response';
+import { Product } from '../product/product.schema';
+import { Purchasing } from '../purchasing/purchasing.schema';
+import { PurchasingItem } from './purchasing-item.schema';
+import { PurchasingItemDto } from './purchasing-item.dto';
+@Injectable()
+export class PurchasingItemService {
+
+  constructor(
+    private global: GlobalService,
+    @InjectModel(Purchasing.name) private purchasingModel: Model<Purchasing>,
+    @InjectModel(PurchasingItem.name) private purchasingItemModel: Model<PurchasingItem>,
+    @InjectModel(Product.name) private productModel: Model<Product>,
+  ) { }
+
+  async createPurchasingItem(dto: PurchasingItemDto, sessionIn?: ClientSession): Promise<PurchasingItem | undefined> {
+    return this.global.withTransaction(async (session) => {
+      const product = await this.productModel.findById(dto.product).session(session);
+      if (!product) {
+        throw BaseResponse.notFound({ err: `createPurchasingItem Product not found` });
+      }
+      const purchasing = await this.purchasingModel.findById(dto.purchase_order).session(session);
+      if (!purchasing) {
+        throw BaseResponse.notFound({ err: `createPurchasingItem Purchasing not found` });
+      }
+      const data = {
+        ...dto,
+        supplier_name: purchasing.supplier_name,
+        product_name: product.product_name,
+      }
+      const created = (await this.purchasingItemModel.create([data], { session }))[0];
+      if (!created) throw BaseResponse.notFound({ err: 'editPurchasingItem created not found' });
+      await this.updatePurchasingTotalPrice(created?.purchase_order, session);
+      return created;
+    }, sessionIn)
+  }
+
+  async editPurchasingItem(
+    id: Types.ObjectId,
+    dto: PurchasingItemDto,
+    sessionIn?: ClientSession
+  ): Promise<PurchasingItem | undefined> {
+    return this.global.withTransaction(async (session) => {
+      const purchasing = await this.purchasingModel.findById(dto.purchase_order).session(session);
+      if (!purchasing) {
+        throw BaseResponse.notFound({ err: `editPurchasingItem Purchasing not found` });
+      }
+      const product = await this.productModel.findById(dto.product).session(session);
+      if (!product) throw BaseResponse.notFound({ err: `editPurchasingItem Product not found` });
+      const data = {
+        ...dto,
+        supplier_name: purchasing.supplier_name,
+        product_name: product.product_name,
+      }
+      const updatedItem = await this.purchasingItemModel.findByIdAndUpdate(
+        id,
+        { $set: data },
+        {
+          new: true,
+          runValidators: true,
+        },
+      ).session(session);
+      if (!updatedItem) throw BaseResponse.notFound({ err: 'editPurchasingItem updatedItem not found' });
+      await this.updatePurchasingTotalPrice(updatedItem?.purchase_order, session);
+      return updatedItem || undefined;
+    }, sessionIn);
+  }
+
+  async detailPurchasingItem(id: Types.ObjectId): Promise<PurchasingItem | undefined> {
+    const detailPurchasing = await this.purchasingItemModel
+      .findById(id)
+      .populate(['purchase_order', 'product'])
+      .lean()
+      .exec();
+    return detailPurchasing || undefined
+  }
+
+  async deletePurchasingItem(id: Types.ObjectId, sessionIn?: ClientSession): Promise<PurchasingItem | undefined> {
+    return this.global.withTransaction(async (session) => {
+      const deletedPurchasingItem = await this.purchasingItemModel.findByIdAndDelete(id).session(session);
+      if (!deletedPurchasingItem) throw BaseResponse.notFound({ err: 'deletePurchasingItem not found' });
+      await this.updatePurchasingTotalPrice(deletedPurchasingItem?.purchase_order, session);
+      return deletedPurchasingItem || undefined;
+    }, sessionIn);
+  }
+
+  async updatePurchasingTotalPrice(purchase_order: Types.ObjectId, sessionIn?: ClientSession): Promise<Purchasing | undefined> {
+    return this.global.withTransaction(async (session) => {
+      const purchase = await this.purchasingModel.findById(purchase_order).session(session);
+      if (!purchase) throw BaseResponse.notFound({ err: 'Purchasing not found' });
+      const items = await this.purchasingItemModel.find({ purchase_order: purchase_order }).session(session).lean();
+      if (!items || items.length < 1) {
+        return undefined;
+      }
+      const total_price = items.reduce((sum, item) => sum + item.purchase_qty * item.purchase_price, 0);
+      purchase.total_purchase_price = total_price;
+      const result = await purchase.save({ session });
+      return result
+    }, sessionIn)
+  }
+}

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { User, UserDocument } from './user.schema';
+import { User } from './user.schema';
 import * as bcrypt from 'bcrypt';
 import { salts, sessionDays } from 'src/types/constants';
 import { IEditUser, IPaginationRes, TmpUser } from 'src/types/interfaces';
@@ -10,22 +10,23 @@ import { GlobalService } from 'src/global/global.service';
 import { generateRandomToken, addDays, decodeBase64 } from 'src/utils/helper';
 import { InviteUserDto } from './user.dto';
 import { RoleService } from '../role/role.service';
+import { RoleDocument } from '../role/role.schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name)
-    private readonly userModel: Model<UserDocument>,
+    private readonly userModel: Model<User>,
     private roleService: RoleService,
     private global: GlobalService
   ) { }
 
-  async getDetailUser(user_id: string): Promise<UserDocument | undefined> {
+  async getDetailUser(user_id: Types.ObjectId): Promise<User | undefined> {
     const user = await this.userModel.findById(user_id).populate('role').exec();
     return user || undefined;
   }
 
-  async editUser(user_id: string, data: IEditUser): Promise<UserDocument | undefined> {
+  async editUser(user_id: Types.ObjectId, data: IEditUser): Promise<User | undefined> {
     const {
       first_name,
       last_name,
@@ -34,9 +35,9 @@ export class UserService {
     } = data;
     let roleId: Types.ObjectId | null | undefined;
     if (role) {
-      const findRole = await this.roleService.getDetailRole(role);
+      const findRole = await this.roleService.getDetailRole(role) as RoleDocument;
       if (!findRole) {
-        return BaseResponse.notFound({ err: 'editUser !findRole' });
+        throw BaseResponse.notFound({ err: 'editUser !findRole' });
       }
       roleId = findRole._id as Types.ObjectId;
     } else {
@@ -71,13 +72,13 @@ export class UserService {
 
       return user || undefined;
     } catch (e) {
-      return BaseResponse.unexpected({ err: { text: 'editUser', err: e.message } })
+      throw BaseResponse.unexpected({ err: { text: 'editUser', err: e.message } })
     }
   }
 
   async getListUser(
-    page: number,
-    size: number,
+    page?: number,
+    size?: number,
     sortBy?: string,
     sortDir: 'asc' | 'desc' = 'asc',
     search?: string,
@@ -87,7 +88,7 @@ export class UserService {
     const filter = { column: 'verified', value: verified };
     const populate = { column: 'role' };
 
-    return this.global.getList<User, UserDocument>(
+    return this.global.getList<User>(
       this.userModel,
       {
         page,
@@ -102,13 +103,13 @@ export class UserService {
     )
   }
 
-  async resendVerification(user_id: string): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
+  async resendVerification(user_id: Types.ObjectId): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
     const tmpUser = await this.userModel.findById(user_id).populate('role').exec();;
     if (!tmpUser) {
-      return BaseResponse.notFound({ err: 'resendVerification tmpUser not found' });
+      throw BaseResponse.notFound({ err: 'resendVerification tmpUser not found' });
     }
     if (tmpUser.verified) {
-      return BaseResponse.forbidden({ err: 'resendVerification tmpUser already verified' });
+      throw BaseResponse.forbidden({ err: 'resendVerification tmpUser already verified' });
     }
     // generate raw random password
     const tmpPassword = generateRandomToken()
@@ -122,15 +123,15 @@ export class UserService {
   }
 
   async inviteUser(body: InviteUserDto): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
-    const findRole = await this.roleService.getDetailRole(body.role)
-    if (!findRole) return BaseResponse.notFound({ err: 'inviteUser !findRole' });
+    const findRole = await this.roleService.getDetailRole(body.role) as RoleDocument;
+    if (!findRole) throw BaseResponse.notFound({ err: 'inviteUser !findRole' });
     const role = findRole._id;
     const first_name = body.first_name;
     const last_name = body.last_name;
     const email = body.email;
     const exist = await this.userModel.findOne({ email });
     if (exist) {
-      return BaseResponse.forbidden({ err: 'inviteUser exist' });
+      throw BaseResponse.forbidden({ err: 'inviteUser exist' });
     }
     // generate raw random password
     const tmpPassword = generateRandomToken()
@@ -163,7 +164,7 @@ export class UserService {
     return true;
   }
 
-  async deleteUser(user_id: string): Promise<UserDocument | undefined> {
+  async deleteUser(user_id: Types.ObjectId): Promise<User | undefined> {
     const execute = await this.userModel.findByIdAndDelete(user_id).populate('role');
     return execute || undefined;
   }

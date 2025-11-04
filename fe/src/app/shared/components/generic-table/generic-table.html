@@ -5,7 +5,8 @@
             <div class="d-flex flex-row align-items-center justify-content-start flex-wrap gap-4">
                 @if (filterSelect) {
                 <div class="flex-1">
-                    <app-select-filter [filterSelect]="filterSelect" (OnChangeFilter)="filterSelectChange($event)"></app-select-filter>
+                    <app-select-filter [filterSelect]="filterSelect"
+                        (OnChangeFilter)="filterSelectChange($event)"></app-select-filter>
                 </div>
                 }
 
@@ -67,15 +68,15 @@
                         }
 
                         @for (column of columns; track $index) {
-                        <th [class.pointer]="column.sort" [ngStyle]="generateInlineStyle(column)"
+                        <th [class.pointer]="column.sort"
                             (click)="column.sort && total > 0 ? sortChanged(column.id) : $event.stopPropagation()"
-                            [ngClass]="'whitespace-nowrap ' + ' ' + column.extraHeaderClass">
+                            [ngClass]="'whitespace-nowrap'">
                             <div class="d-flex gap-1">
                                 @if(column.sort) {
                                 <app-sort-icon [sortId]="column.id" [sortVal]="{sortBy, sortDir}"></app-sort-icon>
                                 }
-                                {{ column.label | dynamicPipe:
-                                column.customHeaderPipe?.pipeType:column.customHeaderPipe?.pipeArgs ?? [] }}
+                                <div [ngClass]="'whitespace-nowrap ' + ' ' + column.extraHeaderClass">{{ column.label }}
+                                </div>
                             </div>
                         </th>
                         }
@@ -88,7 +89,7 @@
                 @for (_ of [].constructor(size); track $index) {
                 <tr>
                     @for (_ of [].constructor(columns.length+1); let i = $index; track $index) {
-                    <td [ngStyle]="generateInlineStyle(columns[i])">
+                    <td>
                         <div class="badge-loading"></div>
                     </td>
                     }
@@ -111,20 +112,24 @@
                     }
 
                     @for (column of columns; track $index) {
-                    <td [ngStyle]="generateInlineStyle(column)" [ngClass]="{
+                    <td [ngClass]="{
                       'whitespace-nowrap': column.customElementId === 'action'
                     }">
                         @if (column.customElementId) {
                         <ng-container [ngTemplateOutlet]="columnTemplates[column.customElementId]"
                             [ngTemplateOutletContext]="{
                           $implicit: row,
-                          value: transformValueIfNeeded(getRowDataValue(row, column.id), column)
+                          value: getRowDataValue(row, column.id)
                         }">
                         </ng-container>
                         } @else {
-                        <!-- | dynamicPipe: (isDateColumn(column) ? datePipe : null): [getDateFormat(column)] -->
-                        {{ ( transformValueIfNeeded(getRowDataValue(row, column.id), column) | dynamicPipe:
-                        column.customPipe?.pipeType:column.customPipe?.pipeArgs ?? []) || "-" }}
+                        @if (!column.dataType) {
+                        {{ ( getRowDataValue(row, column.id)) || "-"}}
+                        } @else if (column.dataType === 'DATE') {
+                        {{ ( getRowDataValue(row, column.id) | date: DATE_FORMAT) || "-"}}
+                        } @else {
+                        {{ ( getRowDataValue(row, column.id) | currency:CURRENCY_FORMAT) || "-"}}
+                        }
                         }
                     </td>
                     }

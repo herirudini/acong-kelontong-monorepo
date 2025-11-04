@@ -35,3 +35,5 @@ export interface ISelectValue {
   label: string;
   value: any;
 }
+
+export type formType = 'new' | 'edit' | 'view';

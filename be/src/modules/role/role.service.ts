@@ -1,38 +1,33 @@
 import { Injectable } from '@nestjs/common';
-import { Role, RoleDocument } from './role.schema';
+import { Role } from './role.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
-import { modules } from 'src/types/constants';
 
 @Injectable()
 export class RoleService {
   constructor(
-    @InjectModel(Role.name) private roleModel: Model<RoleDocument>,
+    @InjectModel(Role.name) private roleModel: Model<Role>,
     private global: GlobalService
   ) { }
 
-  getPermissions() {
-    return modules;
-  }
-
   async getListRole(
-    page: number,
-    size: number,
+    page?: number,
+    size?: number,
     sortBy?: string,
     sortDir: 'asc' | 'desc' = 'asc',
     search?: string,
     active?: boolean
-  ): Promise<{ data: RoleDocument[]; meta: IPaginationRes }> {
+  ): Promise<{ data: Role[]; meta: IPaginationRes }> {
     const searchFields: string[] = ['role_name'];
     let filter;
     if (active) {
       filter = { column: 'active', value: true }
     }
 
-    return this.global.getList<Role, RoleDocument>(
+    return this.global.getList<Role>(
       this.roleModel,
       {
         page,
@@ -46,13 +41,13 @@ export class RoleService {
     )
   }
 
-  async createRole(body: Role): Promise<RoleDocument> {
+  async createRole(body: Role): Promise<Role> {
     const role_name = body.role_name;
     const modules = body.modules;
 
     const exist = await this.roleModel.findOne({ role_name });
     if (exist) {
-      return BaseResponse.forbidden({ err: 'createRole exist' });
+      throw BaseResponse.forbidden({ err: 'createRole exist' });
     }
     const newRole = await this.roleModel.create({
       role_name,
@@ -61,12 +56,12 @@ export class RoleService {
     return newRole;
   }
 
-  async getDetailRole(role_id: string): Promise<RoleDocument | undefined> {
+  async getDetailRole(role_id: Types.ObjectId): Promise<Role | undefined> {
     const role = await this.roleModel.findById(role_id);
     return role || undefined;
   }
 
-  async editRole(role_id: string, data: RoleDocument): Promise<RoleDocument | undefined> {
+  async editRole(role_id: Types.ObjectId, data: Role): Promise<Role | undefined> {
     const {
       role_name,
       modules,
@@ -89,14 +84,14 @@ export class RoleService {
       ).exec();
       return uptatedRole || undefined;
     } catch (e) {
-      return BaseResponse.unexpected({ err: { text: 'editRole', err: e.message } })
+      throw BaseResponse.unexpected({ err: { text: 'editRole', err: e.message } })
     }
   }
 
-  async deleteRole(role_id: string): Promise<boolean> {
+  async deleteRole(role_id: Types.ObjectId): Promise<boolean> {
     const role = await this.roleModel.findById(role_id);
-    if (!role) return BaseResponse.notFound({ option: { message: 'Role not found' } })
-    if (role.active) return BaseResponse.forbidden({ option: { message: 'Cannot delete active role' } })
+    if (!role) throw BaseResponse.notFound({ option: { message: 'Role not found' } })
+    if (role.active) throw BaseResponse.forbidden({ option: { message: 'Cannot delete active role' } })
     await this.roleModel.findByIdAndDelete(role_id).exec();
     return true;
   }

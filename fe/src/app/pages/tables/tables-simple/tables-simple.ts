@@ -70,8 +70,7 @@ export class TablesSimple {
         id,
         sort: true,
         extraHeaderClass: 'uppercase-text',
-        dataType: typeof Date,
-        width: '210px',
+        dataType: 'DATE'
       };
     },
     document_date: (id: string) => {
@@ -80,20 +79,9 @@ export class TablesSimple {
         id,
         sort: true,
         extraHeaderClass: 'uppercase-text',
-        dataType: typeof Date,
-        width: '210px',
+        dataType: 'DATE'
       };
     },
-    // document_validity: (id: string) => {
-    //   return {
-    //     label: 'DOCUMENT_VALIDITY',
-    //     id,
-    //     sort: true,
-    //     extraHeaderClass: 'uppercase-text',
-    //     dataType: typeof Date,
-    //     width: '210px',
-    //   };
-    // },
     action: (id: string) => {
       return {
         label: 'ACTION',
@@ -132,7 +120,7 @@ export class TablesSimple {
     },
   };
 
-  columns = [
+   columns: Array<ColumnProps> = [
     this.genericColumns.document_number('document_number'),
     this.genericColumns.upload_date('file_upload.updated_at'),
     this.genericColumns.ba_tera_issuer('issuer'),

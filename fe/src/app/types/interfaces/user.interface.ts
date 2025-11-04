@@ -1,12 +1,16 @@
 export type TModules =
+    'inventory.view' | 'inventory.create' | 'inventory.edit' | 'inventory.delete' |
+    'showcase.view' | 'showcase.create' | 'showcase.edit' | 'showcase.delete' |
+    'purchasing.view' | 'purchasing.create' | 'purchasing.edit' | 'purchasing.delete' |
     'cashier.view' | 'cashier.create' | 'cashier.edit' | 'cashier.delete' |
-    'products.view' | 'products.create' | 'products.edit' | 'products.delete' |
-    'brands.view' | 'brands.create' | 'brands.edit' | 'brands.delete' |
-    'suppliers.view' | 'suppliers.create' | 'suppliers.edit' | 'suppliers.delete' |
-    'income.view' | 'income.create' | 'income.edit' | 'income.delete' |
+    'product.view' | 'product.create' | 'product.edit' | 'product.delete' |
+    'brand.view' | 'brand.create' | 'brand.edit' | 'brand.delete' |
+    'supplier.view' | 'supplier.create' | 'supplier.edit' | 'supplier.delete' |
+    'capital.view' | 'capital.create' | 'capital.edit' | 'capital.delete' |
+    'cashflow.view' | 'cashflow.create' | 'cashflow.edit' | 'cashflow.delete' |
     'expenses.view' | 'expenses.create' | 'expenses.edit' | 'expenses.delete' |
-    'users.view' | 'users.create' | 'users.edit' | 'users.delete' |
-    'roles.view' | 'roles.create' | 'roles.edit' | 'roles.delete'
+    'user.view' | 'user.create' | 'user.edit' | 'user.delete' |
+    'role.view' | 'role.create' | 'role.edit' | 'role.delete'
 
     // TODO: remove this dummy later
     | 'dashboard.view' |

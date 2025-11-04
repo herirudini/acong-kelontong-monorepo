@@ -4,15 +4,23 @@ import { RequestMethod } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import { SanitizePipe } from './global/sanitizer.pipe';
 import { ErrResFactory } from './global/err-res-factory';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { join } from 'path';
 
 async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.use(cookieParser());
+
+  // Serve /uploads folder as static
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: '/uploads/',
+  });
 
   // set global prefix
   app.setGlobalPrefix('api', {
     exclude: [{ path: '', method: RequestMethod.OPTIONS }],
   });
+
   app.enableCors({
     origin: process.env.FE_DOMAIN as string, // FE domain
     credentials: true,                    // allow cookies
