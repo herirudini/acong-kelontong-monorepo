@@ -6,8 +6,7 @@ import { BaseResponse } from 'src/utils/base-response';
 import { Product } from '../product/product.schema';
 import { Purchasing } from '../purchasing/purchasing.schema';
 import { PurchasingItem } from './purchasing-item.schema';
-import { PurchasingItemDto } from '../purchasing/purchasing.dto';
-
+import { PurchasingItemDto } from './purchasing-item.dto';
 @Injectable()
 export class PurchasingItemService {
 

@@ -37,7 +37,7 @@ export class UserService {
     if (role) {
       const findRole = await this.roleService.getDetailRole(role) as RoleDocument;
       if (!findRole) {
-        return BaseResponse.notFound({ err: 'editUser !findRole' });
+        throw BaseResponse.notFound({ err: 'editUser !findRole' });
       }
       roleId = findRole._id as Types.ObjectId;
     } else {
@@ -72,7 +72,7 @@ export class UserService {
 
       return user || undefined;
     } catch (e) {
-      return BaseResponse.unexpected({ err: { text: 'editUser', err: e.message } })
+      throw BaseResponse.unexpected({ err: { text: 'editUser', err: e.message } })
     }
   }
 
@@ -106,10 +106,10 @@ export class UserService {
   async resendVerification(user_id: Types.ObjectId): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
     const tmpUser = await this.userModel.findById(user_id).populate('role').exec();;
     if (!tmpUser) {
-      return BaseResponse.notFound({ err: 'resendVerification tmpUser not found' });
+      throw BaseResponse.notFound({ err: 'resendVerification tmpUser not found' });
     }
     if (tmpUser.verified) {
-      return BaseResponse.forbidden({ err: 'resendVerification tmpUser already verified' });
+      throw BaseResponse.forbidden({ err: 'resendVerification tmpUser already verified' });
     }
     // generate raw random password
     const tmpPassword = generateRandomToken()
@@ -124,14 +124,14 @@ export class UserService {
 
   async inviteUser(body: InviteUserDto): Promise<{ tmpUser: TmpUser, tmpPassword: string }> {
     const findRole = await this.roleService.getDetailRole(body.role) as RoleDocument;
-    if (!findRole) return BaseResponse.notFound({ err: 'inviteUser !findRole' });
+    if (!findRole) throw BaseResponse.notFound({ err: 'inviteUser !findRole' });
     const role = findRole._id;
     const first_name = body.first_name;
     const last_name = body.last_name;
     const email = body.email;
     const exist = await this.userModel.findOne({ email });
     if (exist) {
-      return BaseResponse.forbidden({ err: 'inviteUser exist' });
+      throw BaseResponse.forbidden({ err: 'inviteUser exist' });
     }
     // generate raw random password
     const tmpPassword = generateRandomToken()

@@ -8,8 +8,8 @@ import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { EditInventoryDto } from './inventory.dto';
 import { digitShortDate } from 'src/utils/helper';
-import { ReceiveOrderItemDto } from '../purchasing/purchasing.dto';
 import { PurchasingItem } from '../purchasing-item/purchasing-item.schema';
+import { ReceiveOrderItemDto } from '../purchasing-item/purchasing-item.dto';
 
 @Injectable()
 export class InventoryService {
@@ -79,7 +79,7 @@ export class InventoryService {
       ).exec();
       return updatedInventory || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'editInventory catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'editInventory catch', err } })
     }
   }
 
@@ -91,7 +91,7 @@ export class InventoryService {
         .exec();
       return detailInventory || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'detailInventory catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'detailInventory catch', err } })
     }
   }
 
@@ -100,7 +100,7 @@ export class InventoryService {
       const detailInventory = await this.inventoryModel.findByIdAndDelete(id).exec();
       return detailInventory || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'detailInventory catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'detailInventory catch', err } })
     }
   }
 }

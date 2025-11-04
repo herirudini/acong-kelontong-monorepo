@@ -41,7 +41,7 @@ export class SupplierService {
       const newSupplier = await this.supplierModel.create(data);
       return newSupplier;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'createSupplier catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'createSupplier catch', err } })
     }
   }
 
@@ -57,7 +57,7 @@ export class SupplierService {
       ).exec();
       return updatedSupplier || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'editSupplier catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'editSupplier catch', err } })
     }
   }
 
@@ -66,7 +66,7 @@ export class SupplierService {
       const detailSupplier = await this.supplierModel.findById(id).exec();
       return detailSupplier || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'detailSupplier catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'detailSupplier catch', err } })
     }
   }
 
@@ -75,7 +75,7 @@ export class SupplierService {
       const detailSupplier = await this.supplierModel.findByIdAndDelete(id).exec();
       return detailSupplier || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'detailSupplier catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'detailSupplier catch', err } })
     }
   }
 }

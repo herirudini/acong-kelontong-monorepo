@@ -36,7 +36,7 @@ export class AuthService {
             const result = await this.authModel.findById(decoded.id).populate('role');
             return result;
         } catch (err) {
-            return BaseResponse.invalid({ err });
+            throw BaseResponse.invalid({ err });
         }
     }
 
@@ -57,7 +57,7 @@ export class AuthService {
         const auth: Auth | null = await this.getAuthItem(accessToken);
         if (!auth) {
             await this.logout(accessToken);
-            return BaseResponse.invalid({ err: 'compareDBToken !auth' });
+            throw BaseResponse.invalid({ err: 'compareDBToken !auth' });
         }
         const decrypted = decrypt(auth.token) as string;
         if (accessToken === decrypted) return auth;
@@ -67,7 +67,7 @@ export class AuthService {
     async updateToken(authId: Types.ObjectId, accessToken: string): Promise<Auth> {
         const encrypted = encrypt(accessToken);
         const updated = await this.authModel.findByIdAndUpdate(authId, { token: encrypted }).populate('role').exec();
-        if (!updated) return BaseResponse.unexpected({ err: 'login !updated' })
+        if (!updated) throw BaseResponse.unexpected({ err: 'login !updated' })
         return updated
     }
 
@@ -81,7 +81,7 @@ export class AuthService {
             }
             return await this.authModel.findByIdAndDelete(decoded.id).exec();
         } catch (err) {
-            return BaseResponse.forbidden({ err: { text: 'logout catch', err } });
+            throw BaseResponse.forbidden({ err: { text: 'logout catch', err } });
         }
     }
 }

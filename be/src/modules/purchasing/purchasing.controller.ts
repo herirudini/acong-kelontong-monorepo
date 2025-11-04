@@ -4,11 +4,12 @@ import { BaseResponse } from 'src/utils/base-response';
 import { PurchasingService } from './purchasing.service';
 import type { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PurchasingDto, PurchaseOrderDto, ReceiveOrderItemDto, ListPurchasingItemsDTO, PurchasingItemDto } from './purchasing.dto';
+import { PurchasingDto, PurchaseOrderDto, ListPurchasingItemsDTO } from './purchasing.dto';
 import { Types } from 'mongoose';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { PurchasingEn } from './purchasing.schema';
+import { PurchasingItemDto, ReceiveOrderItemDto } from '../purchasing-item/purchasing-item.dto';
 
 @Controller('purchasing')
 export class PurchasingController {

@@ -41,7 +41,7 @@ export class BrandService {
             const newBrand = await this.brandModel.create(data);
             return newBrand;
         } catch (err) {
-            return BaseResponse.unexpected({ err: { text: 'createBrand catch', err } })
+            throw BaseResponse.unexpected({ err: { text: 'createBrand catch', err } })
         }
     }
 
@@ -57,7 +57,7 @@ export class BrandService {
             ).exec();
             return updatedBrand || undefined;
         } catch (err) {
-            return BaseResponse.unexpected({ err: { text: 'editBrand catch', err } })
+            throw BaseResponse.unexpected({ err: { text: 'editBrand catch', err } })
         }
     }
 
@@ -66,7 +66,7 @@ export class BrandService {
             const detailBrand = await this.brandModel.findById(id).exec();
             return detailBrand || undefined;
         } catch (err) {
-            return BaseResponse.unexpected({ err: { text: 'detailBrand catch', err } })
+            throw BaseResponse.unexpected({ err: { text: 'detailBrand catch', err } })
         }
     }
 
@@ -75,7 +75,7 @@ export class BrandService {
             const detailBrand = await this.brandModel.findByIdAndDelete(id).exec();
             return detailBrand || undefined;
         } catch (err) {
-            return BaseResponse.unexpected({ err: { text: 'detailBrand catch', err } })
+            throw BaseResponse.unexpected({ err: { text: 'detailBrand catch', err } })
         }
     }
 }

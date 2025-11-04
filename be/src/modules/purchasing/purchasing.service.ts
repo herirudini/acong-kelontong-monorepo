@@ -6,11 +6,12 @@ import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { Purchasing, PurchasingEn } from './purchasing.schema';
-import { ListPurchasingItemsDTO, PurchaseOrderDto, PurchasingDto, PurchasingItemDto } from './purchasing.dto';
+import { ListPurchasingItemsDTO, PurchaseOrderDto, PurchasingDto } from './purchasing.dto';
 import { Supplier } from '../supplier/supplier.schema';
 import { InventoryService } from '../inventory/inventory.service';
 import { PurchasingItem } from '../purchasing-item/purchasing-item.schema';
 import { PurchasingItemService } from '../purchasing-item/purchasing-item.service';
+import { PurchasingItemDto } from '../purchasing-item/purchasing-item.dto';
 
 @Injectable()
 export class PurchasingService {

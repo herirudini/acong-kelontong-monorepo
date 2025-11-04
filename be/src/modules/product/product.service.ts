@@ -44,7 +44,7 @@ export class ProductService {
       const newProduct = await this.productModel.create(data);
       return newProduct;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'createProduct catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'createProduct catch', err } })
     }
   }
 
@@ -60,7 +60,7 @@ export class ProductService {
       ).exec();
       return updatedProduct || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'editProduct catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'editProduct catch', err } })
     }
   }
 
@@ -69,7 +69,7 @@ export class ProductService {
       const detailProduct = await this.productModel.findById(id).exec();
       return detailProduct || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'detailProduct catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'detailProduct catch', err } })
     }
   }
 
@@ -78,7 +78,7 @@ export class ProductService {
       const detailProduct = await this.productModel.findByIdAndDelete(id).exec();
       return detailProduct || undefined;
     } catch (err) {
-      return BaseResponse.unexpected({ err: { text: 'detailProduct catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'detailProduct catch', err } })
     }
   }
 }

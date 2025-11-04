@@ -43,7 +43,7 @@ export class UserController {
   ) {
     try {
       const invite = await this.userService.inviteUser(body)
-      if (!invite) return BaseResponse.forbidden({ option: { message: 'User Exist' } })
+      if (!invite) throw BaseResponse.forbidden({ option: { message: 'User Exist' } })
       const ticket = { pass1: invite.tmpUser._id, pass2: invite.tmpPassword }
       const base64 = encodeBase64(JSON.stringify(ticket))
       const linkChangePassword = `${process.env.FE_DOMAIN}/${process.env.URL_CHANGE_PASSWORD as string}/${base64}`;
@@ -188,7 +188,7 @@ export class UserController {
       if (isVerified) {
         return BaseResponse.success({ res, option: { message: "User verified successfully" } });
       } else {
-        return BaseResponse.invalid({ res, option: { message: "Invalid or expired verification token" } });
+        throw BaseResponse.invalid({ res, option: { message: "Invalid or expired verification token" } });
       }
     } catch (err) {
       return BaseResponse.error({ res, err });

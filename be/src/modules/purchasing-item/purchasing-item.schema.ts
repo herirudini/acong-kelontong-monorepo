@@ -6,8 +6,8 @@ import { Purchasing } from '../purchasing/purchasing.schema';
 // PURCHASING ITEM as BODY
 @Schema({ timestamps: true })
 export class PurchasingItem {
-  @Prop({ type: Types.ObjectId, ref: Purchasing.name, required: true, unique: true })
-  purchase_order: Types.ObjectId; // ref to the HEADER, must be unique
+  @Prop({ type: Types.ObjectId, ref: Purchasing.name, required: true })
+  purchase_order: Types.ObjectId;
 
   @Prop({ type: Types.ObjectId, ref: Product.name, required: true })
   product: Types.ObjectId;
@@ -21,7 +21,7 @@ export class PurchasingItem {
   @Prop({ type: Number, required: true })
   purchase_qty: number;
 
-  @Prop({ type: Number, required: true, default: 0 })
+  @Prop({ type: Number, default: 0 })
   recieved_qty: number;
 
   @Prop({ type: Number, required: true })

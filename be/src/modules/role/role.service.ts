@@ -47,7 +47,7 @@ export class RoleService {
 
     const exist = await this.roleModel.findOne({ role_name });
     if (exist) {
-      return BaseResponse.forbidden({ err: 'createRole exist' });
+      throw BaseResponse.forbidden({ err: 'createRole exist' });
     }
     const newRole = await this.roleModel.create({
       role_name,
@@ -84,14 +84,14 @@ export class RoleService {
       ).exec();
       return uptatedRole || undefined;
     } catch (e) {
-      return BaseResponse.unexpected({ err: { text: 'editRole', err: e.message } })
+      throw BaseResponse.unexpected({ err: { text: 'editRole', err: e.message } })
     }
   }
 
   async deleteRole(role_id: Types.ObjectId): Promise<boolean> {
     const role = await this.roleModel.findById(role_id);
-    if (!role) return BaseResponse.notFound({ option: { message: 'Role not found' } })
-    if (role.active) return BaseResponse.forbidden({ option: { message: 'Cannot delete active role' } })
+    if (!role) throw BaseResponse.notFound({ option: { message: 'Role not found' } })
+    if (role.active) throw BaseResponse.forbidden({ option: { message: 'Cannot delete active role' } })
     await this.roleModel.findByIdAndDelete(role_id).exec();
     return true;
   }
