@@ -150,6 +150,7 @@ export class BaseService {
             let link: any = document.createElement('a');
             link.id = 'pdfLink' + filename;
             link.href = source;
+            link.target = '_blank';
             link.download = filename.toString();
             link.click();
             link = null;

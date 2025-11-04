@@ -51,7 +51,7 @@ export class UserService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get list user');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -66,7 +66,7 @@ export class UserService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot invite user');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -79,7 +79,7 @@ export class UserService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot invite user');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -95,7 +95,7 @@ export class UserService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot edit user');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -108,7 +108,7 @@ export class UserService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get user detail');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -121,7 +121,7 @@ export class UserService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot delete user');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }

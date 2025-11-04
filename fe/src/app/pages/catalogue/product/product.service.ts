@@ -30,7 +30,7 @@ export class ProductService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get list product');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -45,7 +45,7 @@ export class ProductService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot invite product');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -61,7 +61,7 @@ export class ProductService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot edit product');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -74,7 +74,7 @@ export class ProductService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get product detail');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -87,7 +87,7 @@ export class ProductService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot delete product');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }

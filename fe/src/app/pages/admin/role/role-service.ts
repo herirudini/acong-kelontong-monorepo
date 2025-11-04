@@ -25,7 +25,7 @@ export class RoleService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get list role');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -38,7 +38,7 @@ export class RoleService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get role');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -53,7 +53,7 @@ export class RoleService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot create role');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -69,7 +69,7 @@ export class RoleService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot create role');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -84,7 +84,7 @@ export class RoleService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot create role');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -97,7 +97,7 @@ export class RoleService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get list permission');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
