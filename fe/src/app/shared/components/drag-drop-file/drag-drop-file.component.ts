@@ -1,7 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { TenMegaByte } from '../../../types/constants/common.constants';
 import { AlertService } from '../alert/alert-service';
-
 @Component({
   selector: 'app-drag-drop-file',
   templateUrl: './drag-drop-file.component.html',
@@ -13,20 +12,21 @@ export class DragDropFileComponent implements OnChanges {
   @Output() previewHandler: EventEmitter<Event> = new EventEmitter<Event>();
 
   @ViewChild('hiddenInput') hiddenInput?: ElementRef;
-  @Input() disabled: boolean = true;
+  @Input() disabled?: boolean;
   @Input() elementId: string = '';
-  @Input() error: boolean = false;
+  @Input() error?: boolean;
   @Input() fileTypes: string[] = ['jpg', 'jpeg', 'gif', 'bmp'];
   @Input() maxSize: number = TenMegaByte; // Default 10 MB
   @Input() patchFileName: string = '';
   @Input() componentName: string = '';
-  @Input() haveAction: boolean = true;
+  @Input() haveAction?: boolean = true;
+  @Input() loading?: boolean;
 
   isDragging: boolean = false;
   dragEnter: boolean = false;
-  file: File|null = null;
+  file: File | null = null;
   fileName: string = '';
-  constructor(private toast: AlertService, private cdRef: ChangeDetectorRef) {}
+  constructor(private toast: AlertService, private cdRef: ChangeDetectorRef) { }
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.patchFileName) {
@@ -50,19 +50,28 @@ export class DragDropFileComponent implements OnChanges {
 
   validateFile(file: File) {
     try {
+      this.loading = true;
       const fileExtension = file.name.split('.').pop()?.toLowerCase() as string;
       if (!this.fileTypes.includes(fileExtension)) {
-        this.toast.error('INVALID_TYPE');
+        this.toast.error('Invalid file type!');
       } else if (file.size > this.maxSize) {
-        this.toast.error('TOO_LARGE max 10MB');
+        this.toast.error('File size max 10MB!');
       } else {
+        this.loading = true;
         this.file = file;
-        this.fileName = file.name;
         this.fileChanged.emit(this.file);
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onloadend = () => {
+          const base64 = reader.result;
+          const source = base64!.toString();
+          this.fileName = source;
+        };
       }
+      this.loading = false;
     }
     catch (err) {
-        this.toast.error('UPLOAD_FILE.SYSTEM_ERROR');
+      this.toast.error('UPLOAD_FILE.SYSTEM_ERROR');
     } finally {
       this.isDragging = false;
     }
@@ -98,8 +107,15 @@ export class DragDropFileComponent implements OnChanges {
     this.deleteHandler.emit();
   }
 
-  previewClicked(): void {
-    this.previewHandler.emit();
+  download(url: string): void {
+    const filename = url.split('/').pop();
+    let link: any = document.createElement('a');
+    link.id = filename;
+    link.href = url;
+    link.target = '_blank';
+    link.download = filename;
+    link.click();
+    link = null;
   }
 
 }

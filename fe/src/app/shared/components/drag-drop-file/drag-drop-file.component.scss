@@ -5,6 +5,7 @@
   align-items: stretch;
   position: relative;
 }
+
 .disabled {
   height: 100%;
   width: 100%;
@@ -15,13 +16,17 @@
     color: var(--bs-gray-500);
   }
 }
+
 input {
   visibility: invisible;
   height: 0 !important;
   width: 0 !important;
 }
+
 .dropbox {
-  width: 100%;
+  width: fit-content;
+  min-width: 300px;
+  max-width: 100%;
   height: 159px;
   min-height: 159px !important;
   border-radius: var(--border-radius-border-radius-01, 4px);
@@ -31,30 +36,32 @@ input {
   justify-content: center;
   align-items: center;
   flex: 1 0 0;
+
   &.error {
     border: 1px dashed var(--utility-colors-negative, #b12a0b);
   }
+
   &.dragging {
     background-color: var(--neutral-colors-gray-30, #bbbbbd);
+    cursor: pointer;
   }
+
   &-guide {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
     &-icon {
-      color: var(--utility-colors-positive, #007c38);
-      width: 42px;
-      height: 40px;
-      &.error {
-        color: var(--utility-colors-negative, #B12A0B);
-      }
+      font-size: xxx-large;
     }
+
     &-text {
       h3 {
         color: #000;
         text-align: center;
       }
+
       p {
         color: #000;
         text-align: center;
