@@ -80,12 +80,12 @@ export class PurchasingService {
       }
 
       fields.forEach((field: string) => {
-        if (field === 'supplier' && supplier._id) purchase.supplier = supplier._id;
-        if (field === 'supplier_name' && supplier.supplier_name) purchase.supplier_name = supplier.supplier_name;
-        if (field === 'due_date' && data.due_date) purchase.due_date = data.due_date;
-        if (field === 'invoice_number' && data.invoice_number) purchase.invoice_number = data.invoice_number;
-        if (field === 'invoice_photo' && data.invoice_photo) purchase.invoice_photo = data.invoice_photo;
-        if (field === 'status' && data.status) purchase.status = data.status;
+        if (field === 'supplier') purchase.supplier = supplier._id;
+        if (field === 'supplier_name') purchase.supplier_name = supplier.supplier_name;
+        if (field === 'due_date') purchase.due_date = data.due_date;
+        if (field === 'invoice_number') purchase.invoice_number = data.invoice_number;
+        if (field === 'invoice_photo') purchase.invoice_photo = data.invoice_photo;
+        if (field === 'status') purchase.status = data.status;
       });
 
       await purchase.save({ session });

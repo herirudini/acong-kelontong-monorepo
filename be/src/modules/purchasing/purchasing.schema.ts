@@ -19,7 +19,7 @@ export class Purchasing {
   supplier_name: string;
 
   @Prop({ type: Date })
-  due_date: Date;
+  due_date?: Date;
 
   @Prop({ default: PurchasingEn.REQUEST, enum: PurchasingEn })
   status?: PurchasingEn;
