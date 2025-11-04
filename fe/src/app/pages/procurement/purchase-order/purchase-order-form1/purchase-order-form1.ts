@@ -24,7 +24,7 @@ export class PurchaseOrderForm1 implements OnInit {
   @Output() submitPO: EventEmitter<unknown> = new EventEmitter<unknown>()
   @Output() back: EventEmitter<unknown> = new EventEmitter<unknown>()
   @Input() type: formType = 'view';
-
+  loading?: boolean;
   invoicePhotoFile?: File;
 
   form: FormGroup = new FormGroup({
@@ -46,16 +46,22 @@ export class PurchaseOrderForm1 implements OnInit {
   }
 
   getDetail(purchase_id: string) {
-    this.purchasingService.getPurchasingDetail(purchase_id).subscribe((res) => {
-      console.log({ getDetail: res })
-      this.purchasingDetail = res;
-      const valToPatch = {
-        supplier: res.supplier._id,
-        due_date: nativeToNgbDate(res.due_date),
-        invoice_number: res.invoice_number,
-        invoice_photo: res.invoice_photo
+    this.loading = true;
+    this.purchasingService.getPurchasingDetail(purchase_id).subscribe({
+      next: (res) => {
+        console.log({ getDetail: res })
+        this.purchasingDetail = res;
+        const valToPatch = {
+          supplier: res.supplier._id,
+          due_date: nativeToNgbDate(res.due_date),
+          invoice_number: res.invoice_number,
+          invoice_photo: res.invoice_photo
+        }
+        this.form.patchValue(valToPatch)
+        this.loading = false;
+      }, error: () => {
+        this.loading = false;
       }
-      this.form.patchValue(valToPatch)
     });
   }
 

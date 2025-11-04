@@ -30,7 +30,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get list purchasing');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -45,7 +45,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot create purchasing');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -61,7 +61,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot edit purchasing');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -74,7 +74,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get purchasing detail');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -87,7 +87,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot delete purchasing');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -96,7 +96,7 @@ export class PurchaseOrderService extends BaseService {
     purchasing_id: string,
     qParams: ITableQueryData
   ): Observable<IResList<IPurchasingItem>> {
-    return this.getRequest({ url: Endpoint.PURCHASING_ID(purchasing_id)+'/items', qParams, spinner: false }).pipe(
+    return this.getRequest({ url: Endpoint.PURCHASING_ID(purchasing_id) + '/items', qParams, spinner: false }).pipe(
       map((res: IResList<IPurchasingItem>) => {
         const val = {
           meta: res?.meta as IPaginationInput,
@@ -107,7 +107,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get list purchasing');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -122,7 +122,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot create purchase item');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -138,7 +138,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot edit purchase item');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -151,7 +151,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot get purchase item detail');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }
@@ -164,7 +164,7 @@ export class PurchaseOrderService extends BaseService {
       catchError((err) => {
         console.error(err);
         this.alert.error('Cannot delete purchase item');
-        return of(undefined); // emit undefined so the stream completes gracefully
+        throw new Error(err);
       })
     ) as any;
   }

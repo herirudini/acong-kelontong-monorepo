@@ -42,6 +42,7 @@ export class PurchaseOrderItemForm implements OnInit, AfterViewInit, OnChanges {
       this.service.getPurchaseItemDetail(this.purchase_item_id).subscribe((res) => {
         this.form.patchValue({
           ...res,
+          purchase_order: res.purchase_order._id,
           product: res.product._id,
           exp_date: nativeToNgbDate(res.exp_date)
         });
