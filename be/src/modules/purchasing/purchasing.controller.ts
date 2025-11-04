@@ -96,6 +96,32 @@ export class PurchasingController {
     }
   }
 
+  @Get(':purchasing_id')
+  async detailPurchasing(
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @Res() res: Response,
+  ) {
+    try {
+      const purchasing = await this.service.detailPurchasing(purchasingId);
+      return BaseResponse.success({ res, option: { message: "Success get detail purchasing", detail: purchasing } });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
+  @Delete(':purchasing_id')
+  async deletePurchasing(
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @Res() res: Response,
+  ) {
+    try {
+      const purchasing = await this.service.deletePurchasing(purchasingId);
+      return BaseResponse.success({ res, option: { message: "Success get detail purchasing", detail: purchasing } });
+    } catch (err) {
+      return BaseResponse.error({ res, err });
+    }
+  }
+
   @Put(':purchasing_id/process')
   @UseInterceptors(FileInterceptor('invoice_photo', {
     storage: diskStorage({
@@ -162,33 +188,6 @@ export class PurchasingController {
     }
   }
 
-  @Get(':purchasing_id')
-  async detailPurchasing(
-    @Param('purchasing_id') purchasingId: Types.ObjectId,
-    @Res() res: Response,
-  ) {
-    try {
-      const purchasing = await this.service.detailPurchasing(purchasingId);
-      return BaseResponse.success({ res, option: { message: "Success get detail purchasing", detail: purchasing } });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-
-
-  @Delete(':purchasing_id')
-  async deletePurchasing(
-    @Param('purchasing_id') purchasingId: Types.ObjectId,
-    @Res() res: Response,
-  ) {
-    try {
-      const purchasing = await this.service.deletePurchasing(purchasingId);
-      return BaseResponse.success({ res, option: { message: "Success get detail purchasing", detail: purchasing } });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-
   @Get(':purchasing_id/items')
   async listPurchasingItem(
     @Query() query: ListPurchasingItemsDTO,
@@ -198,69 +197,21 @@ export class PurchasingController {
     try {
       query.purchasing_id = purchasingId;
       const { data, meta } = await this.service.listPurchasingItems(query);
-      return BaseResponse.success({ res, option: { message: 'Success get list purchasing', list: data, meta } });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-}
-
-@Controller('purchasing-item')
-export class PurchasingItemController {
-
-  constructor(
-    private readonly service: PurchasingService,
-  ) { }
-  
-  @Post('')
-  async createPurchaseItem(
-    @Body() body: PurchasingItemDto,
-    @Res() res: Response,
-  ) {
-    try {
-      const purchaseItem = await this.service.createPurchasingItem(body);
-      return BaseResponse.success({ res, option: { message: "Success create purchaseItem", detail: purchaseItem } });
+      return BaseResponse.success({ res, option: { message: 'Success get list purchasing item', list: data, meta } });
     } catch (err) {
       return BaseResponse.error({ res, err });
     }
   }
 
-  @Put(':purchase_item_id')
-  async editPurchaseItem(
-    @Param('purchase_item_id') purchaseItemId: Types.ObjectId,
-    @Body() body: PurchasingItemDto,
+  @Post(':purchasing_id/items')
+  async purchasingItemBulkUpdate(
+    @Body() body: PurchasingItemDto[],
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
     @Res() res: Response,
   ) {
     try {
-      const purchaseItem = await this.service.editPurchasingItem(purchaseItemId, body);
-      return BaseResponse.success({ res, option: { message: "Success edit purchaseItem", detail: purchaseItem } });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-
-  @Get(':purchase_item_id')
-  async detailPurchaseItem(
-    @Param('purchase_item_id') purchaseItemId: Types.ObjectId,
-    @Res() res: Response,
-  ) {
-    try {
-      const purchaseItem = await this.service.detailPurchasingItem(purchaseItemId);
-      return BaseResponse.success({ res, option: { message: "Success get detail purchaseItem", detail: purchaseItem } });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
-  }
-
-
-  @Delete(':purchase_item_id')
-  async deletePurchaseItem(
-    @Param('purchase_item_id') purchaseItemId: Types.ObjectId,
-    @Res() res: Response,
-  ) {
-    try {
-      const purchaseItem = await this.service.deletePurchasingItem(purchaseItemId);
-      return BaseResponse.success({ res, option: { message: "Success get detail purchaseItem", detail: purchaseItem } });
+      const { data, meta } = await this.service.bulkUpdatePurchasingItems(purchasingId, body);
+      return BaseResponse.success({ res, option: { message: 'Success bulk update purchasing item', list: data, meta } });
     } catch (err) {
       return BaseResponse.error({ res, err });
     }

@@ -7,9 +7,9 @@ import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { EditInventoryDto } from './inventory.dto';
-import { PurchasingItem } from '../purchasing/purchasing.schema';
 import { digitShortDate } from 'src/utils/helper';
 import { ReceiveOrderItemDto } from '../purchasing/purchasing.dto';
+import { PurchasingItem } from '../purchasing-item/purchasing-item.schema';
 
 @Injectable()
 export class InventoryService {
@@ -44,7 +44,7 @@ export class InventoryService {
   async createInventory(body: ReceiveOrderItemDto, sessionIn: ClientSession): Promise<Inventory> {
     return this.global.withTransaction(async (session) => {
       const poItem = await this.purchasingItemModel.findById(body.purchase_item).session(session);
-      if (!poItem) throw new Error('createInventory poItem not found');
+      if (!poItem) throw BaseResponse.notFound({ err: 'createInventory poItem not found' });
 
       const batchCode = `${digitShortDate(new Date())}-${poItem.product_name.replace(/\s+/g, '_')}-${poItem._id.toString().slice(-4)}`;
 

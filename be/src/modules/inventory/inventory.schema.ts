@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Purchasing, PurchasingItemDocument } from '../purchasing/purchasing.schema';
+import { Purchasing } from '../purchasing/purchasing.schema';
 import { Product } from '../product/product.schema';
+import { PurchasingItemDocument } from '../purchasing-item/purchasing-item.schema';
 
 export enum InventoryEn {
   HALT = 'HALT',
