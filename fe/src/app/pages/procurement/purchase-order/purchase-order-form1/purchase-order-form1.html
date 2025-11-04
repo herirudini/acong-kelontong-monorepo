@@ -27,7 +27,7 @@
           <label for="invoice_photo" class="form-label">Invoice Photo</label>
           <app-drag-drop-file #invoicePhoto [patchFileName]="form.controls.invoice_photo.value"
             [loading]="loading" (deleteHandler)="deleteFile()" (previewHandler)="previewFile()"
-            (fileChanged)="addFile($event)"></app-drag-drop-file>
+            [disabled]="type==='view'" (fileChanged)="addFile($event)"></app-drag-drop-file>
         </div>
       </div>
     </div>

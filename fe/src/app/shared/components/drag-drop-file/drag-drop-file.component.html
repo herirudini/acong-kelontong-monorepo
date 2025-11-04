@@ -1,4 +1,4 @@
-<div class="dropbox pointer position-relative" [class.error]="error" [class.dragging]="isDragging"
+<div class="dropbox position-relative" [class.pointer]="!disabled" [class.error]="error" [class.dragging]="isDragging"
   [class.pointer-events-none]="disabled" [class.disabled]="disabled" (click)="hiddenInput.click()"
   (dragover)="handleDragOver($event)" (dragenter)="isDragging=true" (dragleave)="handleDragMove($event)"
   (drop)="handleDrop($event)" onkeypress="hiddenInput.click()">

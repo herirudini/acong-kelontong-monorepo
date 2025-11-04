@@ -23,6 +23,9 @@ export class PurchaseOrderForm {
     const type = this.route.snapshot.queryParamMap.get('type') || undefined;
     if (type && ['view', 'new', 'edit'].includes(type)) {
       this.type = type as formType;
+      if (this.type === 'view') {
+        this.activeStep = 3;
+      }
     }
   }
 

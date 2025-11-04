@@ -49,6 +49,7 @@ export class DragDropFileComponent implements OnChanges {
   }
 
   validateFile(file: File) {
+    if (this.disabled) return;
     try {
       this.loading = true;
       const fileExtension = file.name.split('.').pop()?.toLowerCase() as string;

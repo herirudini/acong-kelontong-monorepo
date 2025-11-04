@@ -58,6 +58,7 @@ export class PurchaseOrderForm1 implements OnInit {
           invoice_photo: res.invoice_photo
         }
         this.form.patchValue(valToPatch)
+        console.log({ valToPatch })
         this.loading = false;
       }, error: () => {
         this.loading = false;
@@ -107,7 +108,11 @@ export class PurchaseOrderForm1 implements OnInit {
     if (val.supplier) fd.append('supplier', val.supplier);
     if (val.due_date) fd.append('due_date', ngbToNativeDate(val.due_date)!.toISOString());
     if (val.invoice_number) fd.append('invoice_number', val.invoice_number);
-    if (this.invoicePhotoFile) fd.append('invoice_photo', this.invoicePhotoFile);
+    if (this.invoicePhotoFile) {
+      fd.append('invoice_photo', this.invoicePhotoFile)
+    } else {
+      fd.append('invoice_photo', val.invoice_photo)
+    };
     return fd;
   }
 

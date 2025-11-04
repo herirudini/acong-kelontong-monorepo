@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PurchasingDetail } from '../../purchasing-detail/purchasing-detail';
 import { ActivatedRoute } from '@angular/router';
+import { formType } from '../../../../types/interfaces/common.interface';
 @Component({
   selector: 'app-purchase-order-detail',
   imports: [PurchasingDetail],
@@ -10,6 +11,7 @@ import { ActivatedRoute } from '@angular/router';
 export class PurchaseOrderDetail {
   @Output() nextStep: EventEmitter<unknown> = new EventEmitter<unknown>()
   @Output() back: EventEmitter<unknown> = new EventEmitter<unknown>()
+  @Input() type: formType = 'view';
 
   purchase_id?: string;
 

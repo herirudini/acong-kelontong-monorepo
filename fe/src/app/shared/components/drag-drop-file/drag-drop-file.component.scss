@@ -43,7 +43,7 @@ input {
 
   &.dragging {
     background-color: var(--neutral-colors-gray-30, #bbbbbd);
-    cursor: pointer;
+    cursor: copy;
   }
 
   &-guide {
