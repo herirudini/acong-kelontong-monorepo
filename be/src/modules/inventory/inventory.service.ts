@@ -95,10 +95,12 @@ export class InventoryService {
 
   async deleteInventory(id: Types.ObjectId): Promise<Inventory | undefined> {
     try {
-      const detailInventory = await this.inventoryModel.findByIdAndDelete(id).exec();
-      return detailInventory || undefined;
+      const inventory = await this.inventoryModel.findById(id);
+      if (!inventory) throw BaseResponse.notFound()
+      await this.global.deleteData(inventory);
+      return inventory || undefined;
     } catch (err) {
-      throw BaseResponse.unexpected({ err: { text: 'detailInventory catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'deleteInventory catch', err } })
     }
   }
 }

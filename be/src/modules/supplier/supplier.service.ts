@@ -72,10 +72,12 @@ export class SupplierService {
 
   async deleteSupplier(id: Types.ObjectId): Promise<Supplier | undefined> {
     try {
-      const detailSupplier = await this.supplierModel.findByIdAndDelete(id).exec();
-      return detailSupplier || undefined;
+      const supplier = await this.supplierModel.findById(id);
+      if (!supplier) throw BaseResponse.notFound()
+      await this.global.deleteData(supplier);
+      return supplier || undefined;
     } catch (err) {
-      throw BaseResponse.unexpected({ err: { text: 'detailSupplier catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'deleteSupplier catch', err } })
     }
   }
 }

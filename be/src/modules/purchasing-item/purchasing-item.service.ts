@@ -81,7 +81,7 @@ export class PurchasingItemService {
 
   async deletePurchasingItem(id: Types.ObjectId, sessionIn?: ClientSession): Promise<PurchasingItem | undefined> {
     return this.global.withTransaction(async (session) => {
-      const purchasingItem = await this.purchasingItemModel.findByIdAndDelete(id).session(session);
+      const purchasingItem = await this.purchasingItemModel.findById(id).session(session);
       if (!purchasingItem) throw BaseResponse.notFound({ err: 'deletePurchasingItem not found' });
       await this.updatePurchasingTotalPrice(purchasingItem?.purchase_order, session);
       await this.global.deleteData(purchasingItem, session);

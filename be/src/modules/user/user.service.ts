@@ -165,7 +165,9 @@ export class UserService {
   }
 
   async deleteUser(user_id: Types.ObjectId): Promise<User | undefined> {
-    const execute = await this.userModel.findByIdAndDelete(user_id).populate('role');
+    const execute = await this.userModel.findById(user_id);
+    if (!execute) throw BaseResponse.notFound()
+    await this.global.deleteData(execute);
     return execute || undefined;
   }
 

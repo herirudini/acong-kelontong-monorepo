@@ -88,11 +88,11 @@ export class RoleService {
     }
   }
 
-  async deleteRole(role_id: Types.ObjectId): Promise<boolean> {
+  async deleteRole(role_id: Types.ObjectId): Promise<Role | undefined> {
     const role = await this.roleModel.findById(role_id);
     if (!role) throw BaseResponse.notFound({ option: { message: 'Role not found' } })
     if (role.active) throw BaseResponse.forbidden({ option: { message: 'Cannot delete active role' } })
-    await this.roleModel.findByIdAndDelete(role_id).exec();
-    return true;
+    await this.global.deleteData(role);
+    return role || undefined;
   }
 }

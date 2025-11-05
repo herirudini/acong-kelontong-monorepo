@@ -5,7 +5,7 @@ import type { Response } from 'express';
 import { BaseResponse } from 'src/utils/base-response';
 import { PaginationDto } from 'src/global/global.dto';
 import { Types } from 'mongoose';
-import { EditInventoryDto } from './inventory.dto';
+import { InventoryDto } from './inventory.dto';
 
 @UseGuards(AuthGuard)
 @Controller('inventory')
@@ -30,7 +30,7 @@ export class InventoryController {
   @Put(':inventory_id')
   async editInventory(
     @Param('inventory_id') inventoryId: Types.ObjectId,
-    @Body() body: EditInventoryDto,
+    @Body() body: InventoryDto,
     @Res() res: Response,
   ) {
     try {

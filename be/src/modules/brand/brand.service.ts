@@ -72,7 +72,9 @@ export class BrandService {
 
     async deleteBrand(id: Types.ObjectId): Promise<Brand | undefined> {
         try {
-            const detailBrand = await this.brandModel.findByIdAndDelete(id).exec();
+            const detailBrand = await this.brandModel.findById(id);
+            if (!detailBrand) throw BaseResponse.notFound()
+            await this.global.deleteData(detailBrand);
             return detailBrand || undefined;
         } catch (err) {
             throw BaseResponse.unexpected({ err: { text: 'detailBrand catch', err } })

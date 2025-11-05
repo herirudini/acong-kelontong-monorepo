@@ -75,10 +75,12 @@ export class ProductService {
 
   async deleteProduct(id: Types.ObjectId): Promise<Product | undefined> {
     try {
-      const detailProduct = await this.productModel.findByIdAndDelete(id).exec();
-      return detailProduct || undefined;
+      const product = await this.productModel.findById(id);
+      if (!product) throw BaseResponse.notFound()
+      await this.global.deleteData(product);
+      return product || undefined;
     } catch (err) {
-      throw BaseResponse.unexpected({ err: { text: 'detailProduct catch', err } })
+      throw BaseResponse.unexpected({ err: { text: 'deleteProduct catch', err } })
     }
   }
 }
