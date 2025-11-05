@@ -1,5 +1,6 @@
 import { TModules } from './interfaces';
 
+export const cleanupDays = 30;
 export const sessionDays = 7;
 export const sessionMinutes = 15;
 export const salts = 10

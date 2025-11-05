@@ -4,13 +4,23 @@ import { BaseResponse } from 'src/utils/base-response';
 import { PurchasingService } from './purchasing.service';
 import type { Request, Response } from 'express';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PurchasingDto, PurchaseOrderDto, ListPurchasingItemsDTO } from './purchasing.dto';
+import { PurchasingDto, PurchaseOrderDto, ListPurchasingItemsDTO, ReceiveOrderDto } from './purchasing.dto';
 import { Types } from 'mongoose';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import { extname, join } from 'path';
 import { PurchasingEn } from './purchasing.schema';
 import { PurchasingItemDto, ReceiveOrderItemDto } from '../purchasing-item/purchasing-item.dto';
+import { v4 as uuidv4 } from 'uuid';
+import * as fs from 'fs';
+import { UploadInvoiceInterceptor } from './purchasing-invoice.interceptor';
 
+interface headerArgs {
+  purchasingId?: Types.ObjectId,
+  file?: Express.Multer.File,
+  req: Request,
+  dto?: PurchasingDto,
+  res: Response,
+}
 @Controller('purchasing')
 export class PurchasingController {
 
@@ -18,37 +28,42 @@ export class PurchasingController {
     private readonly service: PurchasingService,
   ) { }
 
+  async purchasingMutation<T>(args: headerArgs, cb: () => Promise<T>): Promise<T> {
+    try {
+      if (args.file && args.dto) {
+        const folder = (args.req as any).uuidFolder;
+        const filePath = `/uploads/invoices/${folder}/${args.file.filename}`;
+        const fullUrl = `${args.req.protocol}://${args.req.get('host')}${filePath}`;
+        args.dto.invoice_photo = fullUrl;
+      }
+      const result = await cb();
+      return result;
+    } catch (err) {
+      if (args.file) {
+        const folder = (args.req as any).uuidFolder;
+        const filePath = `/uploads/invoices/${folder}/`;
+        fs.rmSync(`.${filePath}`, { recursive: true, force: true });
+      }
+      return BaseResponse.error({ res: args.res, err });
+    }
+  }
+
   @Post('')
-  @UseInterceptors(FileInterceptor('invoice_photo', {
-    storage: diskStorage({
-      destination: './uploads/invoices',
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
-      },
-    }),
-  }))
+  @UploadInvoiceInterceptor()
   async createPurchasing(
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: PurchasingDto,
     @Req() req: Request,
     @Res() res: Response,
   ) {
-    try {
-      if (file) {
-        const filePath = `/uploads/invoices/${file.filename}`;
-        const fullUrl = `${req.protocol}://${req.get('host')}${filePath}`;
-        dto.invoice_photo = fullUrl; // store full URL
-      }
+    return this.purchasingMutation({ file, dto, req, res }, async () => {
       const data: PurchasingDto & { status: PurchasingEn } = {
         ...dto,
-        status: PurchasingEn.REQUEST
+        status: PurchasingEn.CREATE
       }
       const purchasing = await this.service.createPurchasing(data);
       return BaseResponse.success({ res, option: { message: "Success create purchasing", detail: purchasing } });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
+    })
   }
 
   @Get('')
@@ -65,15 +80,7 @@ export class PurchasingController {
   }
 
   @Put(':purchasing_id')
-  @UseInterceptors(FileInterceptor('invoice_photo', {
-    storage: diskStorage({
-      destination: './uploads/invoices',
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
-      },
-    }),
-  }))
+  @UploadInvoiceInterceptor()
   async editPurchasing(
     @Param('purchasing_id') purchasingId: Types.ObjectId,
     @UploadedFile() file: Express.Multer.File,
@@ -81,20 +88,13 @@ export class PurchasingController {
     @Body() dto: PurchasingDto,
     @Res() res: Response,
   ) {
-    try {
-      if (file) {
-        const filePath = `/uploads/invoices/${file.filename}`;
-        const fullUrl = `${req.protocol}://${req.get('host')}${filePath}`;
-        dto.invoice_photo = fullUrl; // store full URL
-      }
+    return this.purchasingMutation({ file, dto, req, res }, async () => {
       const purchasing = await this.service.editPurchasing(purchasingId, dto);
       return BaseResponse.success({
         res,
         option: { message: 'Success edit purchasing', detail: purchasing },
       });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
+    })
   }
 
   @Get(':purchasing_id')
@@ -123,70 +123,102 @@ export class PurchasingController {
     }
   }
 
-  @Put(':purchasing_id/process')
-  @UseInterceptors(FileInterceptor('invoice_photo', {
-    storage: diskStorage({
-      destination: './uploads/invoices',
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
-      },
-    }),
-  }))
+  @Put(':purchasing_id/request')
   async purchaseOrder(
     @Param('purchasing_id') purchasingId: Types.ObjectId,
-    @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
-    @Body() dto: PurchaseOrderDto,
     @Res() res: Response,
   ) {
-    try {
-      if (file) {
-        const filePath = `/uploads/invoices/${file.filename}`;
-        const fullUrl = `${req.protocol}://${req.get('host')}${filePath}`;
-        dto.invoice_photo = fullUrl; // store full URL
-      }
-      const purchasing = await this.service.purchaseOrder(purchasingId, dto);
+    return this.purchasingMutation({ req, res }, async () => {
+      const purchasing = await this.service.purchasingUpdateStat(purchasingId, PurchasingEn.REQUEST);
       return BaseResponse.success({
         res,
-        option: { message: `Success processing purchase order`, detail: purchasing },
+        option: { message: `Purchase order on request`, detail: purchasing },
       });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
+    });
+  }
+
+  @Put(':purchasing_id/approve')
+  async purchaseOrderApprove(
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.purchasingMutation({ req, res }, async () => {
+      const purchasing = await this.service.purchasingUpdateStat(purchasingId, PurchasingEn.APPROVE);
+      return BaseResponse.success({
+        res,
+        option: { message: `Purchase order approved`, detail: purchasing },
+      });
+    });
+  }
+
+  @Put(':purchasing_id/reject')
+  async purchaseOrderReject(
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @Req() req: Request,
+    @Body() dto: { reject_notes: string },
+    @Res() res: Response,
+  ) {
+    return this.purchasingMutation({ req, res }, async () => {
+      const purchasing = await this.service.purchasingUpdateStat(purchasingId, PurchasingEn.REJECT, dto.reject_notes);
+      return BaseResponse.success({
+        res,
+        option: { message: `Purchase order rejected`, detail: purchasing },
+      });
+    });
+  }
+
+  @Put(':purchasing_id/process')
+  async purchaseOrderProcess(
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.purchasingMutation({ req, res }, async () => {
+      const purchasing = await this.service.purchasingUpdateStat(purchasingId, PurchasingEn.PROCESS);
+      return BaseResponse.success({
+        res,
+        option: { message: `Purchase order on process`, detail: purchasing },
+      });
+    });
+  }
+
+  @Put(':purchasing_id/drop')
+  async purchaseOrderDrop(
+    @Param('purchasing_id') purchasingId: Types.ObjectId,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    return this.purchasingMutation({ req, res }, async () => {
+      const purchasing = await this.service.purchasingUpdateStat(purchasingId, PurchasingEn.DROP);
+      return BaseResponse.success({
+        res,
+        option: { message: `Purchase order on process`, detail: purchasing },
+      });
+    });
   }
 
   @Put(':purchasing_id/receive')
-  @UseInterceptors(FileInterceptor('invoice_photo', {
-    storage: diskStorage({
-      destination: './uploads/invoices',
-      filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-        cb(null, `${uniqueSuffix}${extname(file.originalname)}`);
-      },
-    }),
-  }))
+  @UploadInvoiceInterceptor()
   async recieveOrder(
     @Param('purchasing_id') purchasingId: Types.ObjectId,
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
-    @Body() dto: PurchaseOrderDto & ReceiveOrderItemDto,
+    @Body() dto: { purchase: ReceiveOrderDto, purhcaseItems: ReceiveOrderItemDto[] },
     @Res() res: Response,
   ) {
-    try {
-      if (file) {
-        const filePath = `/uploads/invoices/${file.filename}`;
-        const fullUrl = `${req.protocol}://${req.get('host')}${filePath}`;
-        dto.invoice_photo = fullUrl; // store full URL
+    return this.purchasingMutation({ file, dto: dto.purchase, req, res }, async () => {
+      const data: ReceiveOrderDto & { status: PurchasingEn } = {
+        ...dto.purchase,
+        status: PurchasingEn.RECEIVE
       }
-      const purchasing = await this.service.receiveOrder(purchasingId, dto);
+      const purchasing = await this.service.receiveOrder(purchasingId, data, dto.purhcaseItems);
       return BaseResponse.success({
         res,
-        option: { message: `Success receive purchase order`, detail: purchasing },
+        option: { message: `Purchase order on receive`, detail: purchasing },
       });
-    } catch (err) {
-      return BaseResponse.error({ res, err });
-    }
+    });
   }
 
   @Get(':purchasing_id/items')

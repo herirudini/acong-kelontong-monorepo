@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ClientSession, Connection, Model, Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
@@ -6,12 +6,16 @@ import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
 import { Purchasing, PurchasingEn } from './purchasing.schema';
-import { ListPurchasingItemsDTO, PurchaseOrderDto, PurchasingDto } from './purchasing.dto';
+import { ListPurchasingItemsDTO, PurchaseOrderDto, PurchasingDto, ReceiveOrderDto } from './purchasing.dto';
 import { Supplier } from '../supplier/supplier.schema';
 import { InventoryService } from '../inventory/inventory.service';
 import { PurchasingItem } from '../purchasing-item/purchasing-item.schema';
 import { PurchasingItemService } from '../purchasing-item/purchasing-item.service';
-import { PurchasingItemDto } from '../purchasing-item/purchasing-item.dto';
+import { PurchasingItemDto, ReceiveOrderItemDto } from '../purchasing-item/purchasing-item.dto';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { decreaseDays } from 'src/utils/helper';
+import { cleanupDays } from 'src/types/constants';
+import * as fs from 'fs';
 
 @Injectable()
 export class PurchasingService {
@@ -26,6 +30,47 @@ export class PurchasingService {
     @InjectConnection() private readonly connection: Connection,
   ) { }
 
+  private readonly logger = new Logger(PurchasingService.name);
+
+  // Run every hour
+  @Cron(CronExpression.EVERY_HOUR)
+  async cleanup() {
+    await this.expirePurchases();
+    await this.deletePurchases();
+  }
+
+  async expirePurchases() {
+    const now = new Date();
+    await this.purchasingModel.updateMany(
+      {
+        due_date: { $lt: now },
+        status: { $nin: [PurchasingEn.PROCESS, PurchasingEn.RECEIVE, PurchasingEn.DROP] },
+      },
+      { $set: { status: PurchasingEn.EXPIRED } },
+    );
+  }
+
+  async deletePurchases() {
+    const now = new Date();
+    const expired = await this.purchasingModel.find(
+      {
+        due_date: { $lt: decreaseDays(now, cleanupDays) },
+        status: { $in: [PurchasingEn.EXPIRED] },
+      },
+    ).lean();
+    const dropped = await this.purchasingModel.find(
+      {
+        updatedAt: { $lt: decreaseDays(now, cleanupDays) }, //WARNING: this must be the date when status changed to DROP
+        status: { $in: [PurchasingEn.DROP] },
+      },
+    ).lean();
+    const purchasings = expired.concat(dropped);
+    await Promise.all(purchasings.map(async item => {
+      const deleted = await this.deletePurchasing(item._id)
+      if (deleted) this.logger.log(`Purchasing deleted, id: ${item._id.toString()}`);
+    }));
+  }
+
   async createPurchasing(data: PurchasingDto & { status: PurchasingEn }): Promise<Purchasing | undefined> {
     const session = await this.connection.startSession();
     session.startTransaction();
@@ -36,10 +81,11 @@ export class PurchasingService {
       throw BaseResponse.notFound({ err: 'Supplier not found' });
     }
     const purchase = await this.purchasingModel.create([{  // use array + session
+      ...data,
       supplier: supplier._id,
       supplier_name: supplier.supplier_name,
       due_date: data.due_date,
-      status: PurchasingEn.REQUEST,
+      status: data.status,
       total_purchase_price: 0,
     }], { session });
 
@@ -59,24 +105,34 @@ export class PurchasingService {
       const supplier = await this.supplierModel.findById(data.supplier).session(session);
       if (!supplier) throw BaseResponse.notFound({ err: 'Supplier not found' });
 
-      const statDrop = ['status']
-      const statReceive = [...statDrop, 'invoice_number', 'invoice_photo']
-      const statProcess = [...statReceive, 'due_date']
-      const statRequest = [...statProcess, 'total_purchase_price', 'supplier_name', 'supplier']
+      const allowedFieldsByStatus = {
+        [PurchasingEn.DROP]: ['status'],
+        [PurchasingEn.RECEIVE]: ['status', 'invoice_number', 'invoice_photo'],
+        [PurchasingEn.PROCESS]: ['status', 'invoice_number', 'invoice_photo', 'due_date'],
+        [PurchasingEn.REQUEST]: ['status', 'invoice_number', 'invoice_photo', 'due_date', 'total_purchase_price', 'supplier_name', 'supplier'],
+      };
+      // get allowed fields for this status
+      const fields: string[] = purchase.status ? allowedFieldsByStatus[purchase.status] : [];
+      // find invalid keys
+      const invalidKeys = Object.keys(data).filter(
+        key => !fields.includes(key)
+      );
 
-      let fields: string[];
-      switch (purchase.status) {
-        case PurchasingEn.DROP:
-          fields = statDrop;
-          break;
-        case PurchasingEn.RECEIVE:
-          fields = statReceive;
-          break;
-        case PurchasingEn.PROCESS:
-          fields = statProcess;
-          break;
-        default:
-          fields = statRequest
+      if (invalidKeys.length) {
+        throw BaseResponse.invalid({
+          err: `editPurchasing Invalid fields for status ${purchase.status}: ${invalidKeys.join(', ')}`,
+          option: { message: `Not allowed to update these fields: ${invalidKeys.join(', ')} \n For purchasing with status: ${purchase.status}` }
+        });
+      }
+
+      if (purchase.invoice_photo && purchase.invoice_photo !== data.invoice_photo) {
+        try {
+          const oldPath = new URL(purchase.invoice_photo).pathname; // e.g. /uploads/invoices/<uuid>/<file>
+          const folderPath = oldPath.split('/').slice(0, -1).join('/'); // remove file name
+          fs.rmSync(`.${folderPath}`, { recursive: true, force: true }); // delete the folder
+        } catch (err) {
+          console.warn('Failed to delete old invoice folder:', err.message);
+        }
       }
 
       fields.forEach((field: string) => {
@@ -85,7 +141,7 @@ export class PurchasingService {
         if (field === 'due_date') purchase.due_date = data.due_date;
         if (field === 'invoice_number') purchase.invoice_number = data.invoice_number;
         if (field === 'invoice_photo') purchase.invoice_photo = data.invoice_photo;
-        if (field === 'status') purchase.status = data.status;
+        if (field === 'status') purchase.status = data.status ?? purchase.status;
       });
 
       await purchase.save({ session });
@@ -151,9 +207,23 @@ export class PurchasingService {
 
   async deletePurchasing(id: Types.ObjectId, sessionIn?: ClientSession): Promise<Purchasing | undefined> {
     return this.global.withTransaction(async (session) => {
-      const deletedPurchasing = await this.purchasingModel.findByIdAndDelete(id).session(session);
-      await this.purchasingItemModel.deleteMany({ purchase_order: id }).session(session);
-      return deletedPurchasing || undefined;
+      const purchasing = await this.purchasingModel.findById(id).session(session);
+      if (!purchasing) throw BaseResponse.notFound({ err: 'deletePurchasing failed', option: { message: 'Purchasing not found' } });
+      if (purchasing.invoice_photo) {
+        try {
+          const oldPath = new URL(purchasing.invoice_photo).pathname; // e.g. /uploads/invoices/<uuid>/<file>
+          const folderPath = oldPath.split('/').slice(0, -1).join('/'); // remove file name
+          fs.rmSync(`.${folderPath}`, { recursive: true, force: true }); // delete the folder
+        } catch (err) {
+          console.warn('deletePurchasing Failed to delete old invoice folder:', err.message);
+        }
+      }
+      const deleted = await this.global.deleteData(purchasing, session);
+      const items = await this.purchasingItemModel.find({ purchase_order: id }).session(session);
+      await Promise.all(items.map(async item => {
+        await this.global.deleteData(item, session);
+      }))
+      return deleted || undefined;
     }, sessionIn);
   }
 
@@ -187,28 +257,21 @@ export class PurchasingService {
     }, sessionIn);
   }
 
-  async purchaseOrder(id: Types.ObjectId, dto: PurchaseOrderDto): Promise<Purchasing | undefined> {
+  async purchasingUpdateStat(id: Types.ObjectId, status: PurchasingEn, notes?: string): Promise<Purchasing | undefined> {
     return this.global.withTransaction(async (session) => {
       const purchase = await this.purchasingModel.findById(id).session(session);
       if (!purchase) {
         throw BaseResponse.notFound({ err: { text: 'purchaseOrder purchase not found' } });
       }
-      if (purchase?.status !== PurchasingEn.REQUEST) {
-        throw BaseResponse.forbidden({ err: { text: 'purchaseOrder invalid status purchase order' } })
-      }
-      const data = {
-        ...dto,
-        status: PurchasingEn.PROCESS
-      }
-      const updatedPurchase = await this.editPurchasing(id, data, session);
-      if (!updatedPurchase) {
-        throw BaseResponse.unexpected({ err: { text: 'purchaseOrder failed to editPurchasing' } });
-      }
-      return updatedPurchase
+      purchase.status = status ?? purchase.status;
+      if (status === PurchasingEn.REJECT) purchase.reject_notes = notes;
+      if (status === PurchasingEn.RECEIVE) purchase.receive_notes = notes;
+      await purchase.save({ session });
+      return purchase;
     });
   }
 
-  async receiveOrder(id: Types.ObjectId, dto: PurchaseOrderDto): Promise<Purchasing | undefined> {
+  async receiveOrder(id: Types.ObjectId, dto: ReceiveOrderDto, purhcaseItems: ReceiveOrderItemDto[]): Promise<Purchasing | undefined> {
     return this.global.withTransaction(async (session) => {
       const purchase = await this.purchasingModel.findById(id).session(session);
       if (!purchase)
@@ -218,7 +281,6 @@ export class PurchasingService {
       // ✅ Step 1: Update purchasing and its items
       const updatedPurchase = await this.editPurchasing(id, {
         ...dto,
-        status: PurchasingEn.RECEIVE
       }, session);
       if (!updatedPurchase)
         throw BaseResponse.unexpected({ err: { text: 'receiveOrder failed to editPurchasing' } });

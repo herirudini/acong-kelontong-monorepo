@@ -43,10 +43,15 @@ export function decodeBase64(base64: string): string {
   return Buffer.from(base64, 'base64').toString('utf8');
 }
 
-
 export function addDays(date: Date, days: number): Date {
   const result = new Date(date);
   result.setDate(result.getDate() + days);
+  return result;
+}
+
+export function decreaseDays(date: Date, days: number): Date {
+  const result = new Date(date);
+  result.setDate(result.getDate() - days);
   return result;
 }
 

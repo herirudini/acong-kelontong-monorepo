@@ -38,6 +38,7 @@ import { Inventory, InventorySchema } from './modules/inventory/inventory.schema
 import { PurchasingItemController } from './modules/purchasing-item/purchasing-item.controller';
 import { PurchasingItemService } from './modules/purchasing-item/purchasing-item.service';
 import { PurchasingItem, PurchasingItemSchema } from './modules/purchasing-item/purchasing-item.schema';
+import { Trash, TrashSchema } from './global/global.schema';
 
 @Module({
   imports: [
@@ -84,6 +85,7 @@ import { PurchasingItem, PurchasingItemSchema } from './modules/purchasing-item/
       },
     }),
     MongooseModule.forFeature([
+      { name: Trash.name, schema: TrashSchema },
       { name: Auth.name, schema: AuthSchema },
       { name: Role.name, schema: RoleSchema },
       { name: User.name, schema: UserSchema },

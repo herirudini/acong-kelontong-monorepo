@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
+import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Model, FilterQuery, ClientSession, Connection } from 'mongoose';
 import { modules } from 'src/types/constants';
 import { IPaginationRes, TOneOrMany } from 'src/types/interfaces';
+import { Trash } from './global.schema';
+import { Document } from 'mongoose';
 
 export type PopulateParam = { column: string; select?: any; match?: any; options?: any };
 export class IGetListParam {
@@ -22,6 +24,7 @@ export class GlobalService {
 
   constructor(
     @InjectConnection() private readonly connection: Connection,
+    @InjectModel(Trash.name) private trashModel: Model<Trash>,
   ) { }
 
 
@@ -122,6 +125,17 @@ export class GlobalService {
     } finally {
       if (isNew) await session.endSession();
     }
+  }
+
+  async deleteData<T extends Document>(data: T, sessionIn?: ClientSession): Promise<T | undefined> {
+    return this.withTransaction(async (session) => {
+      await this.trashModel.updateOne(
+        { target_id: data._id },
+        { $set: { target_data: data.toObject() } },
+        { upsert: true },
+      ).session(session);
+      return await data.deleteOne({ session }); // delete original
+    }, sessionIn);
   }
 
 }

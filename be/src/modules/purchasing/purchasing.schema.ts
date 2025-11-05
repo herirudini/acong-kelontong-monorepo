@@ -3,10 +3,14 @@ import { Document, Types } from 'mongoose';
 import { Supplier, SupplierDocument } from '../supplier/supplier.schema';
 
 export enum PurchasingEn {
+  CREATE = 'CREATE',
   REQUEST = 'REQUEST',
+  REJECT = 'REJECT',
+  APPROVE = 'APPROVE',
   PROCESS = 'PROCESS',
   RECEIVE = 'RECEIVE',
   DROP = 'DROP',
+  EXPIRED = 'EXPIRED',
 }
 
 // PURCHASING as HEADER
@@ -21,8 +25,8 @@ export class Purchasing {
   @Prop({ type: Date })
   due_date?: Date;
 
-  @Prop({ default: PurchasingEn.REQUEST, enum: PurchasingEn })
-  status?: PurchasingEn;
+  @Prop({ enum: PurchasingEn, required: true })
+  status: PurchasingEn;
 
   @Prop({ type: Date })
   received_at?: Date;
@@ -35,6 +39,10 @@ export class Purchasing {
 
   @Prop({ type: Number, default: 0 })
   total_purchase_price: number;
+  @Prop()
+  reject_notes?: string;
+  @Prop()
+  receive_notes?: string;
 }
 
 

@@ -1,8 +1,6 @@
-import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, IsDate, IsArray, IsOptional, IsMongoId } from 'class-validator';
+import { IsNotEmpty, IsString, IsDate, IsOptional, IsMongoId } from 'class-validator';
 import { Types } from 'mongoose';
 import { PaginationDto } from 'src/global/global.dto';
-import { PurchasingItemDto } from '../purchasing-item/purchasing-item.dto';
 export class PurchaseOrderDto {
   @IsOptional()
   @IsString()
@@ -10,9 +8,6 @@ export class PurchaseOrderDto {
   @IsOptional()
   @IsString()
   invoice_photo?: string;
-  @IsArray()
-  @Type(() => PurchasingItemDto)
-  purchase_item: PurchasingItemDto[];
 }
 export class PurchasingDto extends PurchaseOrderDto {
   @IsMongoId() // ✅ checks it's a valid ObjectId string
@@ -22,6 +17,12 @@ export class PurchasingDto extends PurchaseOrderDto {
   @IsDate()
   @IsNotEmpty()
   due_date?: Date;
+}
+
+export class ReceiveOrderDto extends PurchaseOrderDto {
+  @IsOptional()
+  @IsString()
+  receive_notes?: string;
 }
 
 export class ListPurchasingItemsDTO extends PaginationDto {
