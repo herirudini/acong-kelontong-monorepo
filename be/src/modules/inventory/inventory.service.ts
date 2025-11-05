@@ -6,11 +6,9 @@ import { PaginationDto } from 'src/global/global.dto';
 import { GlobalService } from 'src/global/global.service';
 import { IPaginationRes } from 'src/types/interfaces';
 import { BaseResponse } from 'src/utils/base-response';
-import { EditInventoryDto } from './inventory.dto';
+import { InventoryDto } from './inventory.dto';
 import { digitShortDate } from 'src/utils/helper';
 import { PurchasingItem } from '../purchasing-item/purchasing-item.schema';
-import { ReceiveOrderItemDto } from '../purchasing-item/purchasing-item.dto';
-
 @Injectable()
 export class InventoryService {
   constructor(
@@ -41,7 +39,7 @@ export class InventoryService {
     )
   }
 
-  async createInventory(body: ReceiveOrderItemDto, sessionIn: ClientSession): Promise<Inventory> {
+  async createInventory(body: InventoryDto, sessionIn: ClientSession): Promise<Inventory> {
     return this.global.withTransaction(async (session) => {
       const poItem = await this.purchasingItemModel.findById(body.purchase_item).session(session);
       if (!poItem) throw BaseResponse.notFound({ err: 'createInventory poItem not found' });
@@ -67,7 +65,7 @@ export class InventoryService {
   }
 
 
-  async editInventory(id: Types.ObjectId, data: EditInventoryDto): Promise<Inventory | undefined> {
+  async editInventory(id: Types.ObjectId, data: InventoryDto): Promise<Inventory | undefined> {
     try {
       const updatedInventory = await this.inventoryModel.findByIdAndUpdate(
         id,

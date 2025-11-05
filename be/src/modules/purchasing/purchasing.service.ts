@@ -11,7 +11,7 @@ import { Supplier } from '../supplier/supplier.schema';
 import { InventoryService } from '../inventory/inventory.service';
 import { PurchasingItem } from '../purchasing-item/purchasing-item.schema';
 import { PurchasingItemService } from '../purchasing-item/purchasing-item.service';
-import { PurchasingItemDto, ReceiveOrderItemDto } from '../purchasing-item/purchasing-item.dto';
+import { PurchasingItemDto } from '../purchasing-item/purchasing-item.dto';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { decreaseDays } from 'src/utils/helper';
 import { cleanupDays } from 'src/types/constants';
@@ -227,7 +227,7 @@ export class PurchasingService {
     }, sessionIn);
   }
 
-  async bulkUpdatePurchasingItems(purchasing_id: Types.ObjectId, data: PurchasingItemDto[], sessionIn?: ClientSession): Promise<{ data: PurchasingItem[]; meta: IPaginationRes; }> {
+  async bulkUpdatePurchasingItems(purchasing_id: Types.ObjectId, data: PurchasingItemDto[], sessionIn?: ClientSession): Promise<Array<PurchasingItem & { _id: Types.ObjectId }>> {
     return this.global.withTransaction(async (session) => {
       const existingItems = await this.purchasingItemModel.find({
         purchase_order: purchasing_id,
@@ -252,7 +252,7 @@ export class PurchasingService {
         }
       }));
 
-      const list = await this.listPurchasingItems({ purchasing_id });
+      const list = await this.purchasingItemModel.find({ purchase_order: purchasing_id }).session(session).lean();
       return list;
     }, sessionIn);
   }
@@ -271,7 +271,7 @@ export class PurchasingService {
     });
   }
 
-  async receiveOrder(id: Types.ObjectId, dto: ReceiveOrderDto, purhcaseItems: ReceiveOrderItemDto[]): Promise<Purchasing | undefined> {
+  async receiveOrder(id: Types.ObjectId, dto: ReceiveOrderDto, updateItems: PurchasingItemDto[]): Promise<Purchasing | undefined> {
     return this.global.withTransaction(async (session) => {
       const purchase = await this.purchasingModel.findById(id).session(session);
       if (!purchase)
@@ -284,12 +284,12 @@ export class PurchasingService {
       }, session);
       if (!updatedPurchase)
         throw BaseResponse.unexpected({ err: { text: 'receiveOrder failed to editPurchasing' } });
-      // ✅ Step 2: Fetch items after update
-      const purchaseItems = await this.purchasingItemModel.find({ purchase_order: id }).session(session);
+      // ✅ Step 2: Update items with new values (optional)
+      const updatedItems = await this.bulkUpdatePurchasingItems(id, updateItems, session);
       // ✅ Step 3: Safely loop and create inventory
-      for (const item of purchaseItems) {
+      await Promise.all(updatedItems.map(async item => {
         await this.inventory.createInventory({ purchase_item: item._id }, session);
-      }
+      }))
       return updatedPurchase;
     });
   }

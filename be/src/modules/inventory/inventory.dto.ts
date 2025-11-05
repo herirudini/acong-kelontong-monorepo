@@ -1,12 +1,21 @@
-import { IsNumber } from 'class-validator';
-import { InventoryEn } from './inventory.schema';
+import { IsDate, IsMongoId, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Types } from 'mongoose';
 
-export class EditInventoryDto {
+export class InventoryDto {
+  @IsMongoId()
+  @IsNotEmpty()
+  purchase_item: Types.ObjectId;
   @IsNumber()
-  sell_price: number;
+  @IsOptional()
+  sell_price?: number;
   @IsNumber()
-  qty: number;
+  @IsOptional()
+  item_qty?: number;
   @IsNumber()
-  remaining_qty: number;
-  status: InventoryEn;
+  @IsOptional()
+  remaining_qty?: number;
+  @IsString()
+  @IsDate()
+  @IsOptional()
+  exp_date?: Date;
 }

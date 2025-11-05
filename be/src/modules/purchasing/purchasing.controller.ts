@@ -9,7 +9,7 @@ import { Types } from 'mongoose';
 import { diskStorage } from 'multer';
 import { extname, join } from 'path';
 import { PurchasingEn } from './purchasing.schema';
-import { PurchasingItemDto, ReceiveOrderItemDto } from '../purchasing-item/purchasing-item.dto';
+import { PurchasingItemDto } from '../purchasing-item/purchasing-item.dto';
 import { v4 as uuidv4 } from 'uuid';
 import * as fs from 'fs';
 import { UploadInvoiceInterceptor } from './purchasing-invoice.interceptor';
@@ -205,7 +205,7 @@ export class PurchasingController {
     @Param('purchasing_id') purchasingId: Types.ObjectId,
     @UploadedFile() file: Express.Multer.File,
     @Req() req: Request,
-    @Body() dto: { purchase: ReceiveOrderDto, purhcaseItems: ReceiveOrderItemDto[] },
+    @Body() dto: { purchase: ReceiveOrderDto, purhcaseItems: PurchasingItemDto[] },
     @Res() res: Response,
   ) {
     return this.purchasingMutation({ file, dto: dto.purchase, req, res }, async () => {
@@ -243,8 +243,8 @@ export class PurchasingController {
     @Res() res: Response,
   ) {
     try {
-      const { data, meta } = await this.service.bulkUpdatePurchasingItems(purchasingId, body);
-      return BaseResponse.success({ res, option: { message: 'Success bulk update purchasing item', list: data, meta } });
+      const data = await this.service.bulkUpdatePurchasingItems(purchasingId, body);
+      return BaseResponse.success({ res, option: { message: 'Success bulk update purchasing item', list: data } });
     } catch (err) {
       return BaseResponse.error({ res, err });
     }
